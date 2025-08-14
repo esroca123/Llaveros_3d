@@ -23,34 +23,35 @@ estilos_llaveros = {
 # --- Selección del estilo ---
 estilo = st.selectbox("Selecciona el estilo de llavero:", list(estilos_llaveros.keys()))
 
-# --- Campo extra según el estilo ---
-extra_info = st.text_input(f"{estilos_llaveros[estilo]}:")
+# --- Campo extra opcional ---
+extra_info = st.text_input(f"{estilos_llaveros[estilo]} (opcional):")
 
-# --- Nombre y descripción ---
+# --- Nombre del llavero ---
 nombre_llavero = st.text_input("Nombre del llavero (ej: Corazón pequeño, Hoja minimalista...)")
-descripcion_llavero = st.text_area("Descripción general del llavero (en inglés):", 
-                                   placeholder="Describe el diseño, tamaño pequeño, innovador, ideal para impresión 3D...")
 
 # --- Botón para generar ---
 if st.button("Generar Prompt"):
-    if nombre_llavero.strip() == "" or descripcion_llavero.strip() == "" or extra_info.strip() == "":
-        st.error("Por favor completa todos los campos.")
+    if nombre_llavero.strip() == "":
+        st.error("Por favor, ingresa el nombre del llavero.")
     else:
-        # --- Prompts por versión ---
-        prompt_color = (
-            f"{descripcion_llavero}, {estilo} ({extra_info}), full color, "
-            "highly detailed, creative, unique, suitable for small keychain design, "
+        # Descripción base por defecto
+        descripcion_base_color = (
+            f"{estilo} {f'({extra_info})' if extra_info else ''}, "
+            "full color, highly detailed, creative, unique, small size for keychain, "
             "3D print-ready, artistic composition"
         )
 
-        prompt_bn = (
-            f"{descripcion_llavero}, {estilo} ({extra_info}), black and white line art, "
-            "thin lines, single stroke, no shadows, no thick outlines, "
+        descripcion_base_bn = (
+            f"{estilo} {f'({extra_info})' if extra_info else ''}, "
+            "black and white line art, thin lines, single stroke, no shadows, no thick outlines, "
             "clean vector style, optimized for DXF conversion"
         )
 
-        # Versión para una imagen dividida
-        prompt_base = f"Create a split image grid showing two versions of the same design: Left side: {prompt_color} | Right side: {prompt_bn}"
+        # Prompt para la imagen combinada
+        prompt_base = (
+            f"Create a single image split in two halves showing the same keychain design: "
+            f"Left side: {descripcion_base_color} | Right side: {descripcion_base_bn}"
+        )
 
         # --- Prompts específicos ---
         prompt_dalle = prompt_base
