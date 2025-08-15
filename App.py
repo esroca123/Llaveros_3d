@@ -23,8 +23,11 @@ estilos_llaveros = {
 # --- Selección del estilo ---
 estilo = st.selectbox("Selecciona el estilo de llavero:", list(estilos_llaveros.keys()))
 
-# --- Campo extra opcional ---
-extra_info = st.text_input(f"{estilos_llaveros[estilo]} (opcional):")
+# --- Campo para detalle específico opcional ---
+detalle_estilo = st.text_input(f"{estilos_llaveros[estilo]} (opcional):")
+
+# --- Campo para descripción creativa/petición especial opcional ---
+descripcion_extra = st.text_area("Descripción creativa o petición especial (opcional):", height=100)
 
 # --- Nombre del llavero ---
 nombre_llavero = st.text_input("Nombre del llavero (ej: Corazón pequeño, Hoja minimalista...)")
@@ -35,25 +38,27 @@ if st.button("Generar Prompt"):
         st.error("Por favor, ingresa el nombre del llavero.")
     else:
         # Descripción base por defecto
-        descripcion_base_color = (
-            f"{estilo} {f'({extra_info})' if extra_info else ''}, "
+        descripcion_color = (
+            f"{estilo} {f'({detalle_estilo})' if detalle_estilo else ''}, "
+            f"{descripcion_extra + ', ' if descripcion_extra else ''}"
             "full color, highly detailed, creative, unique, small size for keychain, "
             "3D print-ready, artistic composition"
         )
 
-        descripcion_base_bn = (
-            f"{estilo} {f'({extra_info})' if extra_info else ''}, "
+        descripcion_bn = (
+            f"{estilo} {f'({detalle_estilo})' if detalle_estilo else ''}, "
+            f"{descripcion_extra + ', ' if descripcion_extra else ''}"
             "black and white line art, thin lines, single stroke, no shadows, no thick outlines, "
             "clean vector style, optimized for DXF conversion"
         )
 
-        # Prompt para la imagen combinada
+        # Prompt para imagen combinada
         prompt_base = (
             f"Create a single image split in two halves showing the same keychain design: "
-            f"Left side: {descripcion_base_color} | Right side: {descripcion_base_bn}"
+            f"Left side: {descripcion_color} | Right side: {descripcion_bn}"
         )
 
-        # --- Prompts específicos ---
+        # Prompts para diferentes IA
         prompt_dalle = prompt_base
         prompt_mj = f"{prompt_base} --ar 1:1 --v 6 --q 2 --style raw"
         prompt_sd = f"{prompt_base}, ultra detailed, 8k, photorealistic render"
