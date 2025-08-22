@@ -11,8 +11,10 @@ with st.container():
 
     # Style and description container
     with st.container():
-        estilos_generales = ["Minimalist", "Futurist", "Cartoon", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
-        estilo_seleccionado = st.selectbox("Keychain Style", ["Initial of a word"] + estilos_generales)
+        estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
+        estilos_generales = ["Minimalist", "Futurist", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
+        
+        estilo_seleccionado = st.selectbox("Keychain Style", ["Initial of a word"] + estilos_especificos + estilos_generales)
         
         if estilo_seleccionado == "Initial of a word":
             inicial_palabra = st.text_input("Word for the initial", placeholder="e.g., Alexandra")
@@ -22,7 +24,7 @@ with st.container():
             inicial_palabra = None
             estilo_inicial_seleccionado = None
 
-        descripcion_opcional = st.text_area("Additional style description (optional)", placeholder="Add specific details about the style here.")
+        descripcion_opcional = st.text_area("Additional style description (optional)", placeholder="Add specific details about the style or character here.")
 
     # Colors container
     with st.container():
@@ -76,4 +78,3 @@ if st.button("Generate Prompt", type="primary"):
         st.divider()
         st.subheader("✅ Your prompt is ready:")
         st.text_area("Copy your prompt here:", prompt, height=250)
-        st.balloons()
