@@ -3,7 +3,7 @@ import streamlit as st
 # Título de la app
 st.title("Llavero Prompts Generator")
 st.markdown("Create detailed prompts to generate unique keychain designs with AI.")
-st.markdown("The resulting prompt will request a single image with three design variations.")
+st.markdown("The resulting prompt will request a single image with three design variations arranged horizontally.")
 
 # --- Main container for data entry ---
 with st.container():
@@ -13,9 +13,9 @@ with st.container():
     with st.container():
         estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
         estilos_generales = ["Minimalist", "Futurist", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
-        
+
         estilo_seleccionado = st.selectbox("Keychain Style", ["Initial of a word"] + estilos_especificos + estilos_generales)
-        
+
         if estilo_seleccionado == "Initial of a word":
             inicial_palabra = st.text_input("Word for the initial", placeholder="e.g., Alexandra")
             # Usamos la misma lista de estilos generales para la inicial
@@ -43,7 +43,7 @@ if st.button("Generate Prompt", type="primary"):
     else:
         # Generate the base prompt
         prompt = "Generate a single image of a keychain design with the following characteristics: "
-        
+
         # Add the style part
         if estilo_seleccionado == "Initial of a word" and inicial_palabra:
             prompt += f"A design based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} style."
@@ -57,24 +57,24 @@ if st.button("Generate Prompt", type="primary"):
             prompt += f" Incorporate the {icono} icon."
         if texto_opcional:
             prompt += f" Include the text: '{texto_opcional}'."
-        
+
         # This is the line that specifies the keyring hole without the ring
-        prompt += " The design includes a keyring hole but no keyring attached."
+        prompt += " The design includes a keyring hole; no keyring should be attached."
 
         # Add suggested colors only if selected
         if colores_seleccionados:
             colores_str = ", ".join(colores_seleccionados)
             prompt += f" Suggested colors: {colores_str}."
 
-        # Specify the generation of the three images
+        # Specify the generation of the three images with horizontal arrangement
         prompt += (
-            " The image must include three variations of the same design: "
-            "1. A full-color version. "
-            "2. A black and white version with clear, defined contours, optimized for DXF file generation. "
-            "3. A single-color version, converting the flat color areas of the original design into solid black shapes to clearly distinguish between each separate part of the design. "
-            "All three versions should be visible within a single, unified image."
+            " The image must include three distinct variations of the same design arranged horizontally within a single frame: "
+            "1. On the right: A full-color version. "
+            "2. In the center: A black and white version with clear, defined contours, optimized for DXF file generation. "
+            "3. On the left: A single-color version where each of the original color areas is filled with solid black, maintaining the separation between the different parts of the design. "
+            "Ensure there is clear space separating each of the three variations to prevent overlap."
         )
-        
+
         # Display the result
         st.divider()
         st.subheader("✅ Your prompt is ready:")
