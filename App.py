@@ -57,8 +57,8 @@ if st.button("Generate Prompt", type="primary"):
         if texto_opcional:
             prompt += f" Include the text: '{texto_opcional}'."
         
-        # Add a hole for the keyring, no ring included
-        prompt += " The design includes a hole for the keyring but no ring attached."
+        # This is the line that specifies the keyring hole without the ring
+        prompt += " The design includes a keyring hole but no keyring attached."
 
         # Add suggested colors only if selected
         if colores_seleccionados:
