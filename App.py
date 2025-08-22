@@ -1,98 +1,57 @@
-import streamlit as st
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
 
-# --- Configuración de la App ---
-st.set_page_config(page_title="Generador de Prompts - Llaveros 3D", page_icon="🔑", layout="centered")
+def procesar_imagen(ruta_imagen, salida="resultado.png"):
+    # Cargar imagen
+    img = cv2.imread(ruta_imagen)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
-st.title("🔑 Generador de Prompts para Llaveros 3D")
-st.write("⚠️ **Importante:** Para mejores resultados, introduce la información en **inglés**.")
+    # ---- 1. Versión en blanco y negro (silueta) ----
+    gris = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, bn = cv2.threshold(gris, 127, 255, cv2.THRESH_BINARY_INV)
 
-# --- Estilos de llaveros disponibles ---
-estilos_llaveros = {
-    "Minimalista geométrico": "Describe la forma geométrica o patrón",
-    "Inicial de nombre con diseño artístico": "Indica la letra o inicial",
-    "Animal estilizado": "Indica el animal",
-    "Símbolo cultural": "Indica el símbolo o cultura",
-    "Futurista con relieve": "Describe el elemento futurista",
-    "Naturaleza (hojas, flores, montañas)": "Indica el elemento natural",
-    "Steampunk con engranajes": "Indica si quieres algún elemento especial",
-    "Retro 8-bit": "Indica el videojuego o personaje retro",
-    "Inspirado en tatuajes": "Indica el estilo o elemento del tatuaje",
-    "Abstracto artístico": "Describe el estilo abstracto"
-}
+    # ---- 2. Versión con colores indexados (mapa de colores -> números) ----
+    Z = img_rgb.reshape((-1,3))
+    Z = np.float32(Z)
 
-# --- Selección del estilo ---
-estilo = st.selectbox("Selecciona el estilo de llavero:", list(estilos_llaveros.keys()))
+    # Usamos KMeans para reducir la cantidad de colores detectados
+    K = 6  # número máximo de colores (puedes ajustarlo)
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
+    _, labels, centers = cv2.kmeans(Z, K, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
 
-# --- Campo para detalle específico opcional ---
-detalle_estilo = st.text_input(f"{estilos_llaveros[estilo]} (opcional):")
+    labels = labels.flatten()
+    mapa_colores = labels.reshape(img_rgb.shape[:2])
 
-# --- Campo para descripción creativa/petición especial opcional ---
-descripcion_extra = st.text_area("Descripción creativa o petición especial (opcional):", height=100)
+    # Creamos una imagen negra y escribimos el número de cada color
+    img_indexada = np.zeros_like(img_rgb)
+    for i in range(K):
+        mask = (mapa_colores == i)
+        img_indexada[mask] = [0, 0, 0]  # negro
+        # Escribimos un número en el centro de la región
+        coords = np.column_stack(np.where(mask))
+        if len(coords) > 0:
+            y, x = coords[len(coords)//2]  # punto medio de la región
+            cv2.putText(img_indexada, str(i+1), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 
+                        0.4, (255,255,255), 1, cv2.LINE_AA)
 
-# --- Nombre del llavero ---
-nombre_llavero = st.text_input("Nombre del llavero (ej: Corazón pequeño, Hoja minimalista...)")
+    # ---- Mostrar en una sola imagen ----
+    fig, axs = plt.subplots(1, 3, figsize=(15,5))
+    axs[0].imshow(img_rgb)
+    axs[0].set_title("Versión a color")
+    axs[0].axis("off")
 
-# --- Botón para generar ---
-if st.button("Generar Prompt"):
-    if nombre_llavero.strip() == "":
-        st.error("Por favor, ingresa el nombre del llavero.")
-    else:
-        # --- Descripciones para cada versión ---
-        descripcion_color = (
-            f"{estilo} {f'({detalle_estilo})' if detalle_estilo else ''}, "
-            f"{descripcion_extra + ', ' if descripcion_extra else ''}"
-            "full color, highly detailed, creative, unique, "
-            "small keychain design WITHOUT ring/hole, "
-            "3D print-ready, artistic composition"
-        )
+    axs[1].imshow(bn, cmap="gray")
+    axs[1].set_title("Versión blanco y negro")
+    axs[1].axis("off")
 
-        descripcion_bn = (
-            f"{estilo} {f'({detalle_estilo})' if detalle_estilo else ''}, "
-            f"{descripcion_extra + ', ' if descripcion_extra else ''}"
-            "black and white line art, only thin outlines, no shadows, "
-            "clean vector style, optimized for DXF conversion, "
-            "keychain design WITHOUT ring/hole"
-        )
+    axs[2].imshow(img_indexada)
+    axs[2].set_title("Colores numerados")
+    axs[2].axis("off")
 
-        descripcion_bn_relleno = (
-            f"{estilo} {f'({detalle_estilo})' if detalle_estilo else ''}, "
-            f"{descripcion_extra + ', ' if descripcion_extra else ''}"
-            "black and white solid silhouette, fully filled shapes, no empty spaces, "
-            "suitable for Blender extrusion, "
-            "keychain design WITHOUT ring/hole"
-        )
+    plt.tight_layout()
+    plt.savefig(salida, dpi=300)
+    plt.show()
 
-        # --- Prompt unificado con 3 versiones ---
-        prompt_base = (
-            f"Create a single image split into three equal sections (left to right), showing the same keychain design: "
-            f"Left: {descripcion_color} | "
-            f"Center: {descripcion_bn} | "
-            f"Right: {descripcion_bn_relleno}"
-        )
-
-        # Prompts para diferentes IA
-        prompt_dalle = prompt_base
-        prompt_mj = f"{prompt_base} --ar 1:1 --v 6 --q 2 --style raw"
-        prompt_sd = f"{prompt_base}, ultra detailed, 8k, photorealistic render"
-
-        # --- Mostrar resultados ---
-        st.subheader("🎯 Prompt generado para DALL·E:")
-        st.code(prompt_dalle, language="text")
-
-        st.subheader("🎯 Prompt generado para MidJourney:")
-        st.code(prompt_mj, language="text")
-
-        st.subheader("🎯 Prompt generado para Stable Diffusion:")
-        st.code(prompt_sd, language="text")
-
-        # --- Frases sugeridas para la caja ---
-        frases = [
-            f"Carry your style with the {nombre_llavero} keychain",
-            f"Small details, big personality — {nombre_llavero}",
-            f"{nombre_llavero}: Designed for everyday adventures",
-            f"Your pocket-sized companion — {nombre_llavero}"
-        ]
-
-        st.subheader("📦 Frases sugeridas para la caja:")
-        for frase in frases:
-            st.write(f"- {frase}")
+# Ejemplo de uso
+# procesar_imagen("imagen.png", "resultado.png")
