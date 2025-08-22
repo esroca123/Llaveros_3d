@@ -18,8 +18,9 @@ with st.container():
         
         if estilo_seleccionado == "Initial of a word":
             inicial_palabra = st.text_input("Word for the initial", placeholder="e.g., Alexandra")
-            estilos_iniciales = ["Serif", "Sans-serif", "Handwritten", "Gothic", "Bubble", "Pixelated"]
-            estilo_inicial_seleccionado = st.selectbox("Style for the initial", estilos_iniciales)
+            # Usamos la misma lista de estilos generales para la inicial
+            estilos_iniciales_disponibles = estilos_especificos + estilos_generales
+            estilo_inicial_seleccionado = st.selectbox("Style for the initial", estilos_iniciales_disponibles)
         else:
             inicial_palabra = None
             estilo_inicial_seleccionado = None
@@ -45,7 +46,7 @@ if st.button("Generate Prompt", type="primary"):
         
         # Add the style part
         if estilo_seleccionado == "Initial of a word" and inicial_palabra:
-            prompt += f"A design based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} font style."
+            prompt += f"A design based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} style."
         else:
             prompt += f"A {estilo_seleccionado.lower()} keychain design."
 
