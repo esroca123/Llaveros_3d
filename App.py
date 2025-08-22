@@ -11,20 +11,23 @@ with st.container():
 
     # Style and description container
     with st.container():
-        estilos_opciones = ["Minimalist", "Futurist", "Cartoon", "Initial of a word"]
-        estilo_seleccionado = st.selectbox("Keychain Style", estilos_opciones)
+        estilos_generales = ["Minimalist", "Futurist", "Cartoon", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
+        estilo_seleccionado = st.selectbox("Keychain Style", ["Initial of a word"] + estilos_generales)
         
         if estilo_seleccionado == "Initial of a word":
             inicial_palabra = st.text_input("Word for the initial", placeholder="e.g., Alexandra")
+            estilos_iniciales = ["Serif", "Sans-serif", "Handwritten", "Gothic", "Bubble", "Pixelated"]
+            estilo_inicial_seleccionado = st.selectbox("Style for the initial", estilos_iniciales)
         else:
             inicial_palabra = None
+            estilo_inicial_seleccionado = None
 
         descripcion_opcional = st.text_area("Additional style description (optional)", placeholder="Add specific details about the style here.")
 
     # Colors container
     with st.container():
         colores_opciones = ["red", "blue", "green", "yellow", "black", "white", "gray", "purple", "pink", "orange"]
-        colores_seleccionados = st.multiselect("Suggested Colors (max. 4)", colores_opciones, max_selections=4)
+        colores_seleccionados = st.multiselect("Suggested Colors (optional, max. 4)", colores_opciones, max_selections=4)
 
     # Optional fields for text and icon
     icono = st.text_input("Icon or symbol (optional)", placeholder="e.g., lightning, moon, flower")
@@ -32,21 +35,19 @@ with st.container():
 
 # --- Button to generate the prompt and validation ---
 if st.button("Generate Prompt", type="primary"):
-    if not estilo_seleccionado or (estilo_seleccionado == "Initial of a word" and not inicial_palabra):
-        st.error("Please select a style and specify the word for the initial if needed.")
-    elif not colores_seleccionados:
-        st.error("Please select at least one color.")
+    if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
+        st.error("Please specify the word for the initial.")
     else:
         # Generate the base prompt
         prompt = "Generate a single image of a keychain design with the following characteristics: "
         
         # Add the style part
         if estilo_seleccionado == "Initial of a word" and inicial_palabra:
-            prompt += f"A design based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_seleccionado.lower()} style."
+            prompt += f"A design based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} font style."
         else:
             prompt += f"A {estilo_seleccionado.lower()} keychain design."
 
-        # Add optional description and icon
+        # Add optional description, text and icon
         if descripcion_opcional:
             prompt += f" Additional details: {descripcion_opcional}."
         if icono:
@@ -57,9 +58,10 @@ if st.button("Generate Prompt", type="primary"):
         # Add a hole for the keyring, no ring included
         prompt += " The design includes a hole for the keyring but no ring attached."
 
-        # Add suggested colors
-        colores_str = ", ".join(colores_seleccionados)
-        prompt += f" Suggested colors: {colores_str}."
+        # Add suggested colors only if selected
+        if colores_seleccionados:
+            colores_str = ", ".join(colores_seleccionados)
+            prompt += f" Suggested colors: {colores_str}."
 
         # Specify the generation of the three images
         prompt += (
