@@ -28,8 +28,9 @@ with st.container():
 
     # Colors container
     with st.container():
+        cantidad_colores = st.selectbox("Number of colors (optional)", ["Any"] + list(range(1, 5)))
         colores_opciones = ["red", "blue", "green", "yellow", "black", "white", "gray", "purple", "pink", "orange"]
-        colores_seleccionados = st.multiselect("Suggested Colors (optional, max. 4)", colores_opciones, max_selections=4)
+        colores_seleccionados = st.multiselect("Suggested Colors (optional)", colores_opciones, max_selections=4)
 
     # Optional fields for text and icon
     icono = st.text_input("Icon or symbol (optional)", placeholder="e.g., lightning, moon, flower")
@@ -62,8 +63,13 @@ if st.button("Generate Prompt", type="primary"):
         # This is the line that specifies the keyring hole without the ring
         prompt += " The design includes a keyring hole; no keyring should be attached."
 
-        # Add suggested colors only if selected
-        if colores_seleccionados:
+        # Add number of colors and suggested colors only if selected
+        if cantidad_colores != "Any":
+            prompt += f" The design must use exactly {cantidad_colores} colors."
+            if colores_seleccionados:
+                colores_str = ", ".join(colores_seleccionados)
+                prompt += f" Suggested colors: {colores_str}."
+        elif colores_seleccionados:
             colores_str = ", ".join(colores_seleccionados)
             prompt += f" Suggested colors: {colores_str}."
 
