@@ -1,57 +1,49 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
+import svgwrite
 
-def procesar_imagen(ruta_imagen, salida="resultado.png"):
-    # Cargar imagen
-    img = cv2.imread(ruta_imagen)
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-    # ---- 1. Versión en blanco y negro (silueta) ----
-    gris = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    _, bn = cv2.threshold(gris, 127, 255, cv2.THRESH_BINARY_INV)
-
-    # ---- 2. Versión con colores indexados (mapa de colores -> números) ----
-    Z = img_rgb.reshape((-1,3))
-    Z = np.float32(Z)
-
-    # Usamos KMeans para reducir la cantidad de colores detectados
-    K = 6  # número máximo de colores (puedes ajustarlo)
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-    _, labels, centers = cv2.kmeans(Z, K, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
-
-    labels = labels.flatten()
-    mapa_colores = labels.reshape(img_rgb.shape[:2])
-
-    # Creamos una imagen negra y escribimos el número de cada color
-    img_indexada = np.zeros_like(img_rgb)
-    for i in range(K):
-        mask = (mapa_colores == i)
-        img_indexada[mask] = [0, 0, 0]  # negro
-        # Escribimos un número en el centro de la región
-        coords = np.column_stack(np.where(mask))
-        if len(coords) > 0:
-            y, x = coords[len(coords)//2]  # punto medio de la región
-            cv2.putText(img_indexada, str(i+1), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 
-                        0.4, (255,255,255), 1, cv2.LINE_AA)
-
-    # ---- Mostrar en una sola imagen ----
-    fig, axs = plt.subplots(1, 3, figsize=(15,5))
-    axs[0].imshow(img_rgb)
-    axs[0].set_title("Versión a color")
-    axs[0].axis("off")
-
-    axs[1].imshow(bn, cmap="gray")
-    axs[1].set_title("Versión blanco y negro")
-    axs[1].axis("off")
-
-    axs[2].imshow(img_indexada)
-    axs[2].set_title("Colores numerados")
-    axs[2].axis("off")
-
-    plt.tight_layout()
-    plt.savefig(salida, dpi=300)
-    plt.show()
+def image_to_keychain_svg(image_path, output_svg, keychain_size=(100, 100), hole_radius=5, hole_offset=5):
+    """
+    Convierte una imagen a un llavero en SVG en silueta negra, con agujero para la argolla.
+    
+    :param image_path: Ruta de la imagen de entrada
+    :param output_svg: Ruta de salida del archivo SVG
+    :param keychain_size: Tamaño del llavero (ancho, alto) en mm
+    :param hole_radius: Radio del agujero en mm
+    :param hole_offset: Distancia desde el borde superior al centro del agujero en mm
+    """
+    
+    # Leer imagen en escala de grises
+    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    
+    # Redimensionar al tamaño del llavero
+    img = cv2.resize(img, keychain_size)
+    
+    # Umbralizar para convertir a silueta (blanco y negro)
+    _, thresh = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+    
+    # Encontrar contornos
+    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # Crear documento SVG
+    dwg = svgwrite.Drawing(output_svg, size=(f"{keychain_size[0]}mm", f"{keychain_size[1]}mm"))
+    
+    # Dibujar fondo blanco
+    dwg.add(dwg.rect(insert=(0, 0), size=(f"{keychain_size[0]}mm", f"{keychain_size[1]}mm"), fill="white"))
+    
+    # Dibujar silueta negra
+    for contour in contours:
+        points = [(p[0][0], p[0][1]) for p in contour]
+        dwg.add(dwg.polygon(points, fill="black"))
+    
+    # Añadir el agujero (círculo vacío en la parte superior central)
+    hole_center = (keychain_size[0] / 2, hole_offset + hole_radius)
+    dwg.add(dwg.circle(center=(f"{hole_center[0]}mm", f"{hole_center[1]}mm"),
+                       r=f"{hole_radius}mm", fill="white"))
+    
+    # Guardar archivo
+    dwg.save()
+    print(f"Llavero guardado en {output_svg}")
 
 # Ejemplo de uso
-# procesar_imagen("imagen.png", "resultado.png")
+image_to_keychain_svg("entrada.png", "llavero.svg")
