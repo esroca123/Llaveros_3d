@@ -3,7 +3,7 @@ import streamlit as st
 # Título de la app
 st.title("Llavero Prompts Generator")
 st.markdown("Create detailed prompts to generate unique keychain designs with AI.")
-st.markdown("The resulting prompt will request a single image with three design variations arranged horizontally.")
+st.markdown("The resulting prompt will request a single image with four design variations arranged horizontally.")
 
 # --- Main container for data entry ---
 with st.container():
@@ -14,7 +14,6 @@ with st.container():
         estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
         estilos_generales = ["Minimalist", "Futurist", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
         
-        # Se añade la opción "Free Style"
         estilo_seleccionado = st.selectbox("Keychain Style", ["Initial of a word", "Free Style"] + estilos_especificos + estilos_generales)
 
         if estilo_seleccionado == "Initial of a word":
@@ -68,13 +67,14 @@ if st.button("Generate Prompt", type="primary"):
             colores_str = ", ".join(colores_seleccionados)
             prompt += f" Suggested colors: {colores_str}."
 
-        # Specify the generation of the three images with horizontal arrangement
+        # Specify the generation of the four images with horizontal arrangement
         prompt += (
-            " The image must include three distinct variations of the same design arranged horizontally within a single frame: "
-            "1. On the right: A full-color version. "
-            "2. In the center: A black and white version with clear, defined contours, optimized for DXF file generation. "
-            "3. On the left: A single-color version where each of the original color areas is filled with solid black, maintaining the separation between the different parts of the design. "
-            "Ensure there is clear space separating each of the three variations to prevent overlap."
+            " The image must include four distinct variations of the same design arranged horizontally within a single frame: "
+            "1. On the far right: A full-color version. "
+            "2. Second from the right: A black and white version with clear, defined contours, optimized for DXF file generation. "
+            "3. Second from the left: A single-color version where each of the original color areas is filled with solid black, maintaining the separation between the different parts of the design. "
+            "4. On the far left: A complete black silhouette of the keychain design. "
+            "Ensure there is clear space separating each of the four variations to prevent overlap."
         )
         
         # Display the result
