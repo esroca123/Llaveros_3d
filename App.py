@@ -37,25 +37,37 @@ if st.button("Generar Prompt"):
     if nombre_llavero.strip() == "":
         st.error("Por favor, ingresa el nombre del llavero.")
     else:
-        # Descripción base por defecto
+        # --- Descripciones para cada versión ---
         descripcion_color = (
             f"{estilo} {f'({detalle_estilo})' if detalle_estilo else ''}, "
             f"{descripcion_extra + ', ' if descripcion_extra else ''}"
-            "full color, highly detailed, creative, unique, small size for keychain, "
+            "full color, highly detailed, creative, unique, "
+            "small keychain design WITHOUT ring/hole, "
             "3D print-ready, artistic composition"
         )
 
         descripcion_bn = (
             f"{estilo} {f'({detalle_estilo})' if detalle_estilo else ''}, "
             f"{descripcion_extra + ', ' if descripcion_extra else ''}"
-            "black and white line art, thin lines, single stroke, no shadows, no thick outlines, "
-            "clean vector style, optimized for DXF conversion"
+            "black and white line art, only thin outlines, no shadows, "
+            "clean vector style, optimized for DXF conversion, "
+            "keychain design WITHOUT ring/hole"
         )
 
-        # Prompt para imagen combinada
+        descripcion_bn_relleno = (
+            f"{estilo} {f'({detalle_estilo})' if detalle_estilo else ''}, "
+            f"{descripcion_extra + ', ' if descripcion_extra else ''}"
+            "black and white solid silhouette, fully filled shapes, no empty spaces, "
+            "suitable for Blender extrusion, "
+            "keychain design WITHOUT ring/hole"
+        )
+
+        # --- Prompt unificado con 3 versiones ---
         prompt_base = (
-            f"Create a single image split in two halves showing the same keychain design: "
-            f"Left side: {descripcion_color} | Right side: {descripcion_bn}"
+            f"Create a single image split into three equal sections (left to right), showing the same keychain design: "
+            f"Left: {descripcion_color} | "
+            f"Center: {descripcion_bn} | "
+            f"Right: {descripcion_bn_relleno}"
         )
 
         # Prompts para diferentes IA
