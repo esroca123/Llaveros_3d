@@ -68,7 +68,7 @@ if st.button("Generate Prompt", type="primary"):
             " The image must include three variations of the same design: "
             "1. A full-color version. "
             "2. A black and white version with clear, defined contours, optimized for DXF file generation. "
-            "3. A single-color version where all original colors are replaced by black, identifying the different colored areas as black shapes. "
+            "3. A single-color version, converting the flat color areas of the original design into solid black shapes to clearly distinguish between each separate part of the design. "
             "All three versions should be visible within a single, unified image."
         )
         
