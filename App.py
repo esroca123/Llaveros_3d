@@ -13,13 +13,14 @@ with st.container():
     with st.container():
         estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
         estilos_generales = ["Minimalist", "Futurist", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
+        estilos_adicionales = ["Kawaii", "Pop Art", "Gothic", "Surrealist", "Glass-like", "Metallic", "Wood-carved", "Clay-sculpted", "Flat Design", "Geometric", "Vaporwave", "Cottagecore", "Ilustración Botánica", "Acuarela Digital", "Graffiti Urbano"]
         
-        estilo_seleccionado = st.selectbox("Keychain Style", ["Initial of a word", "Free Style"] + estilos_especificos + estilos_generales)
+        estilo_seleccionado = st.selectbox("Keychain Style", ["Initial of a word", "Free Style"] + estilos_especificos + estilos_generales + estilos_adicionales)
 
         if estilo_seleccionado == "Initial of a word":
             inicial_palabra = st.text_input("Word for the initial", placeholder="e.g., Alexandra")
-            estilos_iniciales_disponibles = estilos_especificos + estilos_generales
-            estilo_inicial_seleccionado = st.selectbox("Style for the initial", estilos_iniciales_disponibles)
+            todos_los_estilos = sorted(list(set(estilos_especificos + estilos_generales + estilos_adicionales)))
+            estilo_inicial_seleccionado = st.selectbox("Style for the initial", todos_los_estilos)
         else:
             inicial_palabra = None
             estilo_inicial_seleccionado = None
@@ -70,16 +71,12 @@ if st.button("Generate Prompt", type="primary"):
             colores_str = ", ".join(colores_seleccionados)
             base_prompt += f" Suggested colors: {colores_str}."
 
-        # Specify the generation of the four images with horizontal arrangement
-        prompt += (
-            f"1. On the far right: A full-color version of the {base_prompt} The design must include a keyring hole but no keyring attached."
-            f"2. Second from the right: A black and white line art version of the {base_prompt} It must have only thin outlines, no shadows, a clean vector style, and be optimized for DXF file conversion. The design must include a keyring hole but no keyring attached."
-            f"3. Second from the left: A single-color version of the {base_prompt} where each original color area is filled with solid black, maintaining the separation between the different parts, with fully filled shapes and no empty spaces. The design must include a keyring hole but no keyring attached."
-            f"4. On the far left: A complete, solid black silhouette of the {base_prompt} with no internal lines. The design must include a keyring hole but no keyring attached."
-            " Ensure there is clear space separating each of the four variations to prevent overlap."
-        )
-        
-        # Display the result
-        st.divider()
-        st.subheader("✅ Your prompt is ready:")
-        st.text_area("Copy your prompt here:", prompt, height=350)
+        # Add the four-section split logic
+        prompt += f"Section 1: {base_prompt}. 3D rendered, photorealistic, full color. "
+        prompt += f"Section 2: The same design, full color, highly detailed artistic composition. "
+        prompt += f"Section 3: The same design, black and white line art, thin lines, no shadows, clean vector style. "
+        prompt += f"Section 4: The same design, black and white line art, thick lines, bold comic style."
+
+        st.subheader("🎉 ¡Tu Prompt Generado!")
+        st.text_area("Prompt para tu IA:", value=prompt, height=200)
+
