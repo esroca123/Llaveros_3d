@@ -41,49 +41,44 @@ with st.container():
     texto_opcional = st.text_input("Text or phrase (optional)", placeholder="e.g., 'Happy Birthday'")
 
 # --- Button to generate the prompt and validation ---
+
 if st.button("Generate Prompt", type="primary"):
     if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
         st.error("Please specify the word for the initial.")
     else:
-        # Generate the base prompt
-        prompt = "Generate a single image of a keychain design with the following characteristics, split into four distinct sections arranged horizontally: "
-        
-        # Add the style part, including the new "Free Style" logic
+        # Descripción base del diseño
         if estilo_seleccionado == "Initial of a word" and inicial_palabra:
-            base_prompt = f"A **creative, unique, highly detailed** design based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} style."
+            base_prompt = f"A creative, detailed keychain design based on the letter '{inicial_palabra.upper()[0]}' in {estilo_inicial_seleccionado.lower()} style"
         elif estilo_seleccionado == "Free Style":
-            base_prompt = f"A **creative, unique, highly detailed** keychain design. "
+            base_prompt = "A creative, detailed keychain design"
         else:
-            base_prompt = f"A **creative, unique, highly detailed** {estilo_seleccionado.lower()} keychain design."
+            base_prompt = f"A creative, detailed {estilo_seleccionado.lower()} keychain design"
 
-        # Add optional description, text and icon
         if descripcion_opcional:
-            base_prompt += f" Additional details: {descripcion_opcional}."
+            base_prompt += f", with {descripcion_opcional}"
         if icono:
-            base_prompt += f" Incorporate the {icono} icon."
+            base_prompt += f", featuring a {icono} icon"
         if texto_opcional:
-            base_prompt += f" Include the text: '{texto_opcional}'."
+            base_prompt += f", with the text '{texto_opcional}'"
         
-        # Add number of colors and suggested colors only if selected
         if cantidad_colores != "Any":
-            base_prompt += f" The design must use exactly {cantidad_colores} colors."
+            base_prompt += f". Use exactly {cantidad_colores} colors"
             if colores_seleccionados:
-                colores_str = ", ".join(colores_seleccionados)
-                base_prompt += f" Suggested colors: {colores_str}."
+                base_prompt += f": {', '.join(colores_seleccionados)}"
         elif colores_seleccionados:
-            colores_str = ", ".join(colores_seleccionados)
-            base_prompt += f" Suggested colors: {colores_str}."
+            base_prompt += f". Suggested colors: {', '.join(colores_seleccionados)}"
 
-        # Specify the generation of the four images with horizontal arrangement
-        prompt += (
-            f"1. On the far right: A full-color version of the {base_prompt} The design must include a keyring hole but no keyring attached."
-            f"2. Second from the right: A black and white line art version of the {base_prompt} It must have only thin outlines, no shadows, a clean vector style, and be optimized for DXF file conversion. The design must include a keyring hole but no keyring attached."
-            f"3. Second from the left: A single-color version of the {base_prompt} where each original color area is filled with solid black, maintaining the separation between the different parts, with fully filled shapes and no empty spaces. The design must include a keyring hole but no keyring attached."
-            f"4. On the far left: A complete, solid black silhouette of the {base_prompt} with no internal lines. The design must include a keyring hole but no keyring attached."
-            " Ensure there is clear space separating each of the four variations to prevent overlap."
+        # Prompt final simplificado
+        prompt = (
+            f"Generate one image with four horizontal sections of the same keychain design: {base_prompt}. "
+            "Each section shows a variation:\n"
+            "1. Full-color version (with keyring hole, no keyring).\n"
+            "2. Black & white line art (thin outlines, no shadows, clean vector, DXF-ready).\n"
+            "3. Solid black fill version (all parts filled, no empty spaces).\n"
+            "4. Pure silhouette (solid black, no internal lines).\n"
+            "Keep clear separation between the four variations."
         )
-        
-        # Display the result
+
         st.divider()
         st.subheader("✅ Your prompt is ready:")
-        st.text_area("Copy your prompt here:", prompt, height=350)
+        st.text_area("Copy your prompt here:", prompt, height=300)
