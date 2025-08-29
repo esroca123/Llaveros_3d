@@ -27,14 +27,19 @@ with st.container():
         placeholder="Añade aquí detalles específicos sobre el estilo o el personaje."
     )
     
-    # Lógica para la opción de "Initial of a word" que solo se muestra si se selecciona
+    # Lógica para la opción de "Initial of a word"
+    inicial_palabra = None
+    estilo_inicial_seleccionado = None
     if estilo_seleccionado == "Initial of a word":
         inicial_palabra = st.text_input("Palabra para la inicial", placeholder="ej., Alexandra")
         estilo_inicial_seleccionado = st.selectbox("Estilo para la inicial", todos_los_estilos)
-    else:
-        inicial_palabra = None
-        estilo_inicial_seleccionado = None
     
+    # Lógica para la opción "A partir de una imagen"
+    estilo_para_imagen_seleccionado = None
+    if estilo_seleccionado == "A partir de una imagen":
+        st.markdown("La imagen de referencia debe subirse a la IA de tu elección por separado.")
+        estilo_para_imagen_seleccionado = st.selectbox("Estilo para aplicar a la imagen:", todos_los_estilos)
+
     # Todos los campos opcionales que ahora siempre están visibles
     cantidad_colores = st.selectbox("Cantidad de colores (opcional)", ["Cualquiera"] + list(range(1, 5)))
     colores_opciones = ["red", "blue", "green", "yellow", "black", "white", "gray", "purple", "pink", "orange"]
@@ -55,7 +60,7 @@ if st.button("Generar Prompt", type="primary"):
         # Lógica para la opción de "A partir de una imagen"
         if estilo_seleccionado == "A partir de una imagen":
             base_prompt = (
-                f"A creative, unique, highly detailed keychain design "
+                f"A creative, unique, highly detailed keychain design in a {estilo_para_imagen_seleccionado.lower()} style, "
                 f"based on a separate reference image provided to you. "
             )
         # Lógica para la opción de "Initial of a word"
