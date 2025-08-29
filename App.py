@@ -19,27 +19,28 @@ with st.container():
     # Selectbox principal que incluye la nueva opción
     estilo_seleccionado = st.selectbox(
         "Estilo del llavero", 
-        ["Initial of a word", "Free Style", "Subir imagen"] + todos_los_estilos
+        ["Initial of a word", "Free Style", "A partir de una imagen"] + todos_los_estilos
     )
 
     # Lógica condicional para manejar las diferentes opciones
-    if estilo_seleccionado == "Subir imagen":
-        # Interfaz para la opción de subir imagen
-        st.markdown("Sube una imagen y describe cómo quieres que la IA la adapte al diseño del llavero.")
-        imagen_subida = st.file_uploader("Sube una imagen de base:", type=["png", "jpg", "jpeg"])
+    if estilo_seleccionado == "A partir de una imagen":
+        # Interfaz para la opción de 'a partir de una imagen'
+        st.markdown("El prompt resultante te indicará cómo la IA debe usar una imagen que le proporciones por separado.")
+        
         descripcion_opcional = st.text_area(
             "Descripción para el llavero:",
             placeholder="Describe lo que quieres que aparezca, por ejemplo: 'la persona de la foto manejando una moto'."
         )
-        # Se requiere un estilo adicional para la imagen subida
+        
+        # Se requiere un estilo adicional para la imagen
         estilo_para_imagen = st.selectbox("Estilo para aplicar a la imagen:", todos_los_estilos)
 
         # Botón y lógica para generar el prompt
         if st.button("Generar Prompt (desde imagen)", type="primary"):
-            if imagen_subida is not None and descripcion_opcional:
+            if descripcion_opcional:
                 base_prompt_img = (
                     f"A creative, unique, highly detailed keychain design in a {estilo_para_imagen} style, "
-                    f"based on the uploaded image. The design should incorporate the following: "
+                    f"based on a separate reference image provided to you. The design should incorporate the following: "
                     f"'{descripcion_opcional}'."
                 )
                 
@@ -55,9 +56,9 @@ with st.container():
                 
                 st.divider()
                 st.subheader("✅ Tu prompt (para imagen) está listo:")
-                st.text_area("Copia este prompt y pégalo en tu IA de preferencia junto con la imagen subida:", prompt_completo, height=400)
+                st.text_area("Copia este prompt y pégalo en tu IA de preferencia (junto con la imagen de referencia que subas):", prompt_completo, height=400)
             else:
-                st.error("Por favor, sube una imagen y añade una descripción.")
+                st.error("Por favor, añade una descripción.")
 
     else:
         # Interfaz original para estilos de texto
