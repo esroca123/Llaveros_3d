@@ -137,13 +137,12 @@ if st.button("Generar Prompts", type="primary"):
             f"The background must be pure white (RGB 255, 255, 255)."
         )
 
-        # Prompt de separación de colores corregido
+        # Prompt de separación de colores corregido, conciso y directo
         prompt_separacion_colores = (
-            f"Based on the attached image, create a set of simplified, single-color versions for manufacturing purposes. "
-            f"Each original color area in the design must be represented by a completely separate shape, filled with solid black. "
-            f"The final output should show each of these black shapes separated, as if ready to be cut from different colored materials. "
-            f"The background must be pure white (RGB 255, 255, 255). "
-            f"The design must also include a single circular hole for attachment."
+            f"Based on the attached image, generate a simplified version for manufacturing. "
+            f"Each distinct color area of the original design should be represented as a **solid black shape,** clearly separated from the others. "
+            f"The design must also include a single circular hole for attachment. "
+            f"The background must be pure white (RGB 255, 255, 255)."
         )
 
         # Generar el prompt para el soporte
