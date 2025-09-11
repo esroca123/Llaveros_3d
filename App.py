@@ -1,12 +1,34 @@
-opciones_estilos = ["Initial of a word", "Free Style", "A partir de una imagen"] + todos_los_estilos
+import streamlit as st
 
-# Validar valor en session_state
-if "estilo_seleccionado" not in st.session_state or st.session_state.estilo_seleccionado not in opciones_estilos:
-    st.session_state.estilo_seleccionado = opciones_estilos[0]
+# Título de la app
+st.title("Generador de Prompts para Llaveros")
 
-# Ahora sí se puede usar index seguro
-st.session_state.estilo_seleccionado = st.selectbox(
-    "Estilo del llavero",
-    opciones_estilos,
-    index=opciones_estilos.index(st.session_state.estilo_seleccionado)
-)
+# Estado para almacenar el prompt
+if 'prompt' not in st.session_state:
+    st.session_state['prompt'] = ""
+
+# Entrada de texto
+st.session_state['prompt'] = st.text_area("Escribe tu prompt:", st.session_state['prompt'], height=200)
+
+# Selección de estilo
+estilos = ["Minimalista", "Divertido", "Colorido", "Realista"]
+estilo_seleccionado = st.selectbox("Selecciona un estilo:", estilos)
+
+# Botón para generar prompt final
+if st.button("Generar Prompt"):
+    # Mantener la primera letra en mayúscula
+    prompt_final = st.session_state['prompt'].strip()
+    if prompt_final:
+        prompt_final = prompt_final[0].upper() + prompt_final[1:]
+        # Agregamos el estilo seleccionado al prompt
+        prompt_final += f" | Estilo: {estilo_seleccionado}"
+        st.session_state['prompt'] = prompt_final
+        st.success("Prompt generado correctamente!")
+
+# Mostrar prompt final
+st.text_area("Prompt Final:", st.session_state['prompt'], height=150)
+
+# Botón copiar al portapapeles
+st.button("Copiar Prompt", on_click=lambda: st.experimental_set_query_params(copied=st.session_state['prompt']))
+
+# Nota: Aquí puedes reemplazar la función de copiar con tu método preferido para copiar al portapapeles
