@@ -77,44 +77,19 @@ if st.button("Generar Prompts", type="primary"):
         # Lógica para la opción de "A partir de una imagen"
         if estilo_seleccionado == "A partir de una imagen":
             estilo_prompt = estilo_para_imagen_seleccionado.lower()
-            base_prompt_coleccion = (
-                f"A collection of four unique, highly detailed decorative art designs in a {estilo_prompt} style, "
-                f"based on a separate reference image provided to you. The collection theme is '{descripcion_coleccion}'."
-            )
         # Lógica para la opción de "Initial of a word"
         elif estilo_seleccionado == "Initial of a word" and inicial_palabra:
             estilo_prompt = estilo_inicial_seleccionado.lower()
-            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_prompt} style. The collection theme is '{descripcion_coleccion}'."
         # Lógica para la nueva opción "Full Name/Phrase"
         elif estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
             estilo_prompt = estilo_nombre_seleccionado.lower()
-            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs based on the full name '{nombre_completo}' in a {estilo_prompt} style. The phrase '{frase_integrada}' is beautifully and creatively integrated into the design. The collection theme is '{descripcion_coleccion}'."
         # Lógica para el resto de los estilos
         elif estilo_seleccionado != "Free Style":
             estilo_prompt = estilo_seleccionado.lower()
-            base_prompt_coleccion = f"A collection of four unique, highly detailed {estilo_prompt} decorative art designs. The collection theme is '{descripcion_coleccion}'."
         else: # Free Style
             estilo_prompt = "modern" # Estilo predeterminado si es "Free Style"
-            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs. The collection theme is '{descripcion_coleccion}'."
 
-        # Añadir todos los campos opcionales al prompt base
-        if descripcion_opcional:
-            base_prompt_coleccion += f" Additional details: {descripcion_opcional}."
-        if icono:
-            base_prompt_coleccion += f" Incorporate the {icono} icon."
-        if texto_opcional:
-            base_prompt_coleccion += f" Include the text: '{texto_opcional}'."
-
-        if cantidad_colores != "Cualquiera":
-            base_prompt_coleccion += f" The designs must use exactly {cantidad_colores} colors."
-            if colores_seleccionados:
-                colores_str = ", ".join(colores_seleccionados)
-                base_prompt_coleccion += f" Suggested colors: {colores_str}."
-        elif colores_seleccionados:
-            colores_str = ", ".join(colores_seleccionados)
-            base_prompt_coleccion += f" Suggested colors: {colores_str}."
-
-        # Generar los prompts individuales para cada variación de la colección
+        # Generar el prompt principal para la colección a color
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, full-color decorative art designs in a {estilo_prompt} style, presented in a 2x2 grid. "
             f"Each design is a custom, stylized figure, word, or symbol, where the entire piece itself is the main body of the art. "
@@ -125,6 +100,27 @@ if st.button("Generar Prompts", type="primary"):
             f"The background must be pure white (RGB 255, 255, 255). "
             f"The overall theme is: '{descripcion_coleccion}'. Additional details: {descripcion_opcional}."
         )
+
+        # Añado la lógica específica para la opción de "Full Name/Phrase"
+        if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
+            prompt_coleccion_full_color += f" The designs are based on the full name '{nombre_completo}'. "
+            if frase_integrada:
+                prompt_coleccion_full_color += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
+            
+        # Añadir todos los campos opcionales al prompt principal
+        if icono:
+            prompt_coleccion_full_color += f" Incorporate the {icono} icon."
+        if texto_opcional:
+            prompt_coleccion_full_color += f" Include the text: '{texto_opcional}'."
+
+        if cantidad_colores != "Cualquiera":
+            prompt_coleccion_full_color += f" The designs must use exactly {cantidad_colores} colors."
+            if colores_seleccionados:
+                colores_str = ", ".join(colores_seleccionados)
+                prompt_coleccion_full_color += f" Suggested colors: {colores_str}."
+        elif colores_seleccionados:
+            colores_str = ", ".join(colores_seleccionados)
+            prompt_coleccion_full_color += f" Suggested colors: {colores_str}."
 
         prompt_dxf = (
             f"Generate a black and white line art version of the design from the attached image, optimized for DXF file conversion. "
