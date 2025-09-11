@@ -33,7 +33,7 @@ if estilo_seleccionado == "Estilo Nombre + Frase":
     frase = st.text_input("Ingresa una frase opcional:")
 
 # --------------------------------------
-# Generación de prompts para 4 llaveros
+# Generación de prompts para 4 llaveros individuales
 # --------------------------------------
 coleccion_prompts = []
 
@@ -53,7 +53,7 @@ for i in range(1, 5):
     st.text_area(f"Prompt Llavero {i}", prompt, height=80, key=f"llavero_{i}")
 
 # --------------------------------------
-# Prompts derivados (DXF, silueta, separación de colores)
+# Prompts derivados (DXF, Silueta, Separación de colores)
 # --------------------------------------
 st.subheader("Prompts derivados para cada llavero")
 derived_prompts_template = {
@@ -69,7 +69,7 @@ for i, base_prompt in enumerate(coleccion_prompts, start=1):
         st.text_area(f"{tipo}", prompt_derivado, height=80, key=f"llavero_{i}_{tipo}")
 
 # --------------------------------------
-# Soporte y colección completa
+# Soporte para los 4 llaveros
 # --------------------------------------
 st.subheader("Soporte para colgar los llaveros")
 
