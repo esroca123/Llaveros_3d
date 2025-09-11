@@ -24,12 +24,12 @@ with st.container():
     # Campo para la descripción que ahora siempre está visible
     descripcion_coleccion = st.text_area(
         "Descripción de la colección",
-        placeholder="Describe el tema o concepto para los cuatro llaveros (ej., 'cuatro animales de la selva', 'vehículos de carreras')."
+        placeholder="Describe el tema o concepto para los cuatro diseños (ej., 'cuatro animales de la selva', 'vehículos de carreras')."
     )
 
     # Campo para la descripción que ahora siempre está visible
     descripcion_opcional = st.text_area(
-        "Detalles adicionales para cada llavero (opcional)",
+        "Detalles adicionales para cada diseño (opcional)",
         placeholder="Añade aquí detalles específicos sobre el estilo, personajes, etc."
     )
 
@@ -76,20 +76,20 @@ if st.button("Generar Prompts", type="primary"):
         # Lógica para la opción de "A partir de una imagen"
         if estilo_seleccionado == "A partir de una imagen":
             base_prompt_coleccion = (
-                f"A collection of four unique, highly detailed keychain designs in a {estilo_para_imagen_seleccionado.lower()} style, "
+                f"A collection of four unique, highly detailed decorative art designs in a {estilo_para_imagen_seleccionado.lower()} style, "
                 f"based on a separate reference image provided to you. The collection theme is '{descripcion_coleccion}'."
             )
         # Lógica para la opción de "Initial of a word"
         elif estilo_seleccionado == "Initial of a word" and inicial_palabra:
-            base_prompt_coleccion = f"A collection of four unique, highly detailed keychain designs based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} style. The collection theme is '{descripcion_coleccion}'."
+            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} style. The collection theme is '{descripcion_coleccion}'."
         # Lógica para la nueva opción "Full Name/Phrase"
         elif estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
-            base_prompt_coleccion = f"A collection of four unique, highly detailed keychain designs based on the full name '{nombre_completo}' in a {estilo_nombre_seleccionado.lower()} style. The phrase '{frase_integrada}' is beautifully and creatively integrated into the design. The collection theme is '{descripcion_coleccion}'."
+            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs based on the full name '{nombre_completo}' in a {estilo_nombre_seleccionado.lower()} style. The phrase '{frase_integrada}' is beautifully and creatively integrated into the design. The collection theme is '{descripcion_coleccion}'."
         # Lógica para el resto de los estilos
         elif estilo_seleccionado != "Free Style":
-            base_prompt_coleccion = f"A collection of four unique, highly detailed {estilo_seleccionado.lower()} keychain designs. The collection theme is '{descripcion_coleccion}'."
+            base_prompt_coleccion = f"A collection of four unique, highly detailed {estilo_seleccionado.lower()} decorative art designs. The collection theme is '{descripcion_coleccion}'."
         else: # Free Style
-            base_prompt_coleccion = f"A collection of four unique, highly detailed keychain designs. The collection theme is '{descripcion_coleccion}'."
+            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs. The collection theme is '{descripcion_coleccion}'."
 
         # Añadir todos los campos opcionales al prompt base
         if descripcion_opcional:
@@ -110,19 +110,18 @@ if st.button("Generar Prompts", type="primary"):
 
         # Generar los prompts individuales para cada variación de la colección
         prompt_coleccion_full_color = (
-            f"Generate four highly detailed, full-color keychain designs for a cohesive collection, presented in a 2x2 grid. "
-            f"Each design is a custom, stylized figure where the entire figure itself is the main body of the keychain. "
-            f"A single, small, and functional circular hole for attachment is seamlessly incorporated into the top of each keychain design. "
-            f"This attachment hole is the ONLY hole or loop on the keychain's body. "
-            f"The image must show the keychain design ONLY, with ABSOLUTELY NO attached metallic rings, chains, hooks, or any other accessories. "
-            f"The characters are depicted with unique, action-oriented stances, creating visually striking and collectible items. "
-            f"The figures should look like high-quality, stylized collectible figures, with vibrant colors and sharp details. "
+            f"Generate four highly detailed, full-color decorative art designs for a cohesive collection, presented in a 2x2 grid. "
+            f"Each design is a custom, stylized figure or symbol, where the entire piece itself is the main body of the art. "
+            f"A single, small, and functional circular hole for attachment is seamlessly incorporated into the top of each design. "
+            f"This attachment hole is the ONLY hole or loop on the main body of the design. "
+            f"The image must show the designs ONLY, with ABSOLUTELY NO attached metallic rings, chains, hooks, or any other accessories. "
+            f"The designs should look like high-quality, stylized collectible pieces, with vibrant colors and sharp details. "
             f"The background must be pure white (RGB 255, 255, 255). "
             f"The overall theme is: '{descripcion_coleccion}'. Additional details: {descripcion_opcional}."
         )
 
         prompt_dxf = (
-            f"Generate a black and white line art version of the keychain design from the attached image, optimized for DXF file conversion. "
+            f"Generate a black and white line art version of the design from the attached image, optimized for DXF file conversion. "
             f"It must have only thin outlines, no shadows, a clean vector style. "
             f"The design must include a single circular hole for attachment at the top. "
             f"Important: Base the output only on the provided image, do not add new elements or alter the core design. "
@@ -130,14 +129,14 @@ if st.button("Generar Prompts", type="primary"):
         )
 
         prompt_silhouette = (
-            f"Generate a complete, solid black silhouette of the keychain design from the attached image. "
+            f"Generate a complete, solid black silhouette of the design from the attached image. "
             f"The design must have no internal lines. It must include a single circular hole for attachment at the top. "
             f"Important: Base the output only on the provided image, do not add new elements. "
             f"The background must be pure white (RGB 255, 255, 255)."
         )
 
         prompt_separacion_colores = (
-            f"Generate a single-color version of the keychain design from the attached image. "
+            f"Generate a single-color version of the design from the attached image. "
             f"Each original color area should be filled with solid black, maintaining the separation between the different parts, "
             f"with fully filled shapes and no empty spaces. It must include a single circular hole for attachment at the top. "
             f"Important: Base the output only on the provided image, do not add new elements. "
@@ -146,17 +145,17 @@ if st.button("Generar Prompts", type="primary"):
 
         # Generar el prompt para el soporte
         prompt_soporte = (
-            f"Create a unique, innovative, and highly detailed stand to hang four keychain designs from the collection '{descripcion_coleccion}'. "
-            f"The stand's design must be a perfect match for the style '{estilo_seleccionado}' and the theme of the keychains. "
-            f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the keychain designs (without actual keychains attached). "
-            f"The stand must be visible in its entirety, with a clean background. No keychains should be attached yet. "
+            f"Create a unique, innovative, and highly detailed stand to hang four decorative designs from the collection '{descripcion_coleccion}'. "
+            f"The stand's design must be a perfect match for the style '{estilo_seleccionado}' and the theme of the designs. "
+            f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
+            f"The stand must be visible in its entirety, with a clean background. No designs should be attached yet. "
             f"The background must be pure white (RGB 255, 255, 255)."
         )
 
         # Generar el prompt para la presentación final
         prompt_presentacion = (
             f"Create a high-quality, professional product shot. "
-            f"Show the four keychain designs from the collection '{descripcion_coleccion}' mounted and hanging on the previously designed stand. "
+            f"Show the four decorative designs from the collection '{descripcion_coleccion}' mounted and hanging on the previously designed stand. "
             f"The presentation must highlight the unity of the collection and the innovative design of the stand, with soft lighting and a minimalist background. "
             f"All elements must be perfectly aligned and aesthetically appealing. "
             f"The background must be pure white (RGB 255, 255, 255)."
@@ -167,7 +166,7 @@ if st.button("Generar Prompts", type="primary"):
         st.subheader("✅ Tus prompts están listos:")
 
         # Prompt para la colección de 4 llaveros (versión a color)
-        st.markdown("### 1. Prompt para la colección de 4 llaveros (versión a color)")
+        st.markdown("### 1. Prompt para la colección de 4 diseños decorativos (sin argolla)")
         st.code(prompt_coleccion_full_color, language="markdown")
 
         # Prompts para las variantes (para usarse con la imagen generada en el paso 1)
@@ -185,10 +184,10 @@ if st.button("Generar Prompts", type="primary"):
 
         # Prompt para generar el soporte para llaveros
         st.markdown("---")
-        st.markdown("### 3. Prompt para generar el soporte para llaveros")
+        st.markdown("### 3. Prompt para generar el soporte para los diseños")
         st.code(prompt_soporte, language="markdown")
 
         # Prompt para la presentación final (con llaveros montados)
         st.markdown("---")
-        st.markdown("### 4. Prompt para la presentación final (con llaveros montados)")
+        st.markdown("### 4. Prompt para la presentación final (con los diseños montados)")
         st.code(prompt_presentacion, language="markdown")
