@@ -111,18 +111,20 @@ if st.button("Generar Prompts", type="primary"):
         # Generar los prompts individuales para cada variación de la colección
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, full-color keychain designs for a cohesive collection, presented in a 2x2 grid. "
-            f"Each design is dynamically integrated into the character's pose or an element of their signature move, "
-            f"making the keyring hole a functional yet artistic part of the overall design. "
-            f"The keychains are sculpted as custom, stylized figures of the characters, where the entire figure itself is the main body of the keychain. "
-            f"A single, distinct, and functional attachment point (a small, reinforced loop or an integrated ring eyelet) is seamlessly incorporated into the top of each character's head or a prominent part of their upper body. "
-            f"This attachment point should be the ONLY hole or loop on the keychain. The characters are depicted with unique, action-oriented stances, creating visually striking and collectible items. "
+            f"Each design is a custom, stylized figure where the entire figure itself is the main body of the keychain. "
+            f"A single, small, and functional keyring hole (an integrated ring eyelet) is seamlessly incorporated into the top of each character's head or a prominent part of their upper body. "
+            f"This keyring hole is the ONLY hole or loop on the keychain's body. "
+            f"The image must show the keychain design ONLY, with NO attached metallic keyrings, chains, or accessories. "
+            f"The characters are depicted with unique, action-oriented stances, creating visually striking and collectible items. "
             f"The figures should look like high-quality, stylized collectible figures, with vibrant colors and sharp details. "
+            f"Use a clean, minimalist background to highlight the designs. "
             f"The overall theme is: '{descripcion_coleccion}'. Additional details: {descripcion_opcional}."
         )
 
         prompt_dxf = (
             f"Generate a black and white line art version of the keychain design from the attached image, optimized for DXF file conversion. "
-            f"It must have only thin outlines, no shadows, a clean vector style. The design must include a single keyring hole at the top. "
+            f"It must have only thin outlines, no shadows, a clean vector style. "
+            f"The design must include a single keyring hole at the top. "
             f"Important: Base the output only on the provided image, do not add new elements or alter the core design."
         )
 
@@ -135,7 +137,7 @@ if st.button("Generar Prompts", type="primary"):
         prompt_separacion_colores = (
             f"Generate a single-color version of the keychain design from the attached image. "
             f"Each original color area should be filled with solid black, maintaining the separation between the different parts, "
-            f"with fully filled shapes and no empty spaces. The design must include a single keyring hole at the top. "
+            f"with fully filled shapes and no empty spaces. It must include a single keyring hole at the top. "
             f"Important: Base the output only on the provided image, do not add new elements."
         )
 
