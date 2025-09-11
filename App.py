@@ -148,7 +148,8 @@ if st.button("Generar Prompts", type="primary"):
         # Generar el prompt para el soporte
         prompt_soporte = (
             f"Create a unique, innovative, and highly detailed stand to hang four decorative designs. "
-            f"The stand's design must be a perfect match for the style and theme of the four designs shown in the attached image. "
+            f"The stand can be either a wall-mounted design or a free-standing design. "
+            f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
             f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
             f"The stand must be visible in its entirety, with a clean background. No designs should be attached yet. "
             f"The background must be pure white (RGB 255, 255, 255)."
@@ -193,3 +194,4 @@ if st.button("Generar Prompts", type="primary"):
         st.markdown("---")
         st.markdown("### 4. Prompt para la presentación final (con los diseños montados)")
         st.code(prompt_presentacion, language="markdown")
+
