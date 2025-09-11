@@ -6,7 +6,7 @@ st.markdown("Crea prompts detallados para generar diseños de llaveros únicos c
 
 # --- Contenedor principal para la entrada de datos ---
 with st.container():
-    st.subheader("🛠️ Personaliza tu colección de llaveros")
+    st.subheader("🛠️️ Personaliza tu colección de llaveros")
 
     # Definición de estilos
     estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
@@ -71,24 +71,30 @@ if st.button("Generar Prompts", type="primary"):
         st.error("Por favor, especifica el nombre completo.")
     else:
         # Generar el prompt base
+        estilo_prompt = ""
         base_prompt_coleccion = ""
 
         # Lógica para la opción de "A partir de una imagen"
         if estilo_seleccionado == "A partir de una imagen":
+            estilo_prompt = estilo_para_imagen_seleccionado.lower()
             base_prompt_coleccion = (
-                f"A collection of four unique, highly detailed decorative art designs in a {estilo_para_imagen_seleccionado.lower()} style, "
+                f"A collection of four unique, highly detailed decorative art designs in a {estilo_prompt} style, "
                 f"based on a separate reference image provided to you. The collection theme is '{descripcion_coleccion}'."
             )
         # Lógica para la opción de "Initial of a word"
         elif estilo_seleccionado == "Initial of a word" and inicial_palabra:
-            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} style. The collection theme is '{descripcion_coleccion}'."
+            estilo_prompt = estilo_inicial_seleccionado.lower()
+            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_prompt} style. The collection theme is '{descripcion_coleccion}'."
         # Lógica para la nueva opción "Full Name/Phrase"
         elif estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
-            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs based on the full name '{nombre_completo}' in a {estilo_nombre_seleccionado.lower()} style. The phrase '{frase_integrada}' is beautifully and creatively integrated into the design. The collection theme is '{descripcion_coleccion}'."
+            estilo_prompt = estilo_nombre_seleccionado.lower()
+            base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs based on the full name '{nombre_completo}' in a {estilo_prompt} style. The phrase '{frase_integrada}' is beautifully and creatively integrated into the design. The collection theme is '{descripcion_coleccion}'."
         # Lógica para el resto de los estilos
         elif estilo_seleccionado != "Free Style":
-            base_prompt_coleccion = f"A collection of four unique, highly detailed {estilo_seleccionado.lower()} decorative art designs. The collection theme is '{descripcion_coleccion}'."
+            estilo_prompt = estilo_seleccionado.lower()
+            base_prompt_coleccion = f"A collection of four unique, highly detailed {estilo_prompt} decorative art designs. The collection theme is '{descripcion_coleccion}'."
         else: # Free Style
+            estilo_prompt = "modern" # Estilo predeterminado si es "Free Style"
             base_prompt_coleccion = f"A collection of four unique, highly detailed decorative art designs. The collection theme is '{descripcion_coleccion}'."
 
         # Añadir todos los campos opcionales al prompt base
@@ -110,8 +116,8 @@ if st.button("Generar Prompts", type="primary"):
 
         # Generar los prompts individuales para cada variación de la colección
         prompt_coleccion_full_color = (
-            f"Generate four highly detailed, full-color decorative art designs for a cohesive collection, presented in a 2x2 grid. "
-            f"Each design is a custom, stylized figure or symbol, where the entire piece itself is the main body of the art. "
+            f"Generate four highly detailed, full-color decorative art designs in a {estilo_prompt} style, presented in a 2x2 grid. "
+            f"Each design is a custom, stylized figure, word, or symbol, where the entire piece itself is the main body of the art. "
             f"A single, small, and functional circular hole for attachment is seamlessly incorporated into the top of each design. "
             f"This attachment hole is the ONLY hole or loop on the main body of the design. "
             f"The image must show the designs ONLY, with ABSOLUTELY NO attached metallic rings, chains, hooks, or any other accessories. "
