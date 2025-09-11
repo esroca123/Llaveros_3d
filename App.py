@@ -17,10 +17,10 @@ with st.container():
 
     # Selectbox principal que incluye la nueva opción
     estilo_seleccionado = st.selectbox(
-        "Estilo de la colección de llaveros", 
+        "Estilo de la colección de llaveros",
         ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_estilos
     )
-    
+
     # Campo para la descripción que ahora siempre está visible
     descripcion_coleccion = st.text_area(
         "Descripción de la colección",
@@ -32,14 +32,14 @@ with st.container():
         "Detalles adicionales para cada llavero (opcional)",
         placeholder="Añade aquí detalles específicos sobre el estilo, personajes, etc."
     )
-    
+
     # Lógica para la opción de "Initial of a word"
     inicial_palabra = None
     estilo_inicial_seleccionado = None
     if estilo_seleccionado == "Initial of a word":
         inicial_palabra = st.text_input("Palabra para la inicial", placeholder="ej., Alexandra")
         estilo_inicial_seleccionado = st.selectbox("Estilo para la inicial", todos_los_estilos)
-    
+
     # Lógica para la opción "A partir de una imagen"
     estilo_para_imagen_seleccionado = None
     if estilo_seleccionado == "A partir de una imagen":
@@ -62,7 +62,7 @@ with st.container():
 
     icono = st.text_input("Icono o símbolo (opcional)", placeholder="ej., rayo, luna, flor")
     texto_opcional = st.text_input("Texto o frase (opcional)", placeholder="ej., 'Feliz cumpleaños'")
-    
+
 # --- Botón para generar el prompt y validación ---
 if st.button("Generar Prompts", type="primary"):
     if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
@@ -72,7 +72,7 @@ if st.button("Generar Prompts", type="primary"):
     else:
         # Generar el prompt base
         base_prompt_coleccion = ""
-        
+
         # Lógica para la opción de "A partir de una imagen"
         if estilo_seleccionado == "A partir de una imagen":
             base_prompt_coleccion = (
@@ -88,9 +88,9 @@ if st.button("Generar Prompts", type="primary"):
         # Lógica para el resto de los estilos
         elif estilo_seleccionado != "Free Style":
             base_prompt_coleccion = f"A collection of four unique, highly detailed {estilo_seleccionado.lower()} keychain designs. The collection theme is '{descripcion_coleccion}'."
-        else: # Free Style
+        else:  # Free Style
             base_prompt_coleccion = f"A collection of four unique, highly detailed keychain designs. The collection theme is '{descripcion_coleccion}'."
-        
+
         # Añadir todos los campos opcionales al prompt base
         if descripcion_opcional:
             base_prompt_coleccion += f" Additional details: {descripcion_opcional}."
@@ -98,7 +98,7 @@ if st.button("Generar Prompts", type="primary"):
             base_prompt_coleccion += f" Incorporate the {icono} icon."
         if texto_opcional:
             base_prompt_coleccion += f" Include the text: '{texto_opcional}'."
-        
+
         if cantidad_colores != "Cualquiera":
             base_prompt_coleccion += f" The designs must use exactly {cantidad_colores} colors."
             if colores_seleccionados:
@@ -132,7 +132,7 @@ if st.button("Generar Prompts", type="primary"):
             f"with fully filled shapes and no empty spaces. The design must include a keyring hole but no keyring attached. "
             f"Important: Base the output only on the provided image, do not add new elements."
         )
-        
+
         # Generar el prompt para el soporte
         prompt_soporte = (
             f"Create a unique, innovative, and highly detailed stand to hang four keychains from the collection '{descripcion_coleccion}'. "
@@ -149,29 +149,52 @@ if st.button("Generar Prompts", type="primary"):
             f"All elements must be perfectly aligned and aesthetically appealing."
         )
 
-        # Mostrar los resultados
+        # Mostrar los resultados y botones de copiar
         st.divider()
         st.subheader("✅ Tus prompts están listos:")
-        
+
+        # 1. Prompt para la colección de 4 llaveros (versión a color)
         st.markdown("### 1. Prompt para la colección de 4 llaveros (versión a color)")
-        st.text_area("Copia el prompt:", prompt_coleccion_full_color, height=100)
-        
+        st.text_area("Copia el prompt:", prompt_coleccion_full_color, height=100, key="prompt_full_color")
+        if st.button("Copiar", key="copy_full_color"):
+            st.session_state["copied_text"] = st.session_state["prompt_full_color"]
+
+        # 2. Prompts para las variantes (para usarse con la imagen generada en el paso 1)
         st.markdown("---")
         st.markdown("### 2. Prompts para las variantes (para usarse con la imagen generada en el paso 1)")
-        
+
         st.markdown("#### Prompt para versión DXF")
-        st.text_area("Copia el prompt:", prompt_dxf, height=150)
-        
+        st.text_area("Copia el prompt:", prompt_dxf, height=150, key="prompt_dxf")
+        if st.button("Copiar", key="copy_dxf"):
+            st.session_state["copied_text"] = st.session_state["prompt_dxf"]
+
         st.markdown("#### Prompt para versión Silueta")
-        st.text_area("Copia el prompt:", prompt_silhouette, height=150)
-        
+        st.text_area("Copia el prompt:", prompt_silhouette, height=150, key="prompt_silhouette")
+        if st.button("Copiar", key="copy_silhouette"):
+            st.session_state["copied_text"] = st.session_state["prompt_silhouette"]
+
         st.markdown("#### Prompt para versión Separación de Colores")
-        st.text_area("Copia el prompt:", prompt_separacion_colores, height=150)
-        
+        st.text_area("Copia el prompt:", prompt_separacion_colores, height=150, key="prompt_separacion_colores")
+        if st.button("Copiar", key="copy_separacion_colores"):
+            st.session_state["copied_text"] = st.session_state["prompt_separacion_colores"]
+
+        # 3. Prompt para generar el soporte para llaveros
         st.markdown("---")
         st.markdown("### 3. Prompt para generar el soporte para llaveros")
-        st.text_area("Copia el prompt:", prompt_soporte, height=150)
-        
+        st.text_area("Copia el prompt:", prompt_soporte, height=150, key="prompt_soporte")
+        if st.button("Copiar", key="copy_soporte"):
+            st.session_state["copied_text"] = st.session_state["prompt_soporte"]
+
+        # 4. Prompt para la presentación final (con llaveros montados)
         st.markdown("---")
         st.markdown("### 4. Prompt para la presentación final (con llaveros montados)")
-        st.text_area("Copia el prompt:", prompt_presentacion, height=150)
+        st.text_area("Copia el prompt:", prompt_presentacion, height=150, key="prompt_presentacion")
+        if st.button("Copiar", key="copy_presentacion"):
+            st.session_state["copied_text"] = st.session_state["prompt_presentacion"]
+
+        # Mensaje de éxito de la copia
+        if "copied_text" in st.session_state:
+            st.success("✅ ¡Prompt copiado al portapapeles!")
+            # Esto es una solución para eliminar la clave después de mostrar el mensaje.
+            # En Streamlit 1.25.0+ esto ya no es necesario con el widget "st.status"
+            st.session_state["copied_text"] = ""
