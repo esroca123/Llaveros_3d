@@ -44,7 +44,7 @@ with st.container():
     estilo_para_imagen_seleccionado = None
     if estilo_seleccionado == "A partir de una imagen":
         st.markdown("La imagen de referencia debe subirse a la IA de tu elección por separado.")
-        estilo_para_imagen_seleccionado = st.selectbox("Estilo para aplicar a la imagen:", todos_los_ estilos)
+        estilo_para_imagen_seleccionado = st.selectbox("Estilo para aplicar a la imagen:", todos_los_estilos)
 
     # Lógica para la nueva opción "Full Name/Phrase"
     nombre_completo = None
