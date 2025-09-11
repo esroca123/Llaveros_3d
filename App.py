@@ -1,111 +1,129 @@
 import streamlit as st
 
-# Título de la app
-st.title("Llavero Prompts Generator")
-st.markdown("Crea prompts detallados para generar diseños de llaveros únicos con IA.")
+# --- Título ---
+st.title("🗝️ Llavero Collection Prompt Generator")
+st.markdown(
+    "Crea una colección de 4 llaveros únicos, prompts derivados, soporte innovador y frases integradas en el diseño."
+)
 
-# --- Contenedor principal para la entrada de datos ---
+# --- Contenedor para entrada ---
 with st.container():
-    st.subheader("🛠️ Personaliza tu llavero")
+    st.subheader("🛠️ Personaliza tu colección de llaveros")
 
-    # Definición de estilos
-    estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
-    estilos_generales = ["Minimalist", "Futurist", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
-    estilos_adicionales = ["Kawaii", "Pop Art", "Gothic", "Surrealist", "Glass-like", "Metallic", "Wood-carved", "Clay-sculpted", "Flat Design", "Geometric", "Vaporwave", "Cottagecore"]
-    estilos_nuevos_tematicos = ["Gamer / Arcade", "Floral / Nature", "Mandala / Zen", "Iconographic", "Cultural / Ethnic", "Urban / Graffiti", "Sporty", "Disney / Pixar", "Color Splash", "Lego", "Ghibli"]
-    todos_los_estilos = estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
+    # Selectbox de estilos
+    estilos = [
+        "Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit",
+        "Minimalist", "Futurist", "Vintage", "Cyberpunk", "Steampunk", "Art Deco",
+        "Kawaii", "Pop Art", "Gothic", "Surrealist", "Glass-like", "Metallic",
+        "Wood-carved", "Clay-sculpted", "Flat Design", "Geometric", "Vaporwave", "Cottagecore",
+        "Gamer / Arcade", "Floral / Nature", "Mandala / Zen", "Iconographic",
+        "Cultural / Ethnic", "Urban / Graffiti", "Sporty", "Disney / Pixar",
+        "Color Splash", "Lego", "Ghibli"
+    ]
+    estilo_seleccionado = st.selectbox("Selecciona el estilo de la colección", estilos)
 
-    # Selectbox principal que incluye la nueva opción
-    estilo_seleccionado = st.selectbox(
-        "Estilo del llavero", 
-        ["Initial of a word", "Free Style", "A partir de una imagen"] + todos_los_estilos
+    # Descripción y nombre completo
+    descripcion_general = st.text_area(
+        "Descripción general de la colección",
+        placeholder="Describe la colección de llaveros, personajes, colores o temática general."
     )
-    
-    # Campo para la descripción que ahora siempre está visible
-    descripcion_opcional = st.text_area(
-        "Descripción adicional (opcional)",
-        placeholder="Añade aquí detalles específicos sobre el estilo o el personaje."
-    )
-    
-    # Lógica para la opción de "Initial of a word"
-    inicial_palabra = None
-    estilo_inicial_seleccionado = None
-    if estilo_seleccionado == "Initial of a word":
-        inicial_palabra = st.text_input("Palabra para la inicial", placeholder="ej., Alexandra")
-        estilo_inicial_seleccionado = st.selectbox("Estilo para la inicial", todos_los_estilos)
-    
-    # Lógica para la opción "A partir de una imagen"
-    estilo_para_imagen_seleccionado = None
-    if estilo_seleccionado == "A partir de una imagen":
-        st.markdown("La imagen de referencia debe subirse a la IA de tu elección por separado.")
-        estilo_para_imagen_seleccionado = st.selectbox("Estilo para aplicar a la imagen:", todos_los_estilos)
+    nombre_completo = st.text_input("Nombre completo (opcional)", placeholder="ej., Alexandra Pérez")
+    frase_opcional = st.text_input("Frase a integrar en la imagen (opcional)", placeholder="ej., 'Feliz cumpleaños'")
 
-    # Todos los campos opcionales que ahora siempre están visibles
+    # Icono y colores
+    icono_general = st.text_input("Icono o símbolo general (opcional)", placeholder="ej., rayo, luna, flor")
     cantidad_colores = st.selectbox("Cantidad de colores (opcional)", ["Cualquiera"] + list(range(1, 5)))
     colores_opciones = ["red", "blue", "green", "yellow", "black", "white", "gray", "purple", "pink", "orange"]
     colores_seleccionados = st.multiselect("Colores sugeridos (opcional)", colores_opciones, max_selections=4)
 
-    icono = st.text_input("Icono o símbolo (opcional)", placeholder="ej., rayo, luna, flor")
-    texto_opcional = st.text_input("Texto o frase (opcional)", placeholder="ej., 'Feliz cumpleaños'")
+# --- Función para generar prompts base ---
+def generar_prompt_base(variacion_texto):
+    prompt = f"A creative, unique, highly detailed {estilo_seleccionado.lower()} keychain design. {variacion_texto}{descripcion_general}"
+    if nombre_completo:
+        prompt += f" Include the full name '{nombre_completo}' integrated elegantly into the design."
+    if frase_opcional:
+        prompt += f" Integrate the phrase '{frase_opcional}' beautifully into the image, matching the artistic style."
+    if icono_general:
+        prompt += f" Incorporate the {icono_general} icon."
+    if cantidad_colores != "Cualquiera":
+        prompt += f" The design must use exactly {cantidad_colores} colors."
+        if colores_seleccionados:
+            prompt += f" Suggested colors: {', '.join(colores_seleccionados)}."
+    elif colores_seleccionados:
+        prompt += f" Suggested colors: {', '.join(colores_seleccionados)}."
+    return prompt
 
-# --- Botón para generar el prompt y validación ---
+# --- Prompts derivados fijos ---
+prompt_line_art = "Convert this exact attached image to black and white line art, no shadows, high contrast, white background, suitable for DXF conversion."
+prompt_single_color = "Convert this exact attached image into a single-color version, each original color area filled with solid black, with no empty spaces."
+prompt_silhouette = "Convert this exact attached image into a complete solid black silhouette, with no internal lines."
 
-if st.button("Generar Prompt", type="primary"):
-    if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
-        st.error("Por favor, especifica la palabra para la inicial.")
+# --- Prompt soporte y colección ---
+def prompt_soporte_func():
+    return f"Design an innovative keychain holder that complements the {estilo_seleccionado.lower()} style of the collection, suitable to display 4 keychains together in a coherent and aesthetically pleasing way."
+
+prompt_coleccion = "Display the 4 keychains mounted on the designed holder, full color, visually coherent, showing how the collection looks together."
+
+# --- Botón generar ---
+if st.button("Generar Prompts", type="primary"):
+
+    if not descripcion_general:
+        st.error("Por favor, ingresa la descripción general de la colección.")
     else:
-        # Generar el prompt base
-        base_prompt = ""
-        
-        # Lógica para la opción de "A partir de una imagen"
-        if estilo_seleccionado == "A partir de una imagen":
-            base_prompt = (
-                f"A creative, unique, highly detailed keychain design in a {estilo_para_imagen_seleccionado.lower()} style, "
-                f"based on a separate reference image provided to you. "
-            )
-        # Lógica para la opción de "Initial of a word"
-        elif estilo_seleccionado == "Initial of a word" and inicial_palabra:
-            base_prompt = f"A creative, unique, highly detailed design based on the letter '{inicial_palabra.upper()[0]}' in a {estilo_inicial_seleccionado.lower()} style."
-        # Lógica para el resto de los estilos
-        elif estilo_seleccionado != "Free Style":
-            base_prompt = f"A creative, unique, highly detailed {estilo_seleccionado.lower()} keychain design."
-        else: # Free Style
-            base_prompt = f"A creative, unique, highly detailed keychain design."
-
-        # Añadir todos los campos opcionales al prompt base
-        if descripcion_opcional:
-            base_prompt += f" Additional details: {descripcion_opcional}."
-        if icono:
-            base_prompt += f" Incorporate the {icono} icon."
-        if texto_opcional:
-            base_prompt += f" Include the text: '{texto_opcional}'."
-        
-        if cantidad_colores != "Cualquiera":
-            base_prompt += f" The design must use exactly {cantidad_colores} colors."
-            if colores_seleccionados:
-                colores_str = ", ".join(colores_seleccionados)
-                base_prompt += f" Suggested colors: {colores_str}."
-        elif colores_seleccionados:
-            colores_str = ", ".join(colores_seleccionados)
-            base_prompt += f" Suggested colors: {colores_str}."
-
-        # Generar los prompts individuales para cada variación
-        prompt_full_color = f"{base_prompt} A full-color version. The design must include a keyring hole but no keyring attached."
-        prompt_line_art = f"{base_prompt} A black and white line art version. It must have only thin outlines, no shadows, a clean vector style, and be optimized for DXF file conversion. The design must include a keyring hole but no keyring attached."
-        prompt_single_color = f"{base_prompt} A single-color version, where each original color area is filled with solid black, maintaining the separation between the different parts, with fully filled shapes and no empty spaces. The design must include a keyring hole but no keyring attached."
-        prompt_silhouette = f"{base_prompt} A complete, solid black silhouette, with no internal lines. The design must include a keyring hole but no keyring attached."
-
-        # Unir los prompts en un formato de cuadrícula
-        prompt_completo = (
-            f"Create a single image containing four distinct keychain designs, arranged in a 2x2 grid. \n\n"
-            f"Top-left: {prompt_full_color}\n\n"
-            f"Top-right: {prompt_line_art}\n\n"
-            f"Bottom-left: {prompt_single_color}\n\n"
-            f"Bottom-right: {prompt_silhouette}\n\n"
-            f"Ensure there is clear space separating each of the four variations to prevent overlap."
-        )
-        
-        # Mostrar el resultado
         st.divider()
-        st.subheader("✅ Tu prompt está listo:")
-        st.text_area("Copia tu prompt aquí:", prompt_completo, height=450)
+        st.subheader("✅ Prompts generados para tu colección")
+
+        # Generar 4 llaveros
+        for i in range(4):
+            variacion_texto = f"Variation {i+1}: "
+            prompt_base = generar_prompt_base(variacion_texto)
+
+            # Inicializar session_state si no existe
+            if f"copiado_{i}_full" not in st.session_state:
+                st.session_state[f"copiado_{i}_full"] = False
+            if f"copiado_{i}_dxf" not in st.session_state:
+                st.session_state[f"copiado_{i}_dxf"] = False
+            if f"copiado_{i}_single" not in st.session_state:
+                st.session_state[f"copiado_{i}_single"] = False
+            if f"copiado_{i}_silhouette" not in st.session_state:
+                st.session_state[f"copiado_{i}_silhouette"] = False
+
+            # Mostrar prompts y botones
+            st.markdown(f"### 🎨 Llavero {i+1} - Prompt Full Color")
+            st.text_area(f"Prompt Llavero {i+1} Full Color", prompt_base, height=180)
+            if st.button(f"Copiar Llavero {i+1} Full Color"):
+                st.session_state[f"copiado_{i}_full"] = True
+                st.experimental_set_query_params()  # Forzar refresh
+                st.success("¡Prompt copiado al portapapeles!")
+
+            st.markdown(f"📐 Llavero {i+1} - Prompt DXF (Line Art)")
+            st.text_area(f"Prompt Llavero {i+1} DXF", prompt_line_art, height=120)
+            if st.button(f"Copiar Llavero {i+1} DXF"):
+                st.session_state[f"copiado_{i}_dxf"] = True
+                st.success("¡Prompt copiado al portapapeles!")
+
+            st.markdown(f"🖤 Llavero {i+1} - Prompt Single Color")
+            st.text_area(f"Prompt Llavero {i+1} Single Color", prompt_single_color, height=120)
+            if st.button(f"Copiar Llavero {i+1} Single Color"):
+                st.session_state[f"copiado_{i}_single"] = True
+                st.success("¡Prompt copiado al portapapeles!")
+
+            st.markdown(f"⬛ Llavero {i+1} - Prompt Silhouette")
+            st.text_area(f"Prompt Llavero {i+1} Silhouette", prompt_silhouette, height=120)
+            if st.button(f"Copiar Llavero {i+1} Silhouette"):
+                st.session_state[f"copiado_{i}_silhouette"] = True
+                st.success("¡Prompt copiado al portapapeles!")
+
+            st.divider()
+
+        # Prompt soporte
+        st.markdown("### 🏗️ Prompt para soporte")
+        st.text_area("Prompt Soporte", prompt_soporte_func(), height=150)
+        if st.button("Copiar Prompt Soporte"):
+            st.success("¡Prompt copiado al portapapeles!")
+
+        # Prompt colección montada
+        st.markdown("### 🖼️ Prompt colección montada en soporte")
+        st.text_area("Prompt Colección en soporte", prompt_coleccion, height=150)
+        if st.button("Copiar Prompt Colección en soporte"):
+            st.success("¡Prompt copiado al portapapeles!")
