@@ -44,7 +44,7 @@ with st.container():
     estilo_para_imagen_seleccionado = None
     if estilo_seleccionado == "A partir de una imagen":
         st.markdown("La imagen de referencia debe subirse a la IA de tu elección por separado.")
-        estilo_para_imagen_seleccionado = st.selectbox("Estilo para aplicar a la imagen:", todos_los_estilos)
+        estilo_para_imagen_seleccionado = st.selectbox("Estilo para aplicar a la imagen:", todos_los_ estilos)
 
     # Lógica para la nueva opción "Full Name/Phrase"
     nombre_completo = None
@@ -149,52 +149,34 @@ if st.button("Generar Prompts", type="primary"):
             f"All elements must be perfectly aligned and aesthetically appealing."
         )
 
-        # Mostrar los resultados y botones de copiar
+        # Mostrar los resultados y los botones de copiar nativos de Streamlit
         st.divider()
         st.subheader("✅ Tus prompts están listos:")
 
-        # 1. Prompt para la colección de 4 llaveros (versión a color)
+        # Prompt para la colección de 4 llaveros (versión a color)
         st.markdown("### 1. Prompt para la colección de 4 llaveros (versión a color)")
-        st.text_area("Copia el prompt:", prompt_coleccion_full_color, height=100, key="prompt_full_color")
-        if st.button("Copiar", key="copy_full_color"):
-            st.session_state["copied_text"] = st.session_state["prompt_full_color"]
+        st.code(prompt_coleccion_full_color, language="markdown")
 
-        # 2. Prompts para las variantes (para usarse con la imagen generada en el paso 1)
+        # Prompts para las variantes (para usarse con la imagen generada en el paso 1)
         st.markdown("---")
         st.markdown("### 2. Prompts para las variantes (para usarse con la imagen generada en el paso 1)")
 
         st.markdown("#### Prompt para versión DXF")
-        st.text_area("Copia el prompt:", prompt_dxf, height=150, key="prompt_dxf")
-        if st.button("Copiar", key="copy_dxf"):
-            st.session_state["copied_text"] = st.session_state["prompt_dxf"]
+        st.code(prompt_dxf, language="markdown")
 
         st.markdown("#### Prompt para versión Silueta")
-        st.text_area("Copia el prompt:", prompt_silhouette, height=150, key="prompt_silhouette")
-        if st.button("Copiar", key="copy_silhouette"):
-            st.session_state["copied_text"] = st.session_state["prompt_silhouette"]
+        st.code(prompt_silhouette, language="markdown")
 
         st.markdown("#### Prompt para versión Separación de Colores")
-        st.text_area("Copia el prompt:", prompt_separacion_colores, height=150, key="prompt_separacion_colores")
-        if st.button("Copiar", key="copy_separacion_colores"):
-            st.session_state["copied_text"] = st.session_state["prompt_separacion_colores"]
+        st.code(prompt_separacion_colores, language="markdown")
 
-        # 3. Prompt para generar el soporte para llaveros
+        # Prompt para generar el soporte para llaveros
         st.markdown("---")
         st.markdown("### 3. Prompt para generar el soporte para llaveros")
-        st.text_area("Copia el prompt:", prompt_soporte, height=150, key="prompt_soporte")
-        if st.button("Copiar", key="copy_soporte"):
-            st.session_state["copied_text"] = st.session_state["prompt_soporte"]
+        st.code(prompt_soporte, language="markdown")
 
-        # 4. Prompt para la presentación final (con llaveros montados)
+        # Prompt para la presentación final (con llaveros montados)
         st.markdown("---")
         st.markdown("### 4. Prompt para la presentación final (con llaveros montados)")
-        st.text_area("Copia el prompt:", prompt_presentacion, height=150, key="prompt_presentacion")
-        if st.button("Copiar", key="copy_presentacion"):
-            st.session_state["copied_text"] = st.session_state["prompt_presentacion"]
+        st.code(prompt_presentacion, language="markdown")
 
-        # Mensaje de éxito de la copia
-        if "copied_text" in st.session_state:
-            st.success("✅ ¡Prompt copiado al portapapeles!")
-            # Esto es una solución para eliminar la clave después de mostrar el mensaje.
-            # En Streamlit 1.25.0+ esto ya no es necesario con el widget "st.status"
-            st.session_state["copied_text"] = ""
