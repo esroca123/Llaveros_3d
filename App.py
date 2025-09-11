@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Llavero 3D Prompt Generator", layout="wide")
+st.set_page_config(page_title="Llavero 3D Collection Prompt Generator", layout="wide")
 
 # --- Función para copiar al portapapeles ---
 def copiar_al_portapapeles(texto):
@@ -11,17 +11,19 @@ def copiar_al_portapapeles(texto):
     """, unsafe_allow_html=True)
 
 # --- Inicializar session_state para inputs ---
-inputs = ["descripcion_general", "nombre_completo", "frase_opcional",
-          "icono_general", "cantidad_colores", "colores_seleccionados",
-          "estilo_seleccionado", "inicial_palabra", "estilo_inicial_seleccionado",
-          "estilo_para_imagen_seleccionado"]
+campos = ["descripcion_general", "nombre_completo", "frase_opcional", "icono_general",
+          "cantidad_colores", "colores_seleccionados", "estilo_seleccionado",
+          "inicial_palabra", "estilo_inicial_seleccionado", "estilo_para_imagen_seleccionado"]
 
-for inp in inputs:
-    if inp not in st.session_state:
-        st.session_state[inp] = "" if "colores_seleccionados" not in inp else []
+for campo in campos:
+    if campo not in st.session_state:
+        if campo == "colores_seleccionados":
+            st.session_state[campo] = []
+        else:
+            st.session_state[campo] = ""
 
 # --- Título ---
-st.title("🗝️ Llavero 3D Collection Prompt Generator")
+st.title("🗝️ Llavero 3D Prompt Generator")
 st.markdown("Genera una colección de 4 llaveros 3D con prompts derivados y soporte innovador.")
 
 # --- Estilos ---
@@ -32,13 +34,18 @@ estilos_adicionales = ["Kawaii", "Pop Art", "Gothic", "Surrealist", "Glass-like"
 estilos_nuevos_tematicos = ["Gamer / Arcade", "Floral / Nature", "Mandala / Zen", "Iconographic",
                             "Cultural / Ethnic", "Urban / Graffiti", "Sporty", "Disney / Pixar",
                             "Color Splash", "Lego", "Ghibli"]
-todos_los_estilos = estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
 
-# --- Selección de estilo ---
+todos_los_estilos = estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
+opciones_estilos = ["Initial of a word", "Free Style", "A partir de una imagen"] + todos_los_estilos
+
+# --- Selectbox de estilo ---
+if st.session_state.estilo_seleccionado not in opciones_estilos:
+    st.session_state.estilo_seleccionado = opciones_estilos[0]
+
 st.session_state.estilo_seleccionado = st.selectbox(
     "Estilo del llavero",
-    ["Initial of a word", "Free Style", "A partir de una imagen"] + todos_los_estilos,
-    index=0 if not st.session_state.estilo_seleccionado else todos_los_estilos.index(st.session_state.estilo_seleccionado)
+    opciones_estilos,
+    index=opciones_estilos.index(st.session_state.estilo_seleccionado)
 )
 
 # --- Inputs principales ---
@@ -70,7 +77,7 @@ st.session_state.colores_seleccionados = st.multiselect(
     default=st.session_state.colores_seleccionados
 )
 
-# --- Inputs adicionales según opción ---
+# --- Inputs adicionales según estilo ---
 if st.session_state.estilo_seleccionado == "Initial of a word":
     st.session_state.inicial_palabra = st.text_input(
         "Palabra para la inicial",
@@ -92,8 +99,8 @@ if st.session_state.estilo_seleccionado == "A partir de una imagen":
 
 # --- Función para generar prompt base ---
 def generar_prompt_base(variacion_texto, llavero_num):
-    prompt = ""
     estilo = st.session_state.estilo_seleccionado
+    prompt = ""
     if estilo == "Initial of a word" and st.session_state.inicial_palabra:
         prompt = f"A 3D printed keychain design based on the letter '{st.session_state.inicial_palabra.upper()[0]}' in {st.session_state.estilo_inicial_seleccionado.lower()} style, low relief for 3D printing. {variacion_texto}{st.session_state.descripcion_general}"
     elif estilo == "A partir de una imagen":
