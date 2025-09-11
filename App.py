@@ -112,9 +112,9 @@ if st.button("Generar Prompts", type="primary"):
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, full-color keychain designs for a cohesive collection, presented in a 2x2 grid. "
             f"Each design is a custom, stylized figure where the entire figure itself is the main body of the keychain. "
-            f"A single, small, and functional keyring hole (an integrated ring eyelet) is seamlessly incorporated into the top of each character's head or a prominent part of their upper body. "
+            f"A single, small, and functional keyring hole (a clean, integrated circle for attachment) is seamlessly incorporated into the top of each keychain design. "
             f"This keyring hole is the ONLY hole or loop on the keychain's body. "
-            f"The image must show the keychain design ONLY, with NO attached metallic keyrings, chains, or accessories. "
+            f"The image must show the keychain design ONLY, with NO attached metallic keyrings, chains, hooks, or any other accessories. "
             f"The characters are depicted with unique, action-oriented stances, creating visually striking and collectible items. "
             f"The figures should look like high-quality, stylized collectible figures, with vibrant colors and sharp details. "
             f"Use a clean, minimalist background to highlight the designs. "
