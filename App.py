@@ -112,49 +112,54 @@ if st.button("Generar Prompts", type="primary"):
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, full-color keychain designs for a cohesive collection, presented in a 2x2 grid. "
             f"Each design is a custom, stylized figure where the entire figure itself is the main body of the keychain. "
-            f"A single, small, and functional keyring hole (a clean, integrated circle for attachment) is seamlessly incorporated into the top of each keychain design. "
-            f"This keyring hole is the ONLY hole or loop on the keychain's body. "
-            f"The image must show the keychain design ONLY, with NO attached metallic keyrings, chains, hooks, or any other accessories. "
+            f"A single, small, and functional circular hole for attachment is seamlessly incorporated into the top of each keychain design. "
+            f"This attachment hole is the ONLY hole or loop on the keychain's body. "
+            f"The image must show the keychain design ONLY, with ABSOLUTELY NO attached metallic rings, chains, hooks, or any other accessories. "
             f"The characters are depicted with unique, action-oriented stances, creating visually striking and collectible items. "
             f"The figures should look like high-quality, stylized collectible figures, with vibrant colors and sharp details. "
-            f"Use a clean, minimalist background to highlight the designs. "
+            f"The background must be pure white (RGB 255, 255, 255). "
             f"The overall theme is: '{descripcion_coleccion}'. Additional details: {descripcion_opcional}."
         )
 
         prompt_dxf = (
             f"Generate a black and white line art version of the keychain design from the attached image, optimized for DXF file conversion. "
             f"It must have only thin outlines, no shadows, a clean vector style. "
-            f"The design must include a single keyring hole at the top. "
-            f"Important: Base the output only on the provided image, do not add new elements or alter the core design."
+            f"The design must include a single circular hole for attachment at the top. "
+            f"Important: Base the output only on the provided image, do not add new elements or alter the core design. "
+            f"The background must be pure white (RGB 255, 255, 255)."
         )
 
         prompt_silhouette = (
             f"Generate a complete, solid black silhouette of the keychain design from the attached image. "
-            f"The design must have no internal lines. It must include a single keyring hole at the top. "
-            f"Important: Base the output only on the provided image, do not add new elements."
+            f"The design must have no internal lines. It must include a single circular hole for attachment at the top. "
+            f"Important: Base the output only on the provided image, do not add new elements. "
+            f"The background must be pure white (RGB 255, 255, 255)."
         )
 
         prompt_separacion_colores = (
             f"Generate a single-color version of the keychain design from the attached image. "
             f"Each original color area should be filled with solid black, maintaining the separation between the different parts, "
-            f"with fully filled shapes and no empty spaces. It must include a single keyring hole at the top. "
-            f"Important: Base the output only on the provided image, do not add new elements."
+            f"with fully filled shapes and no empty spaces. It must include a single circular hole for attachment at the top. "
+            f"Important: Base the output only on the provided image, do not add new elements. "
+            f"The background must be pure white (RGB 255, 255, 255)."
         )
 
         # Generar el prompt para el soporte
         prompt_soporte = (
-            f"Create a unique, innovative, and highly detailed stand to hang four keychains from the collection '{descripcion_coleccion}'. "
+            f"Create a unique, innovative, and highly detailed stand to hang four keychain designs from the collection '{descripcion_coleccion}'. "
             f"The stand's design must be a perfect match for the style '{estilo_seleccionado}' and the theme of the keychains. "
-            f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the keychains. "
-            f"The stand must be visible in its entirety, with a clean background. No keychains should be attached yet."
+            f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the keychain designs (without actual keychains attached). "
+            f"The stand must be visible in its entirety, with a clean background. No keychains should be attached yet. "
+            f"The background must be pure white (RGB 255, 255, 255)."
         )
 
         # Generar el prompt para la presentación final
         prompt_presentacion = (
             f"Create a high-quality, professional product shot. "
-            f"Show the four keychains from the collection '{descripcion_coleccion}' mounted and hanging on the previously designed stand. "
+            f"Show the four keychain designs from the collection '{descripcion_coleccion}' mounted and hanging on the previously designed stand. "
             f"The presentation must highlight the unity of the collection and the innovative design of the stand, with soft lighting and a minimalist background. "
-            f"All elements must be perfectly aligned and aesthetically appealing."
+            f"All elements must be perfectly aligned and aesthetically appealing. "
+            f"The background must be pure white (RGB 255, 255, 255)."
         )
 
         # Mostrar los resultados y los botones de copiar nativos de Streamlit
