@@ -6,7 +6,7 @@ st.markdown("Crea prompts detallados para generar diseños de llaveros únicos c
 
 # --- Contenedor principal para la entrada de datos ---
 with st.container():
-    st.subheader("🛠️️ Personaliza tu colección de llaveros")
+    st.subheader("🛠️ Personaliza tu colección de llaveros")
 
     # Definición de estilos
     estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
@@ -151,8 +151,8 @@ if st.button("Generar Prompts", type="primary"):
 
         # Generar el prompt para el soporte
         prompt_soporte = (
-            f"Create a unique, innovative, and highly detailed stand to hang four decorative designs from the collection '{descripcion_coleccion}'. "
-            f"The stand's design must be a perfect match for the style '{estilo_seleccionado}' and the theme of the designs. "
+            f"Create a unique, innovative, and highly detailed stand to hang four decorative designs. "
+            f"The stand's design must be a perfect match for the style and theme of the four designs shown in the attached image. "
             f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
             f"The stand must be visible in its entirety, with a clean background. No designs should be attached yet. "
             f"The background must be pure white (RGB 255, 255, 255)."
@@ -161,7 +161,7 @@ if st.button("Generar Prompts", type="primary"):
         # Generar el prompt para la presentación final
         prompt_presentacion = (
             f"Create a high-quality, professional product shot. "
-            f"Show the four decorative designs from the collection '{descripcion_coleccion}' mounted and hanging on the previously designed stand. "
+            f"Show the four decorative designs from the attached image mounted and hanging on the previously designed stand. "
             f"The presentation must highlight the unity of the collection and the innovative design of the stand, with soft lighting and a minimalist background. "
             f"All elements must be perfectly aligned and aesthetically appealing. "
             f"The background must be pure white (RGB 255, 255, 255)."
