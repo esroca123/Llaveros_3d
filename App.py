@@ -146,11 +146,11 @@ if st.button("Generar Prompts", type="primary"):
 
         # Generar el prompt para el soporte - CORREGIDO
         prompt_soporte = (
-            f"Create a unique, innovative, and highly detailed stand to hang four decorative designs. "
-            f"The stand must be a **practical design for 3D printing, with a stable base and no overly complex geometry**. "
+            f"Create a **simple, minimalist, and functional stand** to hang four decorative designs, optimized for easy 3D printing. "
+            f"The design must have **clean, solid geometry, thick walls, and minimal overhangs** to reduce the need for support material. "
+            f"The stand must be a **practical design**, like a simple rectangular or circular base with four solid pegs or hooks. "
             f"It can be either a wall-mounted design or a free-standing design. "
             f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
-            f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
             f"The stand must be visible in its entirety. No designs should be attached yet."
         )
 
