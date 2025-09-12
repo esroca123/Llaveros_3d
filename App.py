@@ -144,16 +144,17 @@ if st.button("Generar Prompts", type="primary"):
             f"The background must be pure white (RGB 255, 255, 255)."
         )
 
-        # Generar el prompt para el soporte
+        # Generar el prompt para el soporte - CORREGIDO
         prompt_soporte = (
             f"Create a unique, innovative, and highly detailed stand to hang four decorative designs. "
-            f"The stand can be either a wall-mounted design or a free-standing design. "
+            f"The stand must be a **practical design for 3D printing, with a stable base and no overly complex geometry**. "
+            f"It can be either a wall-mounted design or a free-standing design. "
             f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
             f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
             f"The stand must be visible in its entirety. No designs should be attached yet."
         )
 
-        # Generar el prompt para la presentación final - CORREGIDO
+        # Generar el prompt para la presentación final
         prompt_presentacion = (
             f"Create a high-quality, professional product shot for an e-commerce platform. "
             f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
