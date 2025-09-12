@@ -32,6 +32,12 @@ with st.container():
         "Detalles adicionales para cada diseño (opcional)",
         placeholder="Añade aquí detalles específicos sobre el estilo, personajes, etc."
     )
+    
+    # Nuevo campo para el soporte
+    descripcion_soporte = st.text_area(
+        "Descripción especial del soporte (opcional)",
+        placeholder="Ej., 'con el nombre de Juan', 'diseñado como un árbol', 'con la fecha 2024'."
+    )
 
     # Lógica para la opción de "Initial of a word"
     inicial_palabra = None
@@ -111,32 +117,43 @@ if st.button("Generar Prompt de Colección", type="primary"):
         elif colores_seleccionados:
             colores_str = ", ".join(colores_seleccionados)
             prompt_coleccion_full_color += f" Suggested colors: {colores_str}."
+            
+        # Generar prompts para los soportes (se generan solo al presionar el botón)
+        prompt_soporte_pared = (
+            f"Create a highly **creative, innovative, and aesthetic wall-mounted stand** to hang four decorative designs. "
+            f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
+            f"The design must have a flat back for easy mounting, be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
+            f"It must include four hooks or holes to hang the designs. "
+            f"{descripcion_soporte}"
+            f"The stand must be visible in its entirety. No designs should be attached yet."
+        )
+
+        prompt_soporte_pie = (
+            f"Create a highly **creative, innovative, and aesthetic free-standing stand** to hold four decorative designs. "
+            f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
+            f"The design must have a wide, stable base and a vertical structure with four hooks or pegs. It must be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
+            f"It must include four hooks or holes to hang the designs. "
+            f"{descripcion_soporte}"
+            f"The stand must be visible in its entirety. No designs should be attached yet."
+        )
 
         st.divider()
-        st.subheader("✅ Tu prompt está listo:")
+        st.subheader("✅ Tus prompts están listos:")
         st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
         st.code(prompt_coleccion_full_color, language="markdown")
 
+        st.divider()
+        st.markdown("### 2. Prompts para el Soporte (Paso 2)")
+        st.markdown("Utiliza la imagen generada en el paso 1 para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
+        st.markdown("#### Colgadero de Pared")
+        st.code(prompt_soporte_pared, language="markdown")
+        st.markdown("#### Soporte de Pie")
+        st.code(prompt_soporte_pie, language="markdown")
+
 # --- Prompts fijos que siempre están visibles ---
 st.divider()
-st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
-st.markdown("Estos prompts se usan con la imagen de tus diseños ya generada. Son fijos y siempre están aquí para tu conveniencia.")
-
-prompt_soporte_pared = (
-    f"Create a highly **creative, innovative, and aesthetic wall-mounted stand** to hang four decorative designs. "
-    f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
-    f"The design must have a flat back for easy mounting, be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
-    f"It must include four hooks or holes to hang the designs. "
-    f"The stand must be visible in its entirety. No designs should be attached yet."
-)
-
-prompt_soporte_pie = (
-    f"Create a highly **creative, innovative, and aesthetic free-standing stand** to hold four decorative designs. "
-    f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
-    f"The design must have a wide, stable base and a vertical structure with four hooks or pegs. It must be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
-    f"It must include four hooks or holes to hang the designs. "
-    f"The stand must be visible in its entirety. No designs should be attached yet."
-)
+st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1 y 2)")
+st.markdown("Estos prompts se usan con las imágenes de tus diseños y soporte ya generadas. Son fijos y siempre están aquí para tu conveniencia.")
 
 prompt_dxf = (
     f"Generate a black and white line art version of the design from the attached image, optimized for DXF file conversion. "
@@ -169,15 +186,6 @@ prompt_presentacion = (
     f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
 )
 
-st.markdown("### 2. Prompts para el Soporte (Paso 2)")
-st.markdown("Utiliza la imagen generada en el paso 1 para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
-st.markdown("#### Colgadero de Pared")
-st.code(prompt_soporte_pared, language="markdown")
-st.markdown("#### Soporte de Pie")
-st.code(prompt_soporte_pie, language="markdown")
-
-st.divider()
-
 st.markdown("### 3. Prompts de Variantes (Paso 3)")
 st.markdown("Usa la imagen generada en el paso 1 para obtener versiones de fabricación.")
 st.markdown("#### Prompt para versión DXF")
@@ -192,4 +200,3 @@ st.divider()
 st.markdown("### 4. Prompt para la Presentación Final (Paso 4)")
 st.markdown("Utiliza la imagen de los llaveros y la del soporte para crear un render de alta calidad.")
 st.code(prompt_presentacion, language="markdown")
-
