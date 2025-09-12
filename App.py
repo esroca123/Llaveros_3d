@@ -4,7 +4,7 @@ import streamlit as st
 st.title("Llavero Prompts Generator")
 st.markdown("Crea prompts detallados para generar diseños de llaveros únicos con IA.")
 
-# --- Contenedor principal para la entrada de datos ---
+# --- Contenedor para la entrada de datos (siempre visible) ---
 with st.container():
     st.subheader("🛠️ Personaliza tu colección de llaveros")
 
@@ -15,19 +15,19 @@ with st.container():
     estilos_nuevos_tematicos = ["Gamer / Arcade", "Floral / Nature", "Mandala / Zen", "Iconographic", "Cultural / Ethnic", "Urban / Graffiti", "Sporty", "Disney / Pixar", "Color Splash", "Lego", "Ghibli"]
     todos_los_estilos = estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
 
-    # Selectbox principal que incluye la nueva opción
+    # Selectbox principal
     estilo_seleccionado = st.selectbox(
         "Estilo de la colección de llaveros",
         ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_estilos
     )
 
-    # Campo para la descripción que ahora siempre está visible
+    # Campo para la descripción de la colección
     descripcion_coleccion = st.text_area(
         "Descripción de la colección",
         placeholder="Describe el tema o concepto para los cuatro diseños (ej., 'cuatro animales de la selva', 'vehículos de carreras')."
     )
 
-    # Campo para la descripción que ahora siempre está visible
+    # Campo para detalles adicionales
     descripcion_opcional = st.text_area(
         "Detalles adicionales para cada diseño (opcional)",
         placeholder="Añade aquí detalles específicos sobre el estilo, personajes, etc."
@@ -55,7 +55,7 @@ with st.container():
         frase_integrada = st.text_input("Frase para integrar (opcional)", placeholder="ej., 'La mejor mamá del mundo'")
         estilo_nombre_seleccionado = st.selectbox("Estilo para el nombre", todos_los_estilos)
 
-    # Todos los campos opcionales que ahora siempre están visibles
+    # Campos opcionales
     cantidad_colores = st.selectbox("Cantidad de colores (opcional)", ["Cualquiera"] + list(range(1, 5)))
     colores_opciones = ["red", "blue", "green", "yellow", "black", "white", "gray", "purple", "pink", "orange"]
     colores_seleccionados = st.multiselect("Colores sugeridos (opcional)", colores_opciones, max_selections=4)
@@ -63,33 +63,26 @@ with st.container():
     icono = st.text_input("Icono o símbolo (opcional)", placeholder="ej., rayo, luna, flor")
     texto_opcional = st.text_input("Texto o frase (opcional)", placeholder="ej., 'Feliz cumpleaños'")
 
-# --- Botón para generar el prompt y validación ---
-if st.button("Generar Prompts", type="primary"):
+# --- Botón para generar el prompt dinámico ---
+if st.button("Generar Prompt de Colección", type="primary"):
     if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
         st.error("Por favor, especifica la palabra para la inicial.")
     elif estilo_seleccionado == "Full Name/Phrase" and not nombre_completo:
         st.error("Por favor, especifica el nombre completo.")
     else:
-        # Generar el prompt base
+        # Generar el prompt dinámico
         estilo_prompt = ""
-        base_prompt_coleccion = ""
-
-        # Lógica para la opción de "A partir de una imagen"
         if estilo_seleccionado == "A partir de una imagen":
             estilo_prompt = estilo_para_imagen_seleccionado.lower()
-        # Lógica para la opción de "Initial of a word"
         elif estilo_seleccionado == "Initial of a word" and inicial_palabra:
             estilo_prompt = estilo_inicial_seleccionado.lower()
-        # Lógica para la nueva opción "Full Name/Phrase"
         elif estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
             estilo_prompt = estilo_nombre_seleccionado.lower()
-        # Lógica para el resto de los estilos
         elif estilo_seleccionado != "Free Style":
             estilo_prompt = estilo_seleccionado.lower()
-        else: # Free Style
-            estilo_prompt = "modern" # Estilo predeterminado si es "Free Style"
+        else:
+            estilo_prompt = "modern"
 
-        # Generar el prompt principal para la colección a color
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, full-color decorative art designs in a {estilo_prompt} style, presented in a 2x2 grid. "
             f"Each design is a custom, stylized figure, word, or symbol, where the entire piece itself is the main body of the art. "
@@ -101,18 +94,15 @@ if st.button("Generar Prompts", type="primary"):
             f"The overall theme is: '{descripcion_coleccion}'. Additional details: {descripcion_opcional}."
         )
 
-        # Añado la lógica específica para la opción de "Full Name/Phrase"
         if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
             prompt_coleccion_full_color += f" The designs are based on the full name '{nombre_completo}'. "
             if frase_integrada:
                 prompt_coleccion_full_color += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
-            
-        # Añadir todos los campos opcionales al prompt principal
+        
         if icono:
             prompt_coleccion_full_color += f" Incorporate the {icono} icon."
         if texto_opcional:
             prompt_coleccion_full_color += f" Include the text: '{texto_opcional}'."
-
         if cantidad_colores != "Cualquiera":
             prompt_coleccion_full_color += f" The designs must use exactly {cantidad_colores} colors."
             if colores_seleccionados:
@@ -122,75 +112,82 @@ if st.button("Generar Prompts", type="primary"):
             colores_str = ", ".join(colores_seleccionados)
             prompt_coleccion_full_color += f" Suggested colors: {colores_str}."
 
-        prompt_dxf = (
-            f"Generate a black and white line art version of the design from the attached image, optimized for DXF file conversion. "
-            f"It must have only thin outlines, no shadows, a clean vector style. "
-            f"The design must include a single circular hole for attachment at the top. "
-            f"Important: Base the output only on the provided image, do not add new elements or alter the core design. "
-            f"The background must be pure white (RGB 255, 255, 255)."
-        )
-
-        prompt_silhouette = (
-            f"Generate a complete, solid black silhouette of the design from the attached image. "
-            f"The design must have no internal lines. It must include a single circular hole for attachment at the top. "
-            f"Important: Base the output only on the provided image, do not add new elements. "
-            f"The background must be pure white (RGB 255, 255, 255)."
-        )
-
-        prompt_separacion_colores = (
-            f"Based on the attached image, generate a simplified version for manufacturing. "
-            f"Each distinct color area of the original design should be represented as a **solid black shape,** clearly separated from the others. "
-            f"The design must also include a single circular hole for attachment. "
-            f"The background must be pure white (RGB 255, 255, 255)."
-        )
-
-        # Generar el prompt para el soporte - CORREGIDO
-        prompt_soporte = (
-            f"Create a **simple, minimalist, and functional stand** to hang four decorative designs, optimized for easy 3D printing. "
-            f"The design must have **clean, solid geometry, thick walls, and minimal overhangs** to reduce the need for support material. "
-            f"The stand must be a **practical design**, like a simple rectangular or circular base with four solid pegs or hooks. "
-            f"It can be either a wall-mounted design or a free-standing design. "
-            f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
-            f"The stand must be visible in its entirety. No designs should be attached yet."
-        )
-
-        # Generar el prompt para la presentación final
-        prompt_presentacion = (
-            f"Create a high-quality, professional product shot for an e-commerce platform. "
-            f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
-            f"The designs should be beautifully **mounted and naturally hanging** on the previously designed stand. "
-            f"Ensure perfect integration, realistic lighting, and natural shadows. "
-            f"The background should be a decorative setting that complements the theme of the collection, like a **minimalist studio with soft lighting** or a **natural wood table with a subtle texture**. "
-            f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
-        )
-
-        # Mostrar los resultados y los botones de copiar nativos de Streamlit
         st.divider()
-        st.subheader("✅ Tus prompts están listos:")
-
-        # Prompt para la colección de 4 llaveros (versión a color)
-        st.markdown("### 1. Prompt para la colección de 4 diseños decorativos (sin argolla)")
+        st.subheader("✅ Tu prompt está listo:")
+        st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
         st.code(prompt_coleccion_full_color, language="markdown")
 
-        # Prompts para las variantes (para usarse con la imagen generada en el paso 1)
-        st.markdown("---")
-        st.markdown("### 2. Prompts para las variantes (para usarse con la imagen generada en el paso 1)")
+# --- Prompts fijos que siempre están visibles ---
+st.divider()
+st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
+st.markdown("Estos prompts se usan con la imagen de tus diseños ya generada. Son fijos y siempre están aquí para tu conveniencia.")
 
-        st.markdown("#### Prompt para versión DXF")
-        st.code(prompt_dxf, language="markdown")
+prompt_soporte_pared = (
+    f"Create a simple, minimalist, and functional **wall-mounted stand** to hang four decorative designs, optimized for easy 3D printing. "
+    f"The design must have a flat back for mounting, a stable base, and minimal overhangs. "
+    f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
+    f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
+    f"The stand must be visible in its entirety. No designs should be attached yet."
+)
 
-        st.markdown("#### Prompt para versión Silueta")
-        st.code(prompt_silhouette, language="markdown")
+prompt_soporte_pie = (
+    f"Create a simple, minimalist, and functional **free-standing stand** to hold four decorative designs, optimized for easy 3D printing. "
+    f"The design must have a wide, stable base and a vertical structure with four hooks or pegs. "
+    f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
+    f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
+    f"The stand must be visible in its entirety. No designs should be attached yet."
+)
 
-        st.markdown("#### Prompt para versión Separación de Colores")
-        st.code(prompt_separacion_colores, language="markdown")
+prompt_dxf = (
+    f"Generate a black and white line art version of the design from the attached image, optimized for DXF file conversion. "
+    f"It must have only thin outlines, no shadows, a clean vector style. "
+    f"The design must include a single circular hole for attachment at the top. "
+    f"Important: Base the output only on the provided image, do not add new elements or alter the core design. "
+    f"The background must be pure white (RGB 255, 255, 255)."
+)
 
-        # Prompt para generar el soporte para llaveros
-        st.markdown("---")
-        st.markdown("### 3. Prompt para generar el soporte para los diseños")
-        st.code(prompt_soporte, language="markdown")
+prompt_silhouette = (
+    f"Generate a complete, solid black silhouette of the design from the attached image. "
+    f"The design must have no internal lines. It must include a single circular hole for attachment at the top. "
+    f"Important: Base the output only on the provided image, do not add new elements. "
+    f"The background must be pure white (RGB 255, 255, 255)."
+)
 
-        # Prompt para la presentación final (con llaveros montados)
-        st.markdown("---")
-        st.markdown("### 4. Prompt para la presentación final (con los diseños montados)")
-        st.code(prompt_presentacion, language="markdown")
+prompt_separacion_colores = (
+    f"Based on the attached image, generate a simplified version for manufacturing. "
+    f"Each distinct color area of the original design should be represented as a **solid black shape,** clearly separated from the others. "
+    f"The design must also include a single circular hole for attachment. "
+    f"The background must be pure white (RGB 255, 255, 255)."
+)
+
+prompt_presentacion = (
+    f"Create a high-quality, professional product shot for an e-commerce platform. "
+    f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
+    f"The designs should be beautifully **mounted and naturally hanging** on the previously designed stand. "
+    f"Ensure perfect integration, realistic lighting, and natural shadows. "
+    f"The background should be a decorative setting that complements the theme of the collection, like a **minimalist studio with soft lighting** or a **natural wood table with a subtle texture**. "
+    f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
+)
+
+st.markdown("### 2. Prompts para el Soporte (Paso 2)")
+st.markdown("Utiliza la imagen generada en el paso 1 para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
+st.markdown("#### Colgadero de Pared")
+st.code(prompt_soporte_pared, language="markdown")
+st.markdown("#### Soporte de Pie")
+st.code(prompt_soporte_pie, language="markdown")
+
+st.markdown("---")
+st.markdown("### 3. Prompts de Variantes (Paso 3)")
+st.markdown("Usa la imagen generada en el paso 1 para obtener versiones de fabricación.")
+st.markdown("#### Prompt para versión DXF")
+st.code(prompt_dxf, language="markdown")
+st.markdown("#### Prompt para versión Silueta")
+st.code(prompt_silhouette, language="markdown")
+st.markdown("#### Prompt para versión Separación de Colores")
+st.code(prompt_separacion_colores, language="markdown")
+
+st.markdown("---")
+st.markdown("### 4. Prompt para la Presentación Final (Paso 4)")
+st.markdown("Utiliza la imagen de los llaveros y la del soporte para crear un render de alta calidad.")
+st.code(prompt_presentacion, language="markdown")
+
