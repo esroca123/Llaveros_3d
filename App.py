@@ -123,18 +123,18 @@ st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
 st.markdown("Estos prompts se usan con la imagen de tus diseños ya generada. Son fijos y siempre están aquí para tu conveniencia.")
 
 prompt_soporte_pared = (
-    f"Create a simple, minimalist, and functional **wall-mounted stand** to hang four decorative designs, optimized for easy 3D printing. "
-    f"The design must have a flat back for mounting, a stable base, and minimal overhangs. "
-    f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
-    f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
+    f"Create a highly **creative, innovative, and aesthetic wall-mounted stand** to hang four decorative designs. "
+    f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
+    f"The design must have a flat back for easy mounting, be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
+    f"It must include four hooks or holes to hang the designs. "
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
 
 prompt_soporte_pie = (
-    f"Create a simple, minimalist, and functional **free-standing stand** to hold four decorative designs, optimized for easy 3D printing. "
-    f"The design must have a wide, stable base and a vertical structure with four hooks or pegs. "
-    f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
-    f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
+    f"Create a highly **creative, innovative, and aesthetic free-standing stand** to hold four decorative designs. "
+    f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
+    f"The design must have a wide, stable base and a vertical structure with four hooks or pegs. It must be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
+    f"It must include four hooks or holes to hang the designs. "
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
 
@@ -176,7 +176,8 @@ st.code(prompt_soporte_pared, language="markdown")
 st.markdown("#### Soporte de Pie")
 st.code(prompt_soporte_pie, language="markdown")
 
-st.markdown("---")
+---
+
 st.markdown("### 3. Prompts de Variantes (Paso 3)")
 st.markdown("Usa la imagen generada en el paso 1 para obtener versiones de fabricación.")
 st.markdown("#### Prompt para versión DXF")
@@ -186,7 +187,8 @@ st.code(prompt_silhouette, language="markdown")
 st.markdown("#### Prompt para versión Separación de Colores")
 st.code(prompt_separacion_colores, language="markdown")
 
-st.markdown("---")
+---
+
 st.markdown("### 4. Prompt para la Presentación Final (Paso 4)")
 st.markdown("Utiliza la imagen de los llaveros y la del soporte para crear un render de alta calidad.")
 st.code(prompt_presentacion, language="markdown")
