@@ -192,4 +192,3 @@ st.code(prompt_separacion_colores, language="markdown")
 st.markdown("### 4. Prompt para la Presentación Final (Paso 4)")
 st.markdown("Utiliza la imagen de los llaveros y la del soporte para crear un render de alta calidad.")
 st.code(prompt_presentacion, language="markdown")
-
