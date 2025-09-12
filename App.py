@@ -150,18 +150,17 @@ if st.button("Generar Prompts", type="primary"):
             f"The stand can be either a wall-mounted design or a free-standing design. "
             f"Its style must perfectly match the style and theme of the four designs shown in the attached image. "
             f"It must be aesthetically pleasing, functional, and include four hooks or holes to hang the designs. "
-            f"The stand must be visible in its entirety, with a clean background. No designs should be attached yet. "
-            f"The background must be pure white (RGB 255, 255, 255)."
+            f"The stand must be visible in its entirety. No designs should be attached yet."
         )
 
         # Generar el prompt para la presentación final - CORREGIDO
         prompt_presentacion = (
-            f"Create a high-quality, professional product shot for promotion. "
-            f"Show the four decorative designs from the attached image, beautifully **mounted and naturally hanging** on the previously designed stand. "
-            f"Ensure perfect integration, realistic lighting, and natural shadows, so the designs are not merely 'puestos encima' sino parte de una composición cohesiva. "
-            f"The presentation must highlight the unity of the collection and the innovative design of the stand, with soft lighting and a minimalist background. "
-            f"All elements must be perfectly aligned and aesthetically appealing, ready for an e-commerce platform. "
-            f"The background must be pure white (RGB 255, 255, 255)."
+            f"Create a high-quality, professional product shot for an e-commerce platform. "
+            f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
+            f"The designs should be beautifully **mounted and naturally hanging** on the previously designed stand. "
+            f"Ensure perfect integration, realistic lighting, and natural shadows. "
+            f"The background should be a decorative setting that complements the theme of the collection, like a **minimalist studio with soft lighting** or a **natural wood table with a subtle texture**. "
+            f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
         )
 
         # Mostrar los resultados y los botones de copiar nativos de Streamlit
