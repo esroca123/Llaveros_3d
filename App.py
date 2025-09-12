@@ -176,7 +176,7 @@ st.code(prompt_soporte_pared, language="markdown")
 st.markdown("#### Soporte de Pie")
 st.code(prompt_soporte_pie, language="markdown")
 
----
+st.divider()
 
 st.markdown("### 3. Prompts de Variantes (Paso 3)")
 st.markdown("Usa la imagen generada en el paso 1 para obtener versiones de fabricación.")
@@ -187,8 +187,9 @@ st.code(prompt_silhouette, language="markdown")
 st.markdown("#### Prompt para versión Separación de Colores")
 st.code(prompt_separacion_colores, language="markdown")
 
----
+st.divider()
 
 st.markdown("### 4. Prompt para la Presentación Final (Paso 4)")
 st.markdown("Utiliza la imagen de los llaveros y la del soporte para crear un render de alta calidad.")
 st.code(prompt_presentacion, language="markdown")
+
