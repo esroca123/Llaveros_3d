@@ -69,7 +69,75 @@ with st.container():
     icono = st.text_input("Icono o símbolo (opcional)", placeholder="ej., rayo, luna, flor")
     texto_opcional = st.text_input("Texto o frase (opcional)", placeholder="ej., 'Feliz cumpleaños'")
 
-# --- Botón para generar el prompt dinámico ---
+# --- Aquí se definen todos los prompts fijos y dinámicos antes del botón ---
+
+prompt_soporte_pared = (
+    f"Create a highly **creative, innovative, and aesthetic wall-mounted stand** to hang four decorative designs. "
+    f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
+    f"The design must have a flat back for easy mounting, be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
+    f"It must include four hooks or holes to hang the designs. "
+    f"{descripcion_soporte}"
+    f"The stand must be visible in its entirety. No designs should be attached yet."
+)
+
+prompt_soporte_pie = (
+    f"Create a highly **creative, innovative, and aesthetic free-standing stand** to hold four decorative designs. "
+    f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
+    f"The design must have a wide, stable base and a vertical structure with four hooks or pegs. It must be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
+    f"It must include four hooks or holes to hang the designs. "
+    f"{descripcion_soporte}"
+    f"The stand must be visible in its entirety. No designs should be attached yet."
+)
+
+prompt_dxf = (
+    f"Generate a black and white line art version of the design from the attached image, optimized for DXF file conversion. "
+    f"It must have only thin outlines, no shadows, a clean vector style. "
+    f"The design must include a single circular hole for attachment at the top. "
+    f"Important: Base the output only on the provided image, do not add new elements or alter the core design. "
+    f"The background must be pure white (RGB 255, 255, 255)."
+)
+
+prompt_silhouette = (
+    f"Generate a complete, solid black silhouette of the design from the attached image. "
+    f"The design must have no internal lines. It must include a single circular hole for attachment at the top. "
+    f"Important: Base the output only on the provided image, do not add new elements. "
+    f"The background must be pure white (RGB 255, 255, 255)."
+)
+
+prompt_separacion_colores = (
+    f"Based on the attached image, generate a simplified version for manufacturing. "
+    f"Each distinct color area of the original design should be represented as a **solid black shape,** clearly separated from the others. "
+    f"The design must also include a single circular hole for attachment. "
+    f"The background must be pure white (RGB 255, 255, 255)."
+)
+
+prompt_presentacion_llaveros_solos = (
+    f"Create a high-quality, professional product shot for an e-commerce platform. "
+    f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
+    f"The designs should be arranged in a visually interesting and appealing composition. "
+    f"The background should be a decorative setting that complements the theme of the collection, like a **minimalist studio with soft lighting** or a **natural wood table with a subtle texture**. "
+    f"The final image should highlight the vibrant colors and detailed designs, making them look like premium collectible items."
+)
+
+prompt_presentacion_soporte_pared = (
+    f"Create a high-quality, professional product shot for an e-commerce platform. "
+    f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
+    f"The designs should be beautifully **mounted and naturally hanging** on the previously designed **wall-mounted stand**. "
+    f"Ensure perfect integration, realistic lighting, and natural shadows. "
+    f"The background should be a decorative setting that complements the theme of the collection. "
+    f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
+)
+
+prompt_presentacion_soporte_pie = (
+    f"Create a high-quality, professional product shot for an e-commerce platform. "
+    f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
+    f"The designs should be beautifully **mounted and naturally hanging** on the previously designed **free-standing stand**. "
+    f"Ensure perfect integration, realistic lighting, and natural shadows. "
+    f"The background should be a decorative setting that complements the theme of the collection. "
+    f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
+)
+
+# --- Botón para generar el prompt dinámico (solo la colección) ---
 if st.button("Generar Prompt de Colección", type="primary"):
     if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
         st.error("Por favor, especifica la palabra para la inicial.")
@@ -124,54 +192,9 @@ if st.button("Generar Prompt de Colección", type="primary"):
         st.code(prompt_coleccion_full_color, language="markdown")
 
 
-# --- Prompts fijos que siempre están visibles ---
+# --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
 st.divider()
 st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
-st.markdown("Estos prompts se usan con las imágenes de tus diseños y soporte ya generadas. Son fijos y siempre están aquí para tu conveniencia.")
-
-prompt_soporte_pared = (
-    f"Create a highly **creative, innovative, and aesthetic wall-mounted stand** to hang four decorative designs. "
-    f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
-    f"The design must have a flat back for easy mounting, be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
-    f"It must include four hooks or holes to hang the designs. "
-    f"{descripcion_soporte}"
-    f"The stand must be visible in its entirety. No designs should be attached yet."
-)
-
-prompt_soporte_pie = (
-    f"Create a highly **creative, innovative, and aesthetic free-standing stand** to hold four decorative designs. "
-    f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
-    f"The design must have a wide, stable base and a vertical structure with four hooks or pegs. It must be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
-    f"It must include four hooks or holes to hang the designs. "
-    f"{descripcion_soporte}"
-    f"The stand must be visible in its entirety. No designs should be attached yet."
-)
-
-prompt_presentacion_llaveros_solos = (
-    f"Create a high-quality, professional product shot for an e-commerce platform. "
-    f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
-    f"The designs should be arranged in a visually interesting and appealing composition. "
-    f"The background should be a decorative setting that complements the theme of the collection, like a **minimalist studio with soft lighting** or a **natural wood table with a subtle texture**. "
-    f"The final image should highlight the vibrant colors and detailed designs, making them look like premium collectible items."
-)
-
-prompt_presentacion_soporte_pared = (
-    f"Create a high-quality, professional product shot for an e-commerce platform. "
-    f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
-    f"The designs should be beautifully **mounted and naturally hanging** on the previously designed **wall-mounted stand**. "
-    f"Ensure perfect integration, realistic lighting, and natural shadows. "
-    f"The background should be a decorative setting that complements the theme of the collection. "
-    f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
-)
-
-prompt_presentacion_soporte_pie = (
-    f"Create a high-quality, professional product shot for an e-commerce platform. "
-    f"Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** "
-    f"The designs should be beautifully **mounted and naturally hanging** on the previously designed **free-standing stand**. "
-    f"Ensure perfect integration, realistic lighting, and natural shadows. "
-    f"The background should be a decorative setting that complements the theme of the collection. "
-    f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
-)
 
 st.markdown("### 2. Prompts para el Soporte (Paso 2)")
 st.markdown("Utiliza la imagen generada en el paso 1 para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
