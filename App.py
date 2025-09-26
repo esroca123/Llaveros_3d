@@ -172,10 +172,10 @@ if st.button("Generar Prompt de Colección", type="primary"):
         else:
             estilo_prompt = "modern"
 
-        # PROMPT DE COLECCIÓN MEJORADO (Fidelidad de estilo reforzada y efecto 3D)
-        # Se combina la instrucción de fidelidad con el nombre del estilo
+        # PROMPT DE COLECCIÓN MEJORADO Y CORREGIDO
+        # Se asegura que la sintaxis de Python (f-string) sea correcta.
         prompt_coleccion_full_color = (
-            f"Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style (Crucial: Strictly adhere to this style)**, presented together in a 2x2 grid. "
+            f"Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. Crucial: **Strictly adhere to the {estilo_prompt} style**, presented together in a 2x2 grid. "
             f"The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). "
             f"Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume, preventing the final image from looking like a flat, digital print. "
             f"Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. "
