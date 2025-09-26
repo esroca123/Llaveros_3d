@@ -113,17 +113,19 @@ prompt_silhouette = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT DE SEPARACIÓN DE COLORES (Agujero eliminado y consistencia geométrica añadida)
+# PROMPT DE SEPARACIÓN DE COLORES (OPTIMIZADO para inversión clara)
 prompt_separacion_colores = (
-    f"Based on the attached **DXF/Line Art image of the single design**, generate a simplified version for color separation. "
+    f"Based on the attached **line art image of the single design**, generate a two-tone version for color separation. "
     f"**Maintain the exact size and aspect ratio of the attached image.** "
-    f"Invert the existing line art so that all original black areas are rendered as **solid black shapes**, and all original white areas are rendered as white. The final output must meet these criteria: "
-    f"1. **Solid Shapes:** Convert all colored areas into **solid black shapes**. "
-    f"2. **Separation Lines:** The white lines that separate these black shapes must be **extremely thin** (minimal line weight) to act only as clean separation boundaries. "
+    f"The transformation must clearly convert all **original white areas within the design into solid black shapes**, and all **original black lines into very thin white separation lines**. "
+    f"Specifically: "
+    f"1. **Solid Black Fills:** All areas that were previously white (inside the black outlines) must now be filled with **solid black**. "
+    f"2. **Thin White Lines:** All original black outlines and internal details must become **extremely thin white lines** (minimal line weight) to serve as clean separators between the black shapes. "
     f"3. **Background:** The outer background must remain **pure white** (RGB 255, 255, 255). "
     f"Crucial: Do not include any hole or attachment point in the design. "
-    f"The goal is a precise, clean, two-tone image (black and white only) ready for industrial color layering."
+    f"The goal is a precise, clean, two-tone image (black and white only) ready for industrial color layering where black represents one layer and white the absence of it or another layer."
 )
+
 
 prompt_presentacion_llaveros_solos = (
     f"Create a high-quality, professional product shot for an e-commerce platform. "
@@ -172,8 +174,7 @@ if st.button("Generar Prompt de Colección", type="primary"):
         else:
             estilo_prompt = "modern"
 
-        # PROMPT DE COLECCIÓN MEJORADO Y CORREGIDO
-        # Se asegura que la sintaxis de Python (f-string) sea correcta.
+        # PROMPT DE COLECCIÓN CORREGIDO (la sintaxis del f-string es válida ahora)
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. Crucial: **Strictly adhere to the {estilo_prompt} style**, presented together in a 2x2 grid. "
             f"The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). "
