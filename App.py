@@ -93,24 +93,29 @@ prompt_soporte_pie = (
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
 
+# PROMPT DXF (ACTUALIZADO para 4 diseños)
 prompt_dxf = (
-    f"Generate a black and white line art version of the design from the attached image, optimized for DXF file conversion. "
-    f"It must have only thin outlines, no shadows, a clean vector style. "
-    f"The design must include a single circular hole for attachment at the top. "
+    f"Generate a black and white line art version of the **four designs** from the attached image, optimized for DXF file conversion. "
+    f"The transformation must be applied to **ALL FOUR** designs in the 2x2 grid. "
+    f"Each design must have only thin outlines, no shadows, a clean vector style, and must include a single circular hole for attachment at the top. "
     f"Important: Base the output only on the provided image, do not add new elements or alter the core design. "
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
+# PROMPT SILUETA (ACTUALIZADO para 4 diseños)
 prompt_silhouette = (
-    f"Generate a complete, solid black silhouette of the design from the attached image. "
-    f"The design must have no internal lines. It must include a single circular hole for attachment at the top. "
+    f"Generate a complete, solid black silhouette of the **four designs** from the attached image. "
+    f"The transformation must be applied to **ALL FOUR** designs in the 2x2 grid. "
+    f"Each design must have no internal lines and must include a single circular hole for attachment at the top. "
     f"Important: Base the output only on the provided image, do not add new elements. "
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT DE SEPARACIÓN DE COLORES ACTUALIZADO
+# PROMPT DE SEPARACIÓN DE COLORES (ACTUALIZADO para 4 diseños)
 prompt_separacion_colores = (
-    f"Based on the attached **DXF/Line Art image**, generate a simplified version for color separation. Invert the existing line art so that all original black areas are rendered as **solid black shapes**, and all original white areas are rendered as white. The final output must meet these criteria: "
+    f"Based on the attached **DXF/Line Art image**, generate a simplified version for color separation. "
+    f"The transformation must be applied to **ALL FOUR** designs in the 2x2 grid. "
+    f"Invert the existing line art so that all original black areas are rendered as **solid black shapes**, and all original white areas are rendered as white. The final output must meet these criteria: "
     f"1. **Solid Shapes:** Convert all colored areas into **solid black shapes**. "
     f"2. **Separation Lines:** The white lines that separate these black shapes must be **extremely thin** (minimal line weight) to act only as clean separation boundaries. "
     f"3. **Background:** The outer background must remain **pure white** (RGB 255, 255, 255). "
@@ -141,7 +146,7 @@ prompt_presentacion_soporte_pie = (
     f"The designs should be beautifully **mounted and naturally hanging** on the previously designed **free-standing stand**. "
     f"Ensure perfect integration, realistic lighting, and natural shadows. "
     f"The background should be a decorative setting that complements the theme of the collection. "
-    f"The final image should highlight the unity of la colección and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
+    f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
 )
 
 
