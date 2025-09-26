@@ -108,11 +108,14 @@ prompt_silhouette = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
+# PROMPT DE SEPARACIÓN DE COLORES ACTUALIZADO
 prompt_separacion_colores = (
-    f"Based on the attached image, generate a simplified version for manufacturing. "
-    f"Each distinct color area of the original design should be represented as a **solid black shape,** clearly separated from the others. "
-    f"The design must also include a single circular hole for attachment. "
-    f"The background must be pure white (RGB 255, 255, 255)."
+    f"Based on the attached **DXF/Line Art image**, generate a simplified version for color separation. Invert the existing line art so that all original black areas are rendered as **solid black shapes**, and all original white areas are rendered as white. The final output must meet these criteria: "
+    f"1. **Solid Shapes:** Convert all colored areas into **solid black shapes**. "
+    f"2. **Separation Lines:** The white lines that separate these black shapes must be **extremely thin** (minimal line weight) to act only as clean separation boundaries. "
+    f"3. **Background:** The outer background must remain **pure white** (RGB 255, 255, 255). "
+    f"4. **Hole:** The design must include a single circular hole for attachment. "
+    f"The goal is a precise, clean, two-tone image (black and white only) ready for industrial color layering."
 )
 
 prompt_presentacion_llaveros_solos = (
@@ -138,7 +141,7 @@ prompt_presentacion_soporte_pie = (
     f"The designs should be beautifully **mounted and naturally hanging** on the previously designed **free-standing stand**. "
     f"Ensure perfect integration, realistic lighting, and natural shadows. "
     f"The background should be a decorative setting that complements the theme of the collection. "
-    f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
+    f"The final image should highlight the unity of la colección and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
 )
 
 
@@ -174,10 +177,10 @@ if st.button("Generar Prompt de Colección", type="primary"):
         )
         
         # -------------------------------------------------------------------------
-        # LÓGICA DE REFERENCIA DE IMAGEN AÑADIDA AQUÍ
+        # LÓGICA DE REFERENCIA DE IMAGEN
         # -------------------------------------------------------------------------
         if estilo_seleccionado == "A partir de una imagen":
-            # Añadir la instrucción para que la IA use la imagen subida como base
+            # Instrucción explícita para la IA de usar la imagen adjunta
             prompt_coleccion_full_color += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
         
         # Lógica para Nombre/Frase
