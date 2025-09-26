@@ -71,6 +71,10 @@ with st.container():
 
 # --- Aquí se definen todos los prompts fijos y dinámicos antes del botón ---
 
+# -------------------------------------------------------------------------
+# PROMPTS FIJOS (Soportes, Variantes y Presentación)
+# -------------------------------------------------------------------------
+
 prompt_soporte_pared = (
     f"Create a highly **creative, innovative, and aesthetic wall-mounted stand** to hang four decorative designs. "
     f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
@@ -137,6 +141,7 @@ prompt_presentacion_soporte_pie = (
     f"The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."
 )
 
+
 # --- Botón para generar el prompt dinámico (solo la colección) ---
 if st.button("Generar Prompt de Colección", type="primary"):
     if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
@@ -144,7 +149,7 @@ if st.button("Generar Prompt de Colección", type="primary"):
     elif estilo_seleccionado == "Full Name/Phrase" and not nombre_completo:
         st.error("Por favor, especifica el nombre completo.")
     else:
-        # Generar el prompt dinámico
+        # Generar el estilo base para el prompt
         estilo_prompt = ""
         if estilo_seleccionado == "A partir de una imagen":
             estilo_prompt = estilo_para_imagen_seleccionado.lower()
@@ -157,22 +162,31 @@ if st.button("Generar Prompt de Colección", type="primary"):
         else:
             estilo_prompt = "modern"
 
+        # PROMPT DE COLECCIÓN MEJORADO Y SIMPLIFICADO (sin agujero)
         prompt_coleccion_full_color = (
-            f"Generate four highly detailed, full-color decorative art designs in a {estilo_prompt} style, presented in a 2x2 grid. "
-            f"Each design is a custom, stylized figure, word, or symbol, where the entire piece itself is the main body of the art. "
-            f"A single, small, and functional circular hole for attachment is seamlessly incorporated into the top of each design. "
-            f"This attachment hole is the ONLY hole or loop on the main body of the design. "
-            f"The image must show the designs ONLY, with ABSOLUTELY NO attached metallic rings, chains, hooks, or any other accessories. "
+            f"Generate four highly detailed, vibrant, and full-color decorative art designs in a {estilo_prompt} style, presented together in a 2x2 grid. "
+            f"Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. "
+            f"The design must be visually strong, clear, and perfectly sized for a collectible item or keychain (approx. 5cm on its longest side). "
+            f"The image must show the designs ONLY, with ABSOLUTELY NO attached rings, chains, hooks, or holes. "
             f"The designs should look like high-quality, stylized collectible pieces, with vibrant colors and sharp details. "
             f"The background must be pure white (RGB 255, 255, 255). "
             f"The overall theme is: '{descripcion_coleccion}'. Additional details: {descripcion_opcional}."
         )
-
+        
+        # -------------------------------------------------------------------------
+        # LÓGICA DE REFERENCIA DE IMAGEN AÑADIDA AQUÍ
+        # -------------------------------------------------------------------------
+        if estilo_seleccionado == "A partir de una imagen":
+            # Añadir la instrucción para que la IA use la imagen subida como base
+            prompt_coleccion_full_color += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
+        
+        # Lógica para Nombre/Frase
         if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
             prompt_coleccion_full_color += f" The designs are based on the full name '{nombre_completo}'. "
             if frase_integrada:
                 prompt_coleccion_full_color += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
         
+        # Lógica de Opciones Adicionales
         if icono:
             prompt_coleccion_full_color += f" Incorporate the {icono} icon."
         if texto_opcional:
