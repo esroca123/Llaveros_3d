@@ -93,7 +93,7 @@ prompt_soporte_pie = (
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
 
-# PROMPT DXF (ACTUALIZADO: Agujero eliminado y consistencia geométrica añadida)
+# PROMPT DXF (Agujero eliminado y consistencia geométrica añadida)
 prompt_dxf = (
     f"Generate a black and white line art version of the **single design** from the attached image, optimized for DXF file conversion. "
     f"**Maintain the exact size and aspect ratio of the attached image.** "
@@ -103,7 +103,7 @@ prompt_dxf = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT SILUETA (ACTUALIZADO: Agujero eliminado y consistencia geométrica añadida)
+# PROMPT SILUETA (Agujero eliminado y consistencia geométrica añadida)
 prompt_silhouette = (
     f"Generate a complete, solid black silhouette of the **single design** from the attached image. "
     f"**Maintain the exact size and aspect ratio of the attached image.** "
@@ -113,7 +113,7 @@ prompt_silhouette = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT DE SEPARACIÓN DE COLORES (ACTUALIZADO: Agujero eliminado y consistencia geométrica añadida)
+# PROMPT DE SEPARACIÓN DE COLORES (Agujero eliminado y consistencia geométrica añadida)
 prompt_separacion_colores = (
     f"Based on the attached **DXF/Line Art image of the single design**, generate a simplified version for color separation. "
     f"**Maintain the exact size and aspect ratio of the attached image.** "
@@ -172,10 +172,12 @@ if st.button("Generar Prompt de Colección", type="primary"):
         else:
             estilo_prompt = "modern"
 
-        # PROMPT DE COLECCIÓN MEJORADO (fidelidad de estilo reforzada)
+        # PROMPT DE COLECCIÓN MEJORADO (Fidelidad de estilo reforzada y efecto 3D)
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, vibrant, and full-color decorative art designs in a {estilo_prompt} style, presented together in a 2x2 grid. "
             f"**Crucial: Strictly adhere to the chosen style.** "
+            f"The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). "
+            f"Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume, preventing the final image from looking like a flat, digital print. "
             f"Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. "
             f"The design must be visually strong, clear, and perfectly sized for a collectible item or keychain (approx. 5cm on its longest side). "
             f"The image must show the designs ONLY, with ABSOLUTELY NO attached rings, chains, hooks, or holes. "
