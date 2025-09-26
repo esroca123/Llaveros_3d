@@ -93,35 +93,35 @@ prompt_soporte_pie = (
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
 
-# PROMPT DXF (ACTUALIZADO: Agujero eliminado)
+# PROMPT DXF (ACTUALIZADO: Agujero eliminado y consistencia geométrica añadida)
 prompt_dxf = (
-    f"Generate a black and white line art version of the **four designs** from the attached image, optimized for DXF file conversion. "
-    f"The transformation must be applied to **ALL FOUR** designs in the 2x2 grid. "
-    f"Each design must have only thin outlines, no shadows, a clean vector style. "
-    f"**Crucial:** Do not include any hole or attachment point in the design. "
+    f"Generate a black and white line art version of the **single design** from the attached image, optimized for DXF file conversion. "
+    f"**Maintain the exact size and aspect ratio of the attached image.** "
+    f"The design must have only thin, continuous outlines, no shadows, and a clean vector style. "
+    f"Crucial: Do not include any hole or attachment point in the design. "
     f"Important: Base the output only on the provided image, do not add new elements or alter the core design. "
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT SILUETA (ACTUALIZADO: Agujero eliminado)
+# PROMPT SILUETA (ACTUALIZADO: Agujero eliminado y consistencia geométrica añadida)
 prompt_silhouette = (
-    f"Generate a complete, solid black silhouette of the **four designs** from the attached image. "
-    f"The transformation must be applied to **ALL FOUR** designs in the 2x2 grid. "
-    f"Each design must have no internal lines. "
-    f"**Crucial:** Do not include any hole or attachment point in the design. "
+    f"Generate a complete, solid black silhouette of the **single design** from the attached image. "
+    f"**Maintain the exact size and aspect ratio of the attached image.** "
+    f"The design must have no internal lines. "
+    f"Crucial: Do not include any hole or attachment point in the design. "
     f"Important: Base the output only on the provided image, do not add new elements. "
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT DE SEPARACIÓN DE COLORES (ACTUALIZADO: Agujero eliminado)
+# PROMPT DE SEPARACIÓN DE COLORES (ACTUALIZADO: Agujero eliminado y consistencia geométrica añadida)
 prompt_separacion_colores = (
-    f"Based on the attached **DXF/Line Art image**, generate a simplified version for color separation. "
-    f"The transformation must be applied to **ALL FOUR** designs in the 2x2 grid. "
+    f"Based on the attached **DXF/Line Art image of the single design**, generate a simplified version for color separation. "
+    f"**Maintain the exact size and aspect ratio of the attached image.** "
     f"Invert the existing line art so that all original black areas are rendered as **solid black shapes**, and all original white areas are rendered as white. The final output must meet these criteria: "
     f"1. **Solid Shapes:** Convert all colored areas into **solid black shapes**. "
     f"2. **Separation Lines:** The white lines that separate these black shapes must be **extremely thin** (minimal line weight) to act only as clean separation boundaries. "
     f"3. **Background:** The outer background must remain **pure white** (RGB 255, 255, 255). "
-    f"**Crucial:** Do not include any hole or attachment point in the design. "
+    f"Crucial: Do not include any hole or attachment point in the design. "
     f"The goal is a precise, clean, two-tone image (black and white only) ready for industrial color layering."
 )
 
@@ -172,9 +172,10 @@ if st.button("Generar Prompt de Colección", type="primary"):
         else:
             estilo_prompt = "modern"
 
-        # PROMPT DE COLECCIÓN MEJORADO Y SIMPLIFICADO (sin agujero)
+        # PROMPT DE COLECCIÓN MEJORADO (fidelidad de estilo reforzada)
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, vibrant, and full-color decorative art designs in a {estilo_prompt} style, presented together in a 2x2 grid. "
+            f"**Crucial: Strictly adhere to the chosen style.** "
             f"Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. "
             f"The design must be visually strong, clear, and perfectly sized for a collectible item or keychain (approx. 5cm on its longest side). "
             f"The image must show the designs ONLY, with ABSOLUTELY NO attached rings, chains, hooks, or holes. "
@@ -219,6 +220,8 @@ if st.button("Generar Prompt de Colección", type="primary"):
 # --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
 st.divider()
 st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
+st.markdown("**Recuerda:** Para los Prompts del Paso 3, debes **cortar la imagen de colección (Paso 1) en 4 diseños individuales** antes de usarlos.")
+
 
 st.markdown("### 2. Prompts para el Soporte (Paso 2)")
 st.markdown("Utiliza la imagen generada en el paso 1 para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
@@ -230,7 +233,7 @@ st.code(prompt_soporte_pie, language="markdown")
 st.divider()
 
 st.markdown("### 3. Prompts de Variantes (Paso 3)")
-st.markdown("Usa la imagen generada en el paso 1 para obtener versiones de fabricación.")
+st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1) para obtener versiones de fabricación.")
 st.markdown("#### Prompt para versión DXF")
 st.code(prompt_dxf, language="markdown")
 st.markdown("#### Prompt para versión Silueta")
