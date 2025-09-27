@@ -113,17 +113,16 @@ prompt_silhouette = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT DE SEPARACIÓN DE COLORES (OPTIMIZADO para inversión clara)
+# PROMPT DE SEPARACIÓN DE COLORES (RE-OPTIMIZADO para inversión binaria total)
 prompt_separacion_colores = (
-    f"Based on the attached **line art image of the single design**, generate a two-tone version for color separation. "
+    f"Based on the attached **black and white line art image of the single design**, generate a **fully inverted, two-tone version for color separation**. "
     f"**Maintain the exact size and aspect ratio of the attached image.** "
-    f"The transformation must clearly convert all **original white areas within the design into solid black shapes**, and all **original black lines into very thin white separation lines**. "
-    f"Specifically: "
-    f"1. **Solid Black Fills:** All areas that were previously white (inside the black outlines) must now be filled with **solid black**. "
-    f"2. **Thin White Lines:** All original black outlines and internal details must become **extremely thin white lines** (minimal line weight) to serve as clean separators between the black shapes. "
-    f"3. **Background:** The outer background must remain **pure white** (RGB 255, 255, 255). "
+    f"The transformation must strictly adhere to a complete inversion, ensuring: "
+    f"1. **Solid Black Fills:** **ALL areas that were originally white within the design's perimeter** (excluding the outer background) must now be filled with **solid black**. "
+    f"2. **Thin White Lines:** **ALL original black outlines and internal details** must become **extremely thin white lines** (minimal line weight) to serve as clean separators between the black shapes. "
+    f"3. **Outer Background:** The outer background must remain **pure white** (RGB 255, 255, 255). "
     f"Crucial: Do not include any hole or attachment point in the design. "
-    f"The goal is a precise, clean, two-tone image (black and white only) ready for industrial color layering where black represents one layer and white the absence of it or another layer."
+    f"The goal is a precise, clean, binary (black and white only) image, ready for industrial color layering where black represents one layer and white the absence of it or another layer. The output should NOT retain any original white areas inside the design."
 )
 
 
