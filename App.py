@@ -88,7 +88,7 @@ prompt_soporte_pie = (
     f"Create a highly **creative, innovative, and aesthetic free-standing stand** to hold four decorative designs. "
     f"The design must be a functional art piece that **reflects and complements the theme of the collection**, not just a simple hanger. "
     f"The design must have a wide, stable base and a vertical structure with four hooks or pegs. It must be simple and stable, with minimal overhangs, making it suitable for easy 3D printing. "
-    f"It must include four hooks or holes to hang the designs. "
+    f"It.must include four hooks or holes to hang the designs. "
     f"{descripcion_soporte}"
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
@@ -113,16 +113,16 @@ prompt_silhouette = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT DE SEPARACIÓN DE COLORES (RE-OPTIMIZADO para líneas más finas)
+# PROMPT DE SEPARACIÓN DE COLORES (FINAL: forzando grosor mínimo y claridad binaria al 100%)
 prompt_separacion_colores = (
-    f"Based on the attached **black and white line art image of the single design**, generate a **fully inverted, two-tone version for color separation**. "
-    f"**Maintain the exact size and aspect ratio of the attached image.** "
+    f"Based on the attached **black and white line art image of the single design**, generate a **100% binary inverted, technical Fill-In version for industrial color separation**. "
+    f"**Maintain the exact size and aspect ratio of the attached image.** No gradients, no shadows, pure black and pure white only. "
     f"The transformation must strictly adhere to a complete inversion, ensuring: "
-    f"1. **Solid Black Fills:** **ALL areas that were originally white within the design's perimeter** (excluding the outer background) must now be filled with **solid black**. "
-    f"2. **Razor-Thin White Lines:** **ALL original black outlines and internal details** must become **EXTREMELY fine, hair-thin white lines** (minimal line weight, almost imperceptible) to serve as precise separators between the black shapes. The goal is the thinnest possible white line. "
+    f"1. **Solid Black Fills (100% Inversion):** **ALL areas that were originally white within the design's perimeter** (excluding the outer background) must now be filled with **solid, pure black**. The original figure must be 100% filled, without exception. "
+    f"2. **Minimal White Separation:** The spaces created by the original black lines must be replaced by **pure white separation lines** with an **ABSOLUTELY MINIMAL stroke thickness (1-pixel width only)**, acting only as clean, razor-thin divisions between the black shapes. The goal is the thinnest possible white line for precision manufacturing. "
     f"3. **Outer Background:** The outer background must remain **pure white** (RGB 255, 255, 255). "
     f"Crucial: Do not include any hole or attachment point in the design. "
-    f"The goal is a precise, clean, binary (black and white only) image, ready for industrial color layering where black represents one layer and white the absence of it or another layer. The output should NOT retain any original white areas inside the design."
+    f"The output must be a clean, binary image, ready for industrial color layering."
 )
 
 
