@@ -113,13 +113,13 @@ prompt_silhouette = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT DE SEPARACIÓN DE COLORES (RE-OPTIMIZADO para inversión binaria total)
+# PROMPT DE SEPARACIÓN DE COLORES (RE-OPTIMIZADO para líneas más finas)
 prompt_separacion_colores = (
     f"Based on the attached **black and white line art image of the single design**, generate a **fully inverted, two-tone version for color separation**. "
     f"**Maintain the exact size and aspect ratio of the attached image.** "
     f"The transformation must strictly adhere to a complete inversion, ensuring: "
     f"1. **Solid Black Fills:** **ALL areas that were originally white within the design's perimeter** (excluding the outer background) must now be filled with **solid black**. "
-    f"2. **Thin White Lines:** **ALL original black outlines and internal details** must become **extremely thin white lines** (minimal line weight) to serve as clean separators between the black shapes. "
+    f"2. **Razor-Thin White Lines:** **ALL original black outlines and internal details** must become **EXTREMELY fine, hair-thin white lines** (minimal line weight, almost imperceptible) to serve as precise separators between the black shapes. The goal is the thinnest possible white line. "
     f"3. **Outer Background:** The outer background must remain **pure white** (RGB 255, 255, 255). "
     f"Crucial: Do not include any hole or attachment point in the design. "
     f"The goal is a precise, clean, binary (black and white only) image, ready for industrial color layering where black represents one layer and white the absence of it or another layer. The output should NOT retain any original white areas inside the design."
