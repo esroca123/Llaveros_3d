@@ -103,11 +103,12 @@ prompt_dxf = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT SILUETA (Agujero eliminado y consistencia geométrica añadida)
+# PROMPT SILUETA MEJORADO (Relleno al 100%)
 prompt_silhouette = (
-    f"Generate a complete, solid black silhouette of the **single design** from the attached image. "
+    f"Generate a complete, solid, and technical black silhouette of the **single design** from the attached image. "
+    f"**Crucial:** The output must be a single, monolithic, **100% filled black shape** that represents **only the exact outer perimeter** of the design. "
     f"**Maintain the exact size and aspect ratio of the attached image.** "
-    f"The design must have no internal lines. "
+    f"The design must have no internal lines, no shadows, no gradients, and no internal white spaces whatsoever. "
     f"Crucial: Do not include any hole or attachment point in the design. "
     f"Important: Base the output only on the provided image, do not add new elements. "
     f"The background must be pure white (RGB 255, 255, 255)."
@@ -235,7 +236,7 @@ st.code(prompt_soporte_pie, language="markdown")
 st.divider()
 
 st.markdown("### 3. Prompts de Variantes (Paso 3)")
-st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1) para obtener versiones de fabricación.")
+st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1 o la versión DXF) para obtener versiones de fabricación.")
 st.markdown("#### Prompt para versión DXF")
 st.code(prompt_dxf, language="markdown")
 st.markdown("#### Prompt para versión Silueta")
