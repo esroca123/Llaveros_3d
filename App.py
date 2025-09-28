@@ -18,7 +18,7 @@ with st.container():
     # Selectbox principal
     estilo_seleccionado = st.selectbox(
         "Estilo de la colección de llaveros",
-        ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los estilos
+        ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_estilos
     )
 
     # Campo para la descripción de la colección
@@ -175,7 +175,7 @@ if st.button("Generar Prompt de Colección", type="primary"):
         else:
             estilo_prompt = "modern"
 
-        # PROMPT DE COLECCIÓN CORREGIDO (la sintaxis del f-string es válida ahora)
+        # PROMPT DE COLECCIÓN CORREGIDO
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. Crucial: **Strictly adhere to the {estilo_prompt} style**, presented together in a 2x2 grid. "
             f"The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). "
