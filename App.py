@@ -21,7 +21,7 @@ with st.container():
     # Selectbox principal
     estilo_seleccionado = st.selectbox(
         "Estilo de la colección de llaveros",
-        ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_estilos
+        ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_stilos
     )
 
     # Campo para la descripción de la colección
@@ -88,7 +88,7 @@ with st.container():
     texto_opcional = st.text_input("Texto o frase (opcional)", placeholder="ej., 'Feliz cumpleaños'")
 
 # -------------------------------------------------------------------------
-# PROMPTS FIJOS (Soportes, Variantes y Presentación) - Definiciones revisadas
+# PROMPTS FIJOS (Soportes, Variantes y Presentación)
 # -------------------------------------------------------------------------
 
 prompt_soporte_pared = (
@@ -109,12 +109,13 @@ prompt_soporte_pie = (
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
 
-# PROMPT DE LIMPIEZA
+# PROMPT DE LIMPIEZA MEJORADO
 prompt_limpieza_contorno = (
     f"Take the attached single design and digitally clean it up. "
     f"**Crucial:** Completely **remove any outer border, contour line, or surrounding shadow** that outlines the design's perimeter. "
-    f"The goal is to generate the figure with a **perfectly sharp edge** separating the figure from the background. "
-    f"Maintain the design's internal details and color, but ensure the final contour is **razor-sharp and has no residual black or colored line/shadow** around the outside. "
+    f"This includes any thin black lines, colored outlines, or blurred edges. "
+    f"The goal is to generate the figure with a **perfectly sharp and clean edge** separating the figure from the background, as if it were a pure cut-out. "
+    f"Maintain the design's internal details and color, but ensure the final contour is **razor-sharp and has NO residual black, colored line, or shadow** around the outside. "
     f"The background must be pure white (RGB 255, 255, 255). "
     f"Do not add a keyring hole."
 )
