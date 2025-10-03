@@ -109,7 +109,7 @@ prompt_soporte_pie = (
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
 
-# NUEVO PROMPT DE LIMPIEZA
+# PROMPT DE LIMPIEZA
 prompt_limpieza_contorno = (
     f"Take the attached single design and digitally clean it up. "
     f"**Crucial:** Completely **remove any outer border, contour line, or surrounding shadow** that outlines the design's perimeter. "
@@ -206,7 +206,7 @@ if st.button("Generar Prompt de Colección", type="primary"):
         else:
             estilo_prompt += "modern"
 
-        # PROMPT DE COLECCIÓN (con la instrucción de no borde exterior)
+        # PROMPT DE COLECCIÓN
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. "
             f"Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. "
@@ -273,37 +273,10 @@ st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
 st.markdown("**RECUERDA:** Si el diseño del Paso 1 tiene un contorno o sombra exterior, debes usar el **Prompt de Limpieza** (Paso 2) antes de los Prompts de Variantes.")
 
 
-st.markdown("### 2. Prompts de Limpieza (Paso 2) - **¡NUEVO!**")
-st.markdown("Usa este prompt si tu imagen del Paso 1 tiene una sombra o contorno no deseado alrededor de toda la figura.")
+st.markdown("### 2. Prompt de Limpieza y Preparación (Paso 2)")
+st.markdown("Usa este prompt si tu imagen tiene una sombra o contorno no deseado alrededor de toda la figura.")
 st.code(prompt_limpieza_contorno, language="markdown")
 
 ---
 
-st.markdown("### 3. Prompts de Variantes (Paso 3)")
-st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1 **o** de la imagen Limpia del Paso 2) para obtener versiones de fabricación.")
-st.markdown("#### Prompt para versión DXF (Contorno Lineal)")
-st.code(prompt_dxf, language="markdown")
-st.markdown("#### Prompt para versión Silueta (Máscara Monolítica)")
-st.code(prompt_silhouette, language="markdown")
-st.markdown("#### Prompt para versión Separación de Colores (Relleno Binario)")
-st.code(prompt_separacion_colores, language="markdown")
-
----
-
-st.markdown("### 4. Prompts para el Soporte (Paso 4)")
-st.markdown("Utiliza la imagen generada en el paso 1 (o la versión Limpia) para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
-st.markdown("#### Colgadero de Pared")
-st.code(prompt_soporte_pared, language="markdown")
-st.markdown("#### Soporte de Pie")
-st.code(prompt_soporte_pie, language="markdown")
-
----
-
-st.markdown("### 5. Prompts para la Presentación Final (Paso 5)")
-st.markdown("Utiliza las imágenes de los diseños y el soporte para crear renders de alta calidad.")
-st.markdown("#### Prompt para Presentación de Llaveros Solos")
-st.code(prompt_presentacion_llaveros_solos, language="markdown")
-st.markdown("#### Prompt para Presentación con Soporte de Pared")
-st.code(prompt_presentacion_soporte_pared, language="markdown")
-st.markdown("#### Prompt para Presentación con Soporte de Pie")
-st.code(prompt_presentacion_soporte_pie, language="markdown")
+st.markdown("### 3. Prompts de Variantes (Paso 3
