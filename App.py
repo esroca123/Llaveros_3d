@@ -89,7 +89,6 @@ with st.container():
 
 # -------------------------------------------------------------------------
 # PROMPTS FIJOS (Soportes, Variantes y Presentación)
-# Se han reescrito para evitar el error de "unterminated f-string"
 # -------------------------------------------------------------------------
 
 prompt_soporte_pared = (
@@ -110,7 +109,17 @@ prompt_soporte_pie = (
     f"The stand must be visible in its entirety. No designs should be attached yet."
 )
 
-# PROMPT DXF (Agujero eliminado y consistencia geométrica añadida)
+# NUEVO PROMPT DE LIMPIEZA
+prompt_limpieza_contorno = (
+    f"Take the attached single design and digitally clean it up. "
+    f"**Crucial:** Completely **remove any outer border, contour line, or surrounding shadow** that outlines the design's perimeter. "
+    f"The goal is to generate the figure with a **perfectly sharp edge** separating the figure from the background. "
+    f"Maintain the design's internal details and color, but ensure the final contour is **razor-sharp and has no residual black or colored line/shadow** around the outside. "
+    f"The background must be pure white (RGB 255, 255, 255). "
+    f"Do not add a keyring hole."
+)
+
+# PROMPT DXF
 prompt_dxf = (
     f"Generate a black and white line art version of the **single design** from the attached image, optimized for DXF file conversion. "
     f"**Maintain the exact size and aspect ratio of the attached image.** "
@@ -120,7 +129,7 @@ prompt_dxf = (
     f"The background must be pure white (RGB 255, 255, 255)."
 )
 
-# PROMPT SILUETA (Énfasis en la máscara exterior)
+# PROMPT SILUETA
 prompt_silhouette = (
     f"Generate a complete, solid, and technical black silhouette of the **single design** from the attached image. "
     f"**Crucial:** The output must be a single, monolithic, **100% filled black shape** that represents **ONLY the exact outermost edge (perimeter) of the design**. "
@@ -132,7 +141,7 @@ prompt_silhouette = (
 )
 
 
-# PROMPT DE SEPARACIÓN DE COLORES (FINAL: forzando grosor mínimo y claridad binaria al 100%)
+# PROMPT DE SEPARACIÓN DE COLORES
 prompt_separacion_colores = (
     f"Based on the attached **black and white line art image of the single design**, generate a **100% binary inverted, technical Fill-In version for industrial color separation**. "
     f"**Maintain the exact size and aspect ratio of the attached image.** No gradients, no shadows, pure black and pure white only. "
@@ -197,7 +206,7 @@ if st.button("Generar Prompt de Colección", type="primary"):
         else:
             estilo_prompt += "modern"
 
-        # PROMPT DE COLECCIÓN (con la nueva instrucción de no borde exterior)
+        # PROMPT DE COLECCIÓN (con la instrucción de no borde exterior)
         prompt_coleccion_full_color = (
             f"Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. "
             f"Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. "
@@ -220,7 +229,6 @@ if st.button("Generar Prompt de Colección", type="primary"):
             personajes_referencia = f"The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable and faithful to the original character's design."
             
             if busqueda_referencia:
-                # Instrucción para que la IA "busque" o use su conocimiento de forma intensa
                 personajes_referencia += " **IMPORTANT:** Before generating, you must perform a high-fidelity reference search for each specified character to ensure maximum visual fidelity, correct proportions, and canonical color palette. The output MUST reflect these authentic details."
             
             prompt_coleccion_full_color += personajes_referencia
@@ -262,30 +270,36 @@ if st.button("Generar Prompt de Colección", type="primary"):
 # --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
 st.divider()
 st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
-st.markdown("**Recuerda:** Para los Prompts del Paso 3, debes **cortar la imagen de colección (Paso 1) en 4 diseños individuales** antes de usarlos.")
+st.markdown("**RECUERDA:** Si el diseño del Paso 1 tiene un contorno o sombra exterior, debes usar el **Prompt de Limpieza** (Paso 2) antes de los Prompts de Variantes.")
 
 
-st.markdown("### 2. Prompts para el Soporte (Paso 2)")
-st.markdown("Utiliza la imagen generada en el paso 1 para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
+st.markdown("### 2. Prompts de Limpieza (Paso 2) - **¡NUEVO!**")
+st.markdown("Usa este prompt si tu imagen del Paso 1 tiene una sombra o contorno no deseado alrededor de toda la figura.")
+st.code(prompt_limpieza_contorno, language="markdown")
+
+---
+
+st.markdown("### 3. Prompts de Variantes (Paso 3)")
+st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1 **o** de la imagen Limpia del Paso 2) para obtener versiones de fabricación.")
+st.markdown("#### Prompt para versión DXF (Contorno Lineal)")
+st.code(prompt_dxf, language="markdown")
+st.markdown("#### Prompt para versión Silueta (Máscara Monolítica)")
+st.code(prompt_silhouette, language="markdown")
+st.markdown("#### Prompt para versión Separación de Colores (Relleno Binario)")
+st.code(prompt_separacion_colores, language="markdown")
+
+---
+
+st.markdown("### 4. Prompts para el Soporte (Paso 4)")
+st.markdown("Utiliza la imagen generada en el paso 1 (o la versión Limpia) para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
 st.markdown("#### Colgadero de Pared")
 st.code(prompt_soporte_pared, language="markdown")
 st.markdown("#### Soporte de Pie")
 st.code(prompt_soporte_pie, language="markdown")
 
-st.divider()
+---
 
-st.markdown("### 3. Prompts de Variantes (Paso 3)")
-st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1 o la versión DXF) para obtener versiones de fabricación.")
-st.markdown("#### Prompt para versión DXF")
-st.code(prompt_dxf, language="markdown")
-st.markdown("#### Prompt para versión Silueta")
-st.code(prompt_silhouette, language="markdown")
-st.markdown("#### Prompt para versión Separación de Colores")
-st.code(prompt_separacion_colores, language="markdown")
-
-st.divider()
-
-st.markdown("### 4. Prompts para la Presentación Final (Paso 4)")
+st.markdown("### 5. Prompts para la Presentación Final (Paso 5)")
 st.markdown("Utiliza las imágenes de los diseños y el soporte para crear renders de alta calidad.")
 st.markdown("#### Prompt para Presentación de Llaveros Solos")
 st.code(prompt_presentacion_llaveros_solos, language="markdown")
