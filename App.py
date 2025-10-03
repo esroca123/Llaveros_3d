@@ -88,7 +88,7 @@ with st.container():
     texto_opcional = st.text_input("Texto o frase (opcional)", placeholder="ej., 'Feliz cumpleaños'")
 
 # -------------------------------------------------------------------------
-# PROMPTS FIJOS (Soportes, Variantes y Presentación)
+# PROMPTS FIJOS (Soportes, Variantes y Presentación) - Definiciones revisadas
 # -------------------------------------------------------------------------
 
 prompt_soporte_pared = (
@@ -277,6 +277,27 @@ st.markdown("### 2. Prompt de Limpieza y Preparación (Paso 2)")
 st.markdown("Usa este prompt si tu imagen tiene una sombra o contorno no deseado alrededor de toda la figura.")
 st.code(prompt_limpieza_contorno, language="markdown")
 
----
+st.markdown("### 3. Prompts de Variantes (Paso 3)")
+st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1 **o** de la imagen Limpia del Paso 2) para obtener versiones de fabricación.")
+st.markdown("#### Prompt para versión DXF (Contorno Lineal)")
+st.code(prompt_dxf, language="markdown")
+st.markdown("#### Prompt para versión Silueta (Máscara Monolítica)")
+st.code(prompt_silhouette, language="markdown")
+st.markdown("#### Prompt para versión Separación de Colores (Relleno Binario)")
+st.code(prompt_separacion_colores, language="markdown")
 
-st.markdown("### 3. Prompts de Variantes (Paso 3
+st.markdown("### 4. Prompts para el Soporte (Paso 4)")
+st.markdown("Utiliza la imagen generada en el paso 1 (o la versión Limpia) para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
+st.markdown("#### Colgadero de Pared")
+st.code(prompt_soporte_pared, language="markdown")
+st.markdown("#### Soporte de Pie")
+st.code(prompt_soporte_pie, language="markdown")
+
+st.markdown("### 5. Prompts para la Presentación Final (Paso 5)")
+st.markdown("Utiliza las imágenes de los diseños y el soporte para crear renders de alta calidad.")
+st.markdown("#### Prompt para Presentación de Llaveros Solos")
+st.code(prompt_presentacion_llaveros_solos, language="markdown")
+st.markdown("#### Prompt para Presentación con Soporte de Pared")
+st.code(prompt_presentacion_soporte_pared, language="markdown")
+st.markdown("#### Prompt para Presentación con Soporte de Pie")
+st.code(prompt_presentacion_soporte_pie, language="markdown")
