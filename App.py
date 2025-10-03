@@ -18,10 +18,10 @@ with st.container():
     estilo_iconic_chibi_cartoon = "Iconic Chibi Cartoon"
     todos_los_estilos = [estilo_iconic_chibi_cartoon] + estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
 
-    # Selectbox principal
+    # Selectbox principal - ¡CORRECCIÓN APLICADA AQUÍ!
     estilo_seleccionado = st.selectbox(
         "Estilo de la colección de llaveros",
-        ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_stilos
+        ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_estilos # <<-- Se corrigió a 'todos_los_estilos'
     )
 
     # Campo para la descripción de la colección
@@ -217,88 +217,4 @@ if st.button("Generar Prompt de Colección", type="primary"):
             f"Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. "
             f"The design must be visually strong, clear, and perfectly sized for a collectible item or keychain (approx. 5cm on its longest side). "
             f"The image must show the designs ONLY, with ABSOLUTELY NO attached rings, chains, hooks, or holes. "
-            f"The designs should look like high-quality, stylized collectible pieces, with vibrant colors and sharp details. "
-            f"The background must be pure white (RGB 255, 255, 255). "
-            f"The overall theme is: '{descripcion_coleccion}'. "
-        )
-        
-        # -------------------------------------------------------------------------
-        # LÓGICA DE REFERENCIA Y BÚSQUEDA DE PERSONAJE
-        # -------------------------------------------------------------------------
-        
-        if nombre_personaje:
-            personajes_referencia = f"The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable and faithful to the original character's design."
-            
-            if busqueda_referencia:
-                personajes_referencia += " **IMPORTANT:** Before generating, you must perform a high-fidelity reference search for each specified character to ensure maximum visual fidelity, correct proportions, and canonical color palette. The output MUST reflect these authentic details."
-            
-            prompt_coleccion_full_color += personajes_referencia
-
-        # Lógica para Referencia de Imagen Externa
-        if estilo_seleccionado == "A partir de una imagen":
-            prompt_coleccion_full_color += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
-        
-        # Lógica para Nombre/Frase
-        if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
-            prompt_coleccion_full_color += f" The designs are based on the full name '{nombre_completo}'. "
-            if frase_integrada:
-                prompt_coleccion_full_color += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
-        
-        # Lógica de Opciones Adicionales (Colores, Iconos, Texto)
-        if icono:
-            prompt_coleccion_full_color += f" Incorporate the {icono} icon."
-        if texto_opcional:
-            prompt_coleccion_full_color += f" Include the text: '{texto_opcional}'."
-        if cantidad_colores != "Cualquiera":
-            prompt_coleccion_full_color += f" The designs must use exactly {cantidad_colores} colors."
-            if colores_seleccionados:
-                colores_str = ", ".join(colores_seleccionados)
-                prompt_coleccion_full_color += f" Suggested colors: {colores_str}."
-        elif colores_seleccionados:
-            colores_str = ", ".join(colores_seleccionados)
-            prompt_coleccion_full_color += f" Suggested colors: {colores_str}."
-            
-        # Añadir detalles opcionales al final si existen
-        if descripcion_opcional:
-            prompt_coleccion_full_color += f" Additional details: {descripcion_opcional}."
-
-        st.divider()
-        st.subheader("✅ Tu prompt está listo:")
-        st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
-        st.code(prompt_coleccion_full_color, language="markdown")
-
-
-# --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
-st.divider()
-st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
-st.markdown("**RECUERDA:** Si el diseño del Paso 1 tiene un contorno o sombra exterior, debes usar el **Prompt de Limpieza** (Paso 2) antes de los Prompts de Variantes.")
-
-
-st.markdown("### 2. Prompt de Limpieza y Preparación (Paso 2)")
-st.markdown("Usa este prompt si tu imagen tiene una sombra o contorno no deseado alrededor de toda la figura.")
-st.code(prompt_limpieza_contorno, language="markdown")
-
-st.markdown("### 3. Prompts de Variantes (Paso 3)")
-st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1 **o** de la imagen Limpia del Paso 2) para obtener versiones de fabricación.")
-st.markdown("#### Prompt para versión DXF (Contorno Lineal)")
-st.code(prompt_dxf, language="markdown")
-st.markdown("#### Prompt para versión Silueta (Máscara Monolítica)")
-st.code(prompt_silhouette, language="markdown")
-st.markdown("#### Prompt para versión Separación de Colores (Relleno Binario)")
-st.code(prompt_separacion_colores, language="markdown")
-
-st.markdown("### 4. Prompts para el Soporte (Paso 4)")
-st.markdown("Utiliza la imagen generada en el paso 1 (o la versión Limpia) para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
-st.markdown("#### Colgadero de Pared")
-st.code(prompt_soporte_pared, language="markdown")
-st.markdown("#### Soporte de Pie")
-st.code(prompt_soporte_pie, language="markdown")
-
-st.markdown("### 5. Prompts para la Presentación Final (Paso 5)")
-st.markdown("Utiliza las imágenes de los diseños y el soporte para crear renders de alta calidad.")
-st.markdown("#### Prompt para Presentación de Llaveros Solos")
-st.code(prompt_presentacion_llaveros_solos, language="markdown")
-st.markdown("#### Prompt para Presentación con Soporte de Pared")
-st.code(prompt_presentacion_soporte_pared, language="markdown")
-st.markdown("#### Prompt para Presentación con Soporte de Pie")
-st.code(prompt_presentacion_soporte_pie, language="markdown")
+            f"The designs should look like
