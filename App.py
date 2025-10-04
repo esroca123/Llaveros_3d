@@ -14,8 +14,8 @@ with st.container():
     estilos_adicionales = ["Kawaii", "Pop Art", "Gothic", "Surrealist", "Glass-like", "Metallic", "Wood-carved", "Clay-sculpted", "Flat Design", "Geometric", "Vaporwave", "Cottagecore"]
     estilos_nuevos_tematicos = ["Gamer / Arcade", "Floral / Nature", "Mandala / Zen", "Iconographic", "Cultural / Ethnic", "Urban / Graffiti", "Sporty", "Disney / Pixar", "Color Splash", "Lego", "Ghibli"]
     
-    # NUEVO ESTILO COMBINABLE
-    estilo_iconic_chibi_cartoon = "Iconic Chibi Cartoon"
+    # ESTILO MODIFICADO PARA CONTORNO CERO
+    estilo_iconic_chibi_cartoon = "Iconic Chibi Cartoon (Contorno Cero)"
     todos_los_estilos = [estilo_iconic_chibi_cartoon] + estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
 
     # Selectbox principal
@@ -105,14 +105,11 @@ It must include four hooks or holes to hang the designs.
 {descripcion_soporte} 
 The stand must be visible in its entirety. No designs should be attached yet."""
 
-# PROMPT DE LIMPIEZA MEJORADO (Eliminación de contorno)
+# PROMPT DE LIMPIEZA REFORZADO (ÚLTIMA LÍNEA DE DEFENSA)
 prompt_limpieza_contorno = f"""Take the attached single design and digitally clean it up. 
-**Crucial:** Completely **remove any outer border, contour line, or surrounding shadow** that outlines the design's perimeter. 
-This includes any thin black lines, colored outlines, or blurred edges. 
-The goal is to generate the figure with a **perfectly sharp and clean edge** separating the figure from the background, as if it were a pure cut-out. 
-Maintain the design's internal details and color, but ensure the final contour is **razor-sharp and has NO residual black, colored line, or shadow** around the outside. 
-The background must be pure white (RGB 255, 255, 255). 
-Do not add a keyring hole."""
+**Crucial Elimination Command:** Completely **remove all black or colored outlines, borders, and contour lines** from the design's perimeter. 
+**Instead of a line, the border must be PERFECTLY SHARP and should transition DIRECTLY from the design's outermost color to the pure white background.** *If the design naturally has internal black lines, maintain those, but the ABSOLUTE OUTER EDGE must have NO black line or shadow.* Ensure the background is pure white (RGB 255, 255, 255). 
+The final figure must look like a sharp, clean cut-out. Do not add a keyring hole."""
 
 # PROMPT DXF
 prompt_dxf = f"""Generate a black and white line art version of the **single design** from the attached image, optimized for DXF file conversion. 
@@ -168,10 +165,11 @@ if st.button("Generar Prompt de Colección", type="primary"):
     else:
         # Generar el estilo base para el prompt
         estilo_prompt = ""
-        if estilo_seleccionado == estilo_iconic_chibi_cartoon:
+        
+        # LÓGICA DE CONTORNO CERO PARA EL ESTILO CHIBI
+        if estilo_seleccionado == "Iconic Chibi Cartoon (Contorno Cero)":
             estilo_prompt = (
-                f"Iconic Chibi Cartoon style, with thick black outlines, flat vibrant colors, "
-                f"shallow 3D relief or subtle domed effect, friendly expressions, simple poses. "
+                f"Iconic Chibi Cartoon style, **FLAT VECTOR ART**, **NO external contour lines, NO perimeter shadow, NO thick black outlines on the outer edge**. Use solid, vibrant colors. The design must be a **clean, sharp silhouette** of the figure, ready for die-cut, with shallow 3D relief or subtle domed effect, friendly expressions, simple poses. The outer border must be a **razor-clean cut** to the white background."
             )
         elif estilo_seleccionado == "A partir de una imagen":
             estilo_prompt += estilo_para_imagen_seleccionado.lower()
@@ -180,12 +178,13 @@ if st.button("Generar Prompt de Colección", type="primary"):
         elif estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
             estilo_prompt += estilo_nombre_seleccionado.lower()
         elif estilo_seleccionado != "Free Style":
-            estilo_prompt += estilo_seleccionado.lower()
+            # Para el resto de estilos, se añade un comando de limpieza
+            estilo_prompt += estilo_seleccionado.lower() + ", **NO external contour lines or outer shadow**"
         else:
             estilo_prompt += "modern"
 
-        # PROMPT DE COLECCIÓN
-        prompt_coleccion_full_color = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. 
+        # PROMPT DE COLECCIÓN BASE
+        prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. 
 Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. 
 **No outer border, no surrounding frame, no external shadow around the entire composition.** The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). 
 Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume, preventing the final image from looking like a flat, digital print. 
@@ -206,41 +205,41 @@ The overall theme is: '{descripcion_coleccion}'. """
             if busqueda_referencia:
                 personajes_referencia += " **IMPORTANT:** Before generating, you must perform a high-fidelity reference search for each specified character to ensure maximum visual fidelity, correct proportions, and canonical color palette. The output MUST reflect these authentic details."
             
-            prompt_coleccion_full_color += personajes_referencia
+            prompt_coleccion_base += personajes_referencia
 
         # Lógica para Referencia de Imagen Externa
         if estilo_seleccionado == "A partir de una imagen":
-            prompt_coleccion_full_color += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
+            prompt_coleccion_base += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
         
         # Lógica para Nombre/Frase
         if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
-            prompt_coleccion_full_color += f" The designs are based on the full name '{nombre_completo}'. "
+            prompt_coleccion_base += f" The designs are based on the full name '{nombre_completo}'. "
             if frase_integrada:
-                prompt_coleccion_full_color += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
+                prompt_coleccion_base += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
         
         # Lógica de Opciones Adicionales (Colores, Iconos, Texto)
         if icono:
-            prompt_coleccion_full_color += f" Incorporate the {icono} icon."
+            prompt_coleccion_base += f" Incorporate the {icono} icon."
         if texto_opcional:
-            prompt_coleccion_full_color += f" Include the text: '{texto_opcional}'."
+            prompt_coleccion_base += f" Include the text: '{texto_opcional}'."
         if cantidad_colores != "Cualquiera":
-            prompt_coleccion_full_color += f" The designs must use exactly {cantidad_colores} colors."
+            prompt_coleccion_base += f" The designs must use exactly {cantidad_colores} colors."
             if colores_seleccionados:
                 colores_str = ", ".join(colores_seleccionados)
-                prompt_coleccion_full_color += f" Suggested colors: {colores_str}."
+                prompt_coleccion_base += f" Suggested colors: {colores_str}."
         elif colores_seleccionados:
             colores_str = ", ".join(colores_seleccionados)
-            prompt_coleccion_full_color += f" Suggested colors: {colores_str}."
+            prompt_coleccion_base += f" Suggested colors: {colores_str}."
             
         # Añadir detalles opcionales al final si existen
         if descripcion_opcional:
-            prompt_coleccion_full_color += f" Additional details: {descripcion_opcional}."
+            prompt_coleccion_base += f" Additional details: {descripcion_opcional}."
 
         st.divider()
         st.subheader("✅ Tu prompt está listo:")
         st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
         # Aseguramos que la variable se convierte a string y se cierra correctamente
-        st.code(str(prompt_coleccion_full_color), language="markdown")
+        st.code(str(prompt_coleccion_base), language="markdown")
 
 
 # --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
