@@ -24,19 +24,17 @@ with st.container():
         ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_estilos
     )
 
-    # Campo para la descripción de la colección
+    # Campos de descripción
     descripcion_coleccion = st.text_area(
         "Descripción de la colección",
         placeholder="Describe el tema o concepto para los cuatro diseños (ej., 'cuatro animales de la selva', 'vehículos de carreras')."
     )
 
-    # Campo para el nombre del personaje (OPCIONAL)
     nombre_personaje = st.text_input(
         "Nombres de personajes/referencias (opcional)",
         placeholder="Ej., 'Goku', 'Pikachu', 'Hello Kitty', o 'Sonic, Tails'. Separa con comas si son varios."
     )
     
-    # CHECKBOX PARA BÚSQUEDA DE REFERENCIA
     busqueda_referencia = st.checkbox(
         "Activar búsqueda intensiva de referencia (Recomendado para personajes conocidos)",
         value=False,
@@ -45,13 +43,29 @@ with st.container():
     
     st.caption("Si hay 4 diseños y pones 1, 2 o 3 nombres, la IA llenará los demás con conceptos relacionados al tema general.")
 
-    # Campo para detalles adicionales
+    # Campos de personalización de la BASE RECTANGULAR
+    st.divider()
+    st.subheader("📝 Datos para Personalización (Base Vacía)")
+    st.markdown("Estos datos se usan para la estética de la base, no para generar texto en la imagen.")
+    
+    # Mantenemos este campo solo para referencia, aunque el prompt ya no lo usa.
+    st.text_input( 
+        "Nombre/Texto de referencia (La base se genera VACÍA)",
+        placeholder="Ej., 'Juan', 'Team A'. (Solo como referencia)."
+    )
+    
+    color_base_personalizacion = st.color_picker(
+        "Color de la base rectangular", 
+        "#4B77BE"
+    )
+    
+    # Campos opcionales generales
+    st.divider()
+    st.subheader("✨ Detalles Adicionales")
     descripcion_opcional = st.text_area(
         "Detalles adicionales para cada diseño (opcional)",
         placeholder="Añade aquí detalles específicos sobre el estilo, poses, expresiones, etc."
     )
-    
-    # Nuevo campo para el soporte
     descripcion_soporte = st.text_area(
         "Descripción especial del soporte (opcional)",
         placeholder="Ej., 'con el nombre de Juan', 'diseñado como un árbol', 'con la fecha 2024'."
@@ -79,7 +93,7 @@ with st.container():
         frase_integrada = st.text_input("Frase para integrar (opcional)", placeholder="ej., 'La mejor mamá del mundo'")
         estilo_nombre_seleccionado = st.selectbox("Estilo para el nombre", todos_los_estilos)
 
-    # Campos opcionales
+    # Campos opcionales de color e ícono
     cantidad_colores = st.selectbox("Cantidad de colores (opcional)", ["Cualquiera"] + list(range(1, 5)))
     colores_opciones = ["red", "blue", "green", "yellow", "black", "white", "gray", "purple", "pink", "orange"]
     colores_seleccionados = st.multiselect("Colores sugeridos (opcional)", colores_opciones, max_selections=4)
@@ -88,7 +102,7 @@ with st.container():
     texto_opcional = st.text_input("Texto o frase (opcional)", placeholder="ej., 'Feliz cumpleaños'")
 
 # -------------------------------------------------------------------------
-# PROMPTS FIJOS (Soportes, Variantes y Presentación) - Uso de """ f-strings """ para estabilidad
+# PROMPTS FIJOS Y DE VARIANTE (Base de Personalización)
 # -------------------------------------------------------------------------
 
 prompt_soporte_pared = f"""Create a highly **creative, innovative, and aesthetic wall-mounted stand** to hang four decorative designs. 
@@ -105,11 +119,19 @@ It must include four hooks or holes to hang the designs.
 {descripcion_soporte} 
 The stand must be visible in its entirety. No designs should be attached yet."""
 
-# PROMPT DE LIMPIEZA REFORZADO (ÚLTIMA LÍNEA DE DEFENSA)
+# PROMPT DE LIMPIEZA REFORZADO 
 prompt_limpieza_contorno = f"""Take the attached single design and digitally clean it up. 
 **Crucial Elimination Command:** Completely **remove all black or colored outlines, borders, and contour lines** from the design's perimeter. 
 **Instead of a line, the border must be PERFECTLY SHARP and should transition DIRECTLY from the design's outermost color to the pure white background.** *If the design naturally has internal black lines, maintain those, but the ABSOLUTE OUTER EDGE must have NO black line or shadow.* Ensure the background is pure white (RGB 255, 255, 255). 
 The final figure must look like a sharp, clean cut-out. Do not add a keyring hole."""
+
+# NUEVO PROMPT DE BASE DE PERSONALIZACIÓN (VACÍA)
+prompt_base_personalizacion = f"""Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
+**Crucial:** The base must be colored **{color_base_personalizacion}** and **perfectly integrate the style and 3D relief/domed effect of the original design**. 
+The rectangular base should be **wider than the figure** (approx. 1.5x the width of the figure) but proportionally balanced so as not to overwhelm the design. 
+The **front face of the base must be left completely smooth and empty**, without any molded text, numbers, or details, acting as a clean, blank surface for later text engraving. 
+The entire composition (figure plus base) must have a clean, sharp, **NO external contour line** perimeter, ready for die-cut. 
+Do not add a keyring hole."""
 
 # PROMPT DXF
 prompt_dxf = f"""Generate a black and white line art version of the **single design** from the attached image, optimized for DXF file conversion. 
@@ -196,7 +218,7 @@ The background must be pure white (RGB 255, 255, 255).
 The overall theme is: '{descripcion_coleccion}'. """
         
         # -------------------------------------------------------------------------
-        # LÓGICA DE REFERENCIA Y BÚSQUEDA DE PERSONAJE
+        # LÓGICA DE REFERENCIA Y OPCIONES ADICIONALES
         # -------------------------------------------------------------------------
         
         if nombre_personaje:
@@ -238,27 +260,32 @@ The overall theme is: '{descripcion_coleccion}'. """
         st.divider()
         st.subheader("✅ Tu prompt está listo:")
         st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
-        # Aseguramos que la variable se convierte a string y se cierra correctamente
         st.code(str(prompt_coleccion_base), language="markdown")
 
 
 # --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
 st.divider()
 st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
-st.markdown("**RECUERDA:** Si el diseño del Paso 1 tiene un contorno o sombra exterior, debes usar el **Prompt de Limpieza** (Paso 2) antes de los Prompts de Variantes.")
+st.markdown("**RECUERDA:** Usa un diseño individual (cortado del Paso 1) para los siguientes prompts.")
 
 
 st.markdown("### 2. Prompt de Limpieza y Preparación (Paso 2)")
-st.markdown("Usa este prompt si tu imagen tiene una sombra o contorno no deseado alrededor de toda la figura.")
+st.markdown("Usa este prompt si tu imagen aún tiene una sombra o contorno no deseado alrededor de toda la figura.")
 st.code(prompt_limpieza_contorno, language="markdown")
 
-st.markdown("### 3. Prompts de Variantes (Paso 3)")
-st.markdown("Usa **CADA DISEÑO INDIVIDUAL** (cortado de la imagen del Paso 1 **o** de la imagen Limpia del Paso 2) para obtener versiones de fabricación.")
-st.markdown("#### Prompt para versión DXF (Contorno Lineal)")
+st.markdown("### 3. Prompts de Variantes de Producción (Paso 3)")
+st.markdown("Usa la imagen LIMPIA (Paso 2) para generar las variantes de fabricación y personalización.")
+
+st.markdown("#### 3.a. Prompt para la Variante de Base Personalizada (¡BASE VACÍA!)")
+st.info(f"La base rectangular se generará VACÍA con el color **{color_base_personalizacion}**, lista para agregar texto en el software de diseño.")
+st.code(prompt_base_personalizacion, language="markdown")
+
+
+st.markdown("#### 3.b. Prompt para versión DXF (Contorno Lineal)")
 st.code(prompt_dxf, language="markdown")
-st.markdown("#### Prompt para versión Silueta (Máscara Monolítica)")
+st.markdown("#### 3.c. Prompt para versión Silueta (Máscara Monolítica)")
 st.code(prompt_silhouette, language="markdown")
-st.markdown("#### Prompt para versión Separación de Colores (Relleno Binario)")
+st.markdown("#### 3.d. Prompt para versión Separación de Colores (Relleno Binario)")
 st.code(prompt_separacion_colores, language="markdown")
 
 st.markdown("### 4. Prompts para el Soporte (Paso 4)")
