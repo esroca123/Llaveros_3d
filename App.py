@@ -127,7 +127,7 @@ The final figure must look like a sharp, clean cut-out. Do not add a keyring hol
 # PROMPT DE BASE DE PERSONALIZACIÓN (VACÍA, ALTURA REDUCIDA Y TEMÁTICA)
 prompt_base_personalizacion = f"""Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
 **Crucial:** The base must be colored **{color_base_personalizacion}** and **perfectly integrate the style and 3D relief/domed effect of the original design**. 
-The rectangular base should be **wider than the figure** (approx. 1.5x the width of the figure) and **significantly shorter in height** (approx. 0.3x to 0.5x the height of the figure), proportionally balanced so as not to overwhelm the design. 
+The rectangular base should be **wider than the figure** (approx. 1.5x the width of the figure) and **significantly shorter in height** (approx. 0.15x to 0.1x the height of the figure), proportionally balanced so as not to overwhelm the design. 
 The base itself must be **stylized and themed to complement the collection concept: '{descripcion_coleccion}'**, for example, if the collection is about 'Pokemon', the base could have subtle Pokemon-related textures or shapes. 
 The **front face of the base must be left completely smooth and empty**, without any molded text, numbers, or details, acting as a clean, blank surface for later text engraving. 
 The entire composition (figure plus base) must have a clean, sharp, **NO external contour line** perimeter, ready for die-cut. 
