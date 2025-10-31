@@ -53,8 +53,6 @@ with st.container():
         placeholder="Ej., 'Juan', 'Team A'. (Solo como referencia)."
     )
     
-    # ELIMINADO: color_base_personalizacion = st.color_picker( "Color de la base rectangular", "#4B77BE" )
-
     # NUEVA CASILLA PARA EL ESTILO DE LA BASE
     estilo_base_personalizacion = st.text_input(
         "Estilo específico para la base (opcional)",
@@ -128,6 +126,7 @@ prompt_limpieza_contorno = f"""Take the attached single design and digitally cle
 The final figure must look like a sharp, clean cut-out. Do not add a keyring hole."""
 
 # PROMPT DE BASE DE PERSONALIZACIÓN (OPTIMIZADO Y SIN SELECCIÓN DE COLOR POR EL USUARIO)
+# NOTA: Asegurarse de que no haya comillas dobles o triples sin escapar dentro de esta f-string si son parte del texto.
 prompt_base_personalizacion_template = """Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
 **Crucial:** The figure must **NOT be modified or altered** in any way; simply place it on top of the base. 
 The base must be **beautiful, eye-catching, and its color(s) coherent and harmonious with the colors of the figure**. It should also have a **3D relief or subtle domed effect** to match the figure's style. 
@@ -191,33 +190,3 @@ The final image should highlight the unity of la colección and the innovative d
 if st.button("Generar Prompt de Colección", type="primary"):
     if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
         st.error("Por favor, especifica la palabra para la inicial.")
-    elif estilo_seleccionado == "Full Name/Phrase" and not nombre_completo:
-        st.error("Por favor, especifica el nombre completo.")
-    elif not descripcion_coleccion: # Se añade validación para que la descripción de la colección sea obligatoria
-        st.error("Por favor, describe la colección para que la base se integre temáticamente.")
-    else:
-        # Generar el estilo base para el prompt
-        estilo_prompt = ""
-        
-        # LÓGICA DE CONTORNO CERO PARA EL ESTILO CHIBI
-        if estilo_seleccionado == "Iconic Chibi Cartoon (Contorno Cero)":
-            estilo_prompt = (
-                f"Iconic Chibi Cartoon style, **FLAT VECTOR ART**, **NO external contour lines, NO perimeter shadow, NO thick black outlines on the outer edge**. Use solid, vibrant colors. The design must be a **clean, sharp silhouette** of the figure, ready for die-cut, with shallow 3D relief or subtle domed effect, friendly expressions, simple poses. The outer border must be a **razor-clean cut** to the white background."
-            )
-        elif estilo_seleccionado == "A partir de una imagen":
-            estilo_prompt += estilo_para_imagen_seleccionado.lower()
-        elif estilo_seleccionado == "Initial of a word" and inicial_palabra:
-            estilo_prompt += estilo_inicial_seleccionado.lower()
-        elif estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
-            estilo_prompt += estilo_nombre_seleccionado.lower()
-        elif estilo_seleccionado != "Free Style":
-            # Para el resto de estilos, se añade un comando de limpieza
-            estilo_prompt += f"{estilo_seleccionado.lower().replace('{', '{{').replace('}', '}}')}, **NO external contour lines or outer shadow**"
-        else:
-            estilo_prompt += "modern"
-
-        # PROMPT DE COLECCIÓN BASE
-        prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. 
-Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. 
-**No outer border, no surrounding frame, no external shadow around the entire composition.** The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). 
-Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume
