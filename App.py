@@ -48,7 +48,6 @@ with st.container():
     st.subheader("📝 Datos para Personalización (Base Vacía)")
     st.markdown("Estos datos se usan para la estética de la base, no para generar texto en la imagen. La base se generará lista para grabar un nombre.")
     
-    # Mantenemos este campo solo para referencia, aunque el prompt ya no lo usa.
     st.text_input( 
         "Nombre/Texto de referencia (La base se genera VACÍA)",
         placeholder="Ej., 'Juan', 'Team A'. (Solo como referencia)."
@@ -204,9 +203,57 @@ if st.button("Generar Prompt de Colección", type="primary"):
             estilo_prompt += estilo_nombre_seleccionado.lower()
         elif estilo_seleccionado != "Free Style":
             # Para el resto de estilos, se añade un comando de limpieza
-            estilo_prompt += estilo_seleccionado.lower() + ", **NO external contour lines or outer shadow**"
+            # Aquí la clave es asegurarnos de que no haya `{` o `}` sin balancear.
+            # El .replace garantiza que cualquier llave literal se escape.
+            estilo_prompt += estilo_seleccionado.lower().replace("{", "{{").replace("}", "}}") + ", **NO external contour lines or outer shadow**"
         else:
             estilo_prompt += "modern"
 
         # PROMPT DE COLECCIÓN BASE
-        prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo
+        # Se usaron triples comillas para el f-string para facilitar el manejo de comillas internas
+        # y evitar errores de terminación.
+        prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. 
+Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. 
+**No outer border, no surrounding frame, no external shadow around the entire composition.** The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). 
+Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume, preventing the final image from looking like a flat, digital print. 
+Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. 
+The design must be visually strong, clear, and perfectly sized for a collectible item or keychain (approx. 5cm on its longest side). 
+The image must show the designs ONLY, with ABSOLUTELY NO attached rings, chains, hooks, or holes. 
+The designs should look like high-quality, stylized collectible pieces, with vibrant colors and sharp details. 
+The background must be pure white (RGB 255, 255, 255). 
+The overall theme is: '{descripcion_coleccion}'. """
+        
+        # -------------------------------------------------------------------------
+        # LÓGICA DE REFERENCIA Y OPCIONES ADICIONALES
+        # -------------------------------------------------------------------------
+        
+        if nombre_personaje:
+            # Mantener triple comilla para la f-string para evitar el "unterminated f-string literal"
+            personajes_referencia = f"""The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable and faithful to the original character's design."""
+            
+            if busqueda_referencia:
+                personajes_referencia += " **IMPORTANT:** Before generating, you must perform a high-fidelity reference search for each specified character to ensure maximum visual fidelity, correct proportions, and canonical color palette. The output MUST reflect these authentic details."
+            
+            prompt_coleccion_base += personajes_referencia
+
+        # Lógica para Referencia de Imagen Externa
+        if estilo_seleccionado == "A partir de una imagen":
+            prompt_coleccion_base += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
+        
+        # Lógica para Nombre/Frase
+        if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
+            prompt_coleccion_base += f" The designs are based on the full name '{nombre_completo}'. "
+            if frase_integrada:
+                prompt_coleccion_base += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
+        
+        # Lógica de Opciones Adicionales (Colores, Iconos, Texto)
+        if icono:
+            prompt_coleccion_base += f" Incorporate the {icono} icon."
+        if texto_opcional:
+            prompt_coleccion_base += f" Include the text: '{texto_opcional}'."
+        if cantidad_colores != "Cualquiera":
+            prompt_coleccion_base += f" The designs must use exactly {cantidad_colores} colors."
+            if colores_seleccionados:
+                colores_str = ", ".join(colores_seleccionados)
+                prompt_coleccion_base += f" Suggested colors: {colores_str}."
+        elif colores_
