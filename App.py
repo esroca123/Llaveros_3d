@@ -203,15 +203,12 @@ if st.button("Generar Prompt de Colección", type="primary"):
             estilo_prompt += estilo_nombre_seleccionado.lower()
         elif estilo_seleccionado != "Free Style":
             # Para el resto de estilos, se añade un comando de limpieza
-            # Aquí la clave es asegurarnos de que no haya `{` o `}` sin balancear.
             # El .replace garantiza que cualquier llave literal se escape.
             estilo_prompt += estilo_seleccionado.lower().replace("{", "{{").replace("}", "}}") + ", **NO external contour lines or outer shadow**"
         else:
             estilo_prompt += "modern"
 
         # PROMPT DE COLECCIÓN BASE
-        # Se usaron triples comillas para el f-string para facilitar el manejo de comillas internas
-        # y evitar errores de terminación.
         prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. 
 Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. 
 **No outer border, no surrounding frame, no external shadow around the entire composition.** The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). 
@@ -228,7 +225,6 @@ The overall theme is: '{descripcion_coleccion}'. """
         # -------------------------------------------------------------------------
         
         if nombre_personaje:
-            # Mantener triple comilla para la f-string para evitar el "unterminated f-string literal"
             personajes_referencia = f"""The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable and faithful to the original character's design."""
             
             if busqueda_referencia:
@@ -256,4 +252,30 @@ The overall theme is: '{descripcion_coleccion}'. """
             if colores_seleccionados:
                 colores_str = ", ".join(colores_seleccionados)
                 prompt_coleccion_base += f" Suggested colors: {colores_str}."
-        elif colores_
+        # AHORA CORREGIDO: elif colores_seleccionados: --> elif colores_seleccionados:
+        elif colores_seleccionados: 
+            colores_str = ", ".join(colores_seleccionados)
+            prompt_coleccion_base += f" Suggested colors: {colores_str}."
+            
+        # Añadir detalles opcionales al final si existen
+        if descripcion_opcional:
+            prompt_coleccion_base += f" Additional details: {descripcion_opcional}."
+
+        st.divider()
+        st.subheader("✅ Tu prompt está listo:")
+        st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
+        st.code(str(prompt_coleccion_base), language="markdown")
+
+
+# --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
+st.divider()
+st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
+st.markdown("**RECUERDA:** Usa un diseño individual (cortado del Paso 1) para los siguientes prompts.")
+
+
+st.markdown("### 2. Prompt de Limpieza y Preparación (Paso 2)")
+st.markdown("Usa este prompt si tu imagen aún tiene una sombra o contorno no deseado alrededor de toda la figura.")
+st.code(prompt_limpieza_contorno, language="markdown")
+
+st.markdown("### 3. Prompts de Variantes de Producción (Paso 3)")
+st.markdown("Usa la imagen LIMPIA (Paso 2) para generar las variantes de fabricación y personaliz
