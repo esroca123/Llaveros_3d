@@ -48,7 +48,7 @@ with st.container():
     st.subheader("📝 Datos para Personalización (Base Vacía)")
     st.markdown("Estos datos se usan para la estética de la base, no para generar texto en la imagen. La base se generará lista para grabar un nombre.")
     
-    # CORRECCIÓN DE SyntaxError: invalid syntax en st.in -> AHORA st.text_input
+    # Mantenemos este campo solo para referencia, aunque el prompt ya no lo usa.
     st.text_input( 
         "Nombre/Texto de referencia (La base se genera VACÍA)",
         placeholder="Ej., 'Juan', 'Team A'. (Solo como referencia)."
@@ -209,20 +209,4 @@ if st.button("Generar Prompt de Colección", type="primary"):
             estilo_prompt += "modern"
 
         # PROMPT DE COLECCIÓN BASE
-        prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. 
-Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. 
-**No outer border, no surrounding frame, no external shadow around the entire composition.** The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). 
-Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume, preventing the final image from looking like a flat, digital print. 
-Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. 
-The design must be visually strong, clear, and perfectly sized for a collectible item or keychain (approx. 5cm on its longest side). 
-The image must show the designs ONLY, with ABSOLUTELY NO attached rings, chains, hooks, or holes. 
-The designs should look like high-quality, stylized collectible pieces, with vibrant colors and sharp details. 
-The background must be pure white (RGB 255, 255, 255). 
-The overall theme is: '{descripcion_coleccion}'. """
-        
-        # -------------------------------------------------------------------------
-        # LÓGICA DE REFERENCIA Y OPCIONES ADICIONALES
-        # -------------------------------------------------------------------------
-        
-        if nombre_personaje:
-            personajes_referencia = f"The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable
+        prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo
