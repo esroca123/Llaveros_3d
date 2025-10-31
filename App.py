@@ -53,9 +53,12 @@ with st.container():
         placeholder="Ej., 'Juan', 'Team A'. (Solo como referencia)."
     )
     
-    color_base_personalizacion = st.color_picker(
-        "Color de la base rectangular", 
-        "#4B77BE"
+    # ELIMINADO: color_base_personalizacion = st.color_picker( "Color de la base rectangular", "#4B77BE" )
+
+    # NUEVA CASILLA PARA EL ESTILO DE LA BASE
+    estilo_base_personalizacion = st.text_input(
+        "Estilo específico para la base (opcional)",
+        placeholder="Ej., 'base de hierba', 'base de nube', 'base minimalista gris'. Si se deja vacío, la IA intentará coincidir el estilo de la figura."
     )
     
     # Campos opcionales generales
@@ -124,14 +127,20 @@ prompt_limpieza_contorno = f"""Take the attached single design and digitally cle
 **Instead of a line, the border must be PERFECTLY SHARP and should transition DIRECTLY from the design's outermost color to the pure white background.** *If the design naturally has internal black lines, maintain those, but the ABSOLUTE OUTER EDGE must have NO black line or shadow.* Ensure the background is pure white (RGB 255, 255, 255). 
 The final figure must look like a sharp, clean cut-out. Do not add a keyring hole."""
 
-# PROMPT DE BASE DE PERSONALIZACIÓN (VACÍA, ALTURA REDUCIDA Y TEMÁTICA)
-prompt_base_personalizacion = f"""Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
-**Crucial:** The base must be colored **{color_base_personalizacion}** and **perfectly integrate the style and 3D relief/domed effect of the original design**. 
-The rectangular base should be **wider than the figure** (approx. 1.5x the width of the figure) and **significantly shorter in height** (approx. 0.15x to 0.1x the height of the figure), proportionally balanced so as not to overwhelm the design. 
-The base itself must be **stylized and themed to complement the collection concept: '{descripcion_coleccion}'**, for example, if the collection is about 'Pokemon', the base could have subtle Pokemon-related textures or shapes. 
-The **front face of the base must be left completely smooth and empty**, without any molded text, numbers, or details, acting as a clean, blank surface for later text engraving. 
+# PROMPT DE BASE DE PERSONALIZACIÓN (OPTIMIZADO Y SIN SELECCIÓN DE COLOR POR EL USUARIO)
+prompt_base_personalizacion_template = """Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
+**Crucial:** The figure must **NOT be modified or altered** in any way; simply place it on top of the base. 
+The base must be **beautiful, eye-catching, and its color(s) coherent and harmonious with the colors of the figure**. It should also have a **3D relief or subtle domed effect** to match the figure's style. 
+The rectangular base should be approximately **1.5 times the width of the figure** and **0.5 times the height of the figure**, maintaining a balanced proportion so as not to overwhelm the design. 
+The front face of the base must be left **completely smooth and empty**, without any molded text, numbers, or details, acting as a clean, blank surface for later text engraving. 
 The entire composition (figure plus base) must have a clean, sharp, **NO external contour line** perimeter, ready for die-cut. 
 Do not add a keyring hole."""
+
+# Lógica para aplicar el estilo de la base (mantiene la opción de input de estilo)
+if estilo_base_personalizacion:
+    prompt_base_personalizacion = prompt_base_personalizacion_template + f" The base must be in a '{estilo_base_personalizacion}' style."
+else:
+    prompt_base_personalizacion = prompt_base_personalizacion_template + " The base must perfectly adapt the style of the figure placed on top of it."
 
 # PROMPT DXF
 prompt_dxf = f"""Generate a black and white line art version of the **single design** from the attached image, optimized for DXF file conversion. 
@@ -162,14 +171,14 @@ The output must be a clean, binary image, ready for industrial color layering.""
 
 prompt_presentacion_llaveros_solos = f"""Create a high-quality, professional product shot for an e-commerce platform. 
 Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** The designs should be arranged in a visually interesting and appealing composition. 
-The background should be a decorative setting that complements the theme of the collection, like a **minimalist studio with soft lighting** or a **natural wood table with a subtle texture**. 
+The background should be a decorative setting that complements the theme of la colección, like a **minimalist studio with soft lighting** or a **natural wood table with a subtle texture**. 
 The final image should highlight the vibrant colors and detailed designs, making them look like premium collectible items."""
 
 prompt_presentacion_soporte_pared = f"""Create a high-quality, professional product shot for an e-commerce platform. 
 Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** The designs should be beautifully **mounted and naturally hanging** on the previously designed **wall-mounted stand**. 
 Ensure perfect integration, realistic lighting, and natural shadows. 
-The background should be a decorative setting that complements the theme of the collection. 
-The final image should highlight the unity of the collection and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."""
+The background should be a decorative setting that complements the theme of la colección. 
+The final image should highlight the unity of la colección and the innovative design of the stand, with all elements perfectly aligned and aesthetically appealing."""
 
 prompt_presentacion_soporte_pie = f"""Create a high-quality, professional product shot for an e-commerce platform. 
 Show the four decorative designs from the attached image, each with a realistic **metallic keyring and a chain attached.** The designs should be beautifully **mounted and naturally hanging** on the previously designed **free-standing stand**. 
@@ -203,7 +212,6 @@ if st.button("Generar Prompt de Colección", type="primary"):
             estilo_prompt += estilo_nombre_seleccionado.lower()
         elif estilo_seleccionado != "Free Style":
             # Para el resto de estilos, se añade un comando de limpieza
-            # Reestructurado para evitar unterminated string literal
             estilo_prompt += f"{estilo_seleccionado.lower().replace('{', '{{').replace('}', '}}')}, **NO external contour lines or outer shadow**"
         else:
             estilo_prompt += "modern"
@@ -212,97 +220,4 @@ if st.button("Generar Prompt de Colección", type="primary"):
         prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. 
 Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. 
 **No outer border, no surrounding frame, no external shadow around the entire composition.** The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). 
-Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume, preventing the final image from looking like a flat, digital print. 
-Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. 
-The design must be visually strong, clear, and perfectly sized for a collectible item or keychain (approx. 5cm on its longest side). 
-The image must show the designs ONLY, with ABSOLUTELY NO attached rings, chains, hooks, or holes. 
-The designs should look like high-quality, stylized collectible pieces, with vibrant colors and sharp details. 
-The background must be pure white (RGB 255, 255, 255). 
-The overall theme is: '{descripcion_coleccion}'. """
-        
-        # -------------------------------------------------------------------------
-        # LÓGICA DE REFERENCIA Y OPCIONES ADICIONALES
-        # -------------------------------------------------------------------------
-        
-        if nombre_personaje:
-            personajes_referencia = f"""The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable and faithful to the original character's design."""
-            
-            if busqueda_referencia:
-                personajes_referencia += " **IMPORTANT:** Before generating, you must perform a high-fidelity reference search for each specified character to ensure maximum visual fidelity, correct proportions, and canonical color palette. The output MUST reflect these authentic details."
-            
-            prompt_coleccion_base += personajes_referencia
-
-        # Lógica para Referencia de Imagen Externa
-        if estilo_seleccionado == "A partir de una imagen":
-            prompt_coleccion_base += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
-        
-        # Lógica para Nombre/Frase
-        if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
-            prompt_coleccion_base += f" The designs are based on the full name '{nombre_completo}'. "
-            if frase_integrada:
-                prompt_coleccion_base += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
-        
-        # Lógica de Opciones Adicionales (Colores, Iconos, Texto)
-        if icono:
-            prompt_coleccion_base += f" Incorporate the {icono} icon."
-        if texto_opcional:
-            prompt_coleccion_base += f" Include the text: '{texto_opcional}'."
-        if cantidad_colores != "Cualquiera":
-            prompt_coleccion_base += f" The designs must use exactly {cantidad_colores} colors."
-            if colores_seleccionados:
-                colores_str = ", ".join(colores_seleccionados)
-                prompt_coleccion_base += f" Suggested colors: {colores_str}."
-        elif colores_seleccionados: 
-            colores_str = ", ".join(colores_seleccionados)
-            prompt_coleccion_base += f" Suggested colors: {colores_str}."
-            
-        # Añadir detalles opcionales al final si existen
-        if descripcion_opcional:
-            prompt_coleccion_base += f" Additional details: {descripcion_opcional}."
-
-        st.divider()
-        st.subheader("✅ Tu prompt está listo:")
-        st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
-        st.code(str(prompt_coleccion_base), language="markdown")
-
-
-# --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
-st.divider()
-st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
-st.markdown("Usa la imagen LIMPIA (cortada individualmente del Paso 1) para los siguientes prompts.")
-
-
-st.markdown("### 2. Prompt de Limpieza y Preparación (Paso 2)")
-st.markdown("Usa este prompt si tu imagen aún tiene una sombra o contorno no deseado alrededor de toda la figura.")
-st.code(prompt_limpieza_contorno, language="markdown")
-
-st.markdown("### 3. Prompts de Variantes de Producción (Paso 3)")
-st.markdown("Usa la imagen LIMPIA (Paso 2) para generar las variantes de fabricación y personalización.")
-
-st.markdown("#### 3.a. Prompt para la Variante de Base Personalizada (¡BASE VACÍA, TEMÁTICA Y BAJA!)")
-st.info(f"La base rectangular se generará VACÍA con el color **{color_base_personalizacion}** y el tema **'{descripcion_coleccion}'**, lista para agregar texto en el software de diseño.")
-st.code(prompt_base_personalizacion, language="markdown")
-
-
-st.markdown("#### 3.b. Prompt para versión DXF (Contorno Lineal)")
-st.code(prompt_dxf, language="markdown")
-st.markdown("#### 3.c. Prompt para versión Silueta (Máscara Monolítica)")
-st.code(prompt_silhouette, language="markdown")
-st.markdown("#### 3.d. Prompt para versión Separación de Colores (Relleno Binario)")
-st.code(prompt_separacion_colores, language="markdown")
-
-st.markdown("### 4. Prompts para el Soporte (Paso 4)")
-st.markdown("Utiliza la imagen generada en el paso 1 (o la versión Limpia) para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
-st.markdown("#### Colgadero de Pared")
-st.code(prompt_soporte_pared, language="markdown")
-st.markdown("#### Soporte de Pie")
-st.code(prompt_soporte_pie, language="markdown")
-
-st.markdown("### 5. Prompts para la Presentación Final (Paso 5)")
-st.markdown("Utiliza las imágenes de los diseños y el soporte para crear renders de alta calidad.")
-st.markdown("#### Prompt para Presentación de Llaveros Solos")
-st.code(prompt_presentacion_llaveros_solos, language="markdown")
-st.markdown("#### Prompt para Presentación con Soporte de Pared")
-st.code(prompt_presentacion_soporte_pared, language="markdown")
-st.markdown("#### Prompt para Presentación con Soporte de Pie")
-st.code(prompt_presentacion_soporte_pie, language="markdown")
+Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume
