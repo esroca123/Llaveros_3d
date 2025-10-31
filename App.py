@@ -48,7 +48,7 @@ with st.container():
     st.subheader("📝 Datos para Personalización (Base Vacía)")
     st.markdown("Estos datos se usan para la estética de la base, no para generar texto en la imagen. La base se generará lista para grabar un nombre.")
     
-    # Mantenemos este campo solo para referencia, aunque el prompt ya no lo usa.
+    # CORRECCIÓN DE SyntaxError: invalid syntax en st.in -> AHORA st.text_input
     st.text_input( 
         "Nombre/Texto de referencia (La base se genera VACÍA)",
         placeholder="Ej., 'Juan', 'Team A'. (Solo como referencia)."
@@ -125,7 +125,7 @@ prompt_limpieza_contorno = f"""Take the attached single design and digitally cle
 **Instead of a line, the border must be PERFECTLY SHARP and should transition DIRECTLY from the design's outermost color to the pure white background.** *If the design naturally has internal black lines, maintain those, but the ABSOLUTE OUTER EDGE must have NO black line or shadow.* Ensure the background is pure white (RGB 255, 255, 255). 
 The final figure must look like a sharp, clean cut-out. Do not add a keyring hole."""
 
-# NUEVO PROMPT DE BASE DE PERSONALIZACIÓN (VACÍA, ALTURA REDUCIDA Y TEMÁTICA)
+# PROMPT DE BASE DE PERSONALIZACIÓN (VACÍA, ALTURA REDUCIDA Y TEMÁTICA)
 prompt_base_personalizacion = f"""Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
 **Crucial:** The base must be colored **{color_base_personalizacion}** and **perfectly integrate the style and 3D relief/domed effect of the original design**. 
 The rectangular base should be **wider than the figure** (approx. 1.5x the width of the figure) and **significantly shorter in height** (approx. 0.3x to 0.5x the height of the figure), proportionally balanced so as not to overwhelm the design. 
@@ -225,59 +225,4 @@ The overall theme is: '{descripcion_coleccion}'. """
         # -------------------------------------------------------------------------
         
         if nombre_personaje:
-            personajes_referencia = f"The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable and faithful to the original character's design."
-            
-            if busqueda_referencia:
-                personajes_referencia += " **IMPORTANT:** Before generating, you must perform a high-fidelity reference search for each specified character to ensure maximum visual fidelity, correct proportions, and canonical color palette. The output MUST reflect these authentic details."
-            
-            prompt_coleccion_base += personajes_referencia
-
-        # Lógica para Referencia de Imagen Externa
-        if estilo_seleccionado == "A partir de una imagen":
-            prompt_coleccion_base += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
-        
-        # Lógica para Nombre/Frase
-        if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
-            prompt_coleccion_base += f" The designs are based on the full name '{nombre_completo}'. "
-            if frase_integrada:
-                prompt_coleccion_base += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
-        
-        # Lógica de Opciones Adicionales (Colores, Iconos, Texto)
-        if icono:
-            prompt_coleccion_base += f" Incorporate the {icono} icon."
-        if texto_opcional:
-            prompt_coleccion_base += f" Include the text: '{texto_opcional}'."
-        if cantidad_colores != "Cualquiera":
-            prompt_coleccion_base += f" The designs must use exactly {cantidad_colores} colors."
-            if colores_seleccionados:
-                colores_str = ", ".join(colores_seleccionados)
-                prompt_coleccion_base += f" Suggested colors: {colores_str}."
-        elif colores_seleccionados:
-            colores_str = ", ".join(colores_seleccionados)
-            prompt_coleccion_base += f" Suggested colors: {colores_str}."
-            
-        # Añadir detalles opcionales al final si existen
-        if descripcion_opcional:
-            prompt_coleccion_base += f" Additional details: {descripcion_opcional}."
-
-        st.divider()
-        st.subheader("✅ Tu prompt está listo:")
-        st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
-        st.code(str(prompt_coleccion_base), language="markdown")
-
-
-# --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
-st.divider()
-st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
-st.markdown("**RECUERDA:** Usa un diseño individual (cortado del Paso 1) para los siguientes prompts.")
-
-
-st.markdown("### 2. Prompt de Limpieza y Preparación (Paso 2)")
-st.markdown("Usa este prompt si tu imagen aún tiene una sombra o contorno no deseado alrededor de toda la figura.")
-st.code(prompt_limpieza_contorno, language="markdown")
-
-st.markdown("### 3. Prompts de Variantes de Producción (Paso 3)")
-st.markdown("Usa la imagen LIMPIA (Paso 2) para generar las variantes de fabricación y personalización.")
-
-st.markdown("#### 3.a. Prompt para la Variante de Base Personalizada (¡BASE VACÍA, TEMÁTICA Y BAJA!)")
-st.in
+            personajes_referencia = f"The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable
