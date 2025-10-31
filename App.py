@@ -126,7 +126,6 @@ prompt_limpieza_contorno = f"""Take the attached single design and digitally cle
 The final figure must look like a sharp, clean cut-out. Do not add a keyring hole."""
 
 # PROMPT DE BASE DE PERSONALIZACIÓN (OPTIMIZADO Y SIN SELECCIÓN DE COLOR POR EL USUARIO)
-# NOTA: Asegurarse de que no haya comillas dobles o triples sin escapar dentro de esta f-string si son parte del texto.
 prompt_base_personalizacion_template = """Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
 **Crucial:** The figure must **NOT be modified or altered** in any way; simply place it on top of the base. 
 The base must be **beautiful, eye-catching, and its color(s) coherent and harmonious with the colors of the figure**. It should also have a **3D relief or subtle domed effect** to match the figure's style. 
@@ -187,6 +186,137 @@ The final image should highlight the unity of la colección and the innovative d
 
 
 # --- Botón para generar el prompt dinámico (solo la colección) ---
-if st.button("Generar Prompt de Colección", type="primary"):
-    if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
-        st.error("Por favor, especifica la palabra para la inicial.")
+# He añadido un try-except general para capturar cualquier error inesperado dentro del botón.
+# Esto no soluciona la causa raíz, pero puede ayudar a identificar si hay un error en tiempo de ejecución.
+try:
+    if st.button("Generar Prompt de Colección", type="primary"):
+        # Verificaciones moved dentro del bloque para asegurar que las variables estén definidas
+        if estilo_seleccionado == "Initial of a word" and not inicial_palabra:
+            st.error("Por favor, especifica la palabra para la inicial.")
+        elif estilo_seleccionado == "Full Name/Phrase" and not nombre_completo:
+            st.error("Por favor, especifica el nombre completo.")
+        elif not descripcion_coleccion: # Se añade validación para que la descripción de la colección sea obligatoria
+            st.error("Por favor, describe la colección para que la base se integre temáticamente.")
+        else:
+            # Generar el estilo base para el prompt
+            estilo_prompt = ""
+            
+            # LÓGICA DE CONTORNO CERO PARA EL ESTILO CHIBI
+            if estilo_seleccionado == "Iconic Chibi Cartoon (Contorno Cero)":
+                estilo_prompt = (
+                    f"Iconic Chibi Cartoon style, **FLAT VECTOR ART**, **NO external contour lines, NO perimeter shadow, NO thick black outlines on the outer edge**. Use solid, vibrant colors. The design must be a **clean, sharp silhouette** of the figure, ready for die-cut, with shallow 3D relief or subtle domed effect, friendly expressions, simple poses. The outer border must be a **razor-clean cut** to the white background."
+                )
+            elif estilo_seleccionado == "A partir de una imagen":
+                estilo_prompt += estilo_para_imagen_seleccionado.lower()
+            elif estilo_seleccionado == "Initial of a word" and inicial_palabra:
+                # Asegurarse que estilo_inicial_seleccionado no sea None antes de .lower()
+                estilo_prompt += estilo_inicial_seleccionado.lower() if estilo_inicial_seleccionado else ""
+            elif estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
+                # Asegurarse que estilo_nombre_seleccionado no sea None antes de .lower()
+                estilo_prompt += estilo_nombre_seleccionado.lower() if estilo_nombre_seleccionado else ""
+            elif estilo_seleccionado != "Free Style":
+                # Para el resto de estilos, se añade un comando de limpieza
+                estilo_prompt += f"{estilo_seleccionado.lower().replace('{', '{{').replace('}', '}}')}, **NO external contour lines or outer shadow**"
+            else:
+                estilo_prompt += "modern"
+
+            # PROMPT DE COLECCIÓN BASE
+            prompt_coleccion_base = f"""Generate four highly detailed, vibrant, and full-color decorative art designs in a **{estilo_prompt} style**. 
+Crucial: **Strictly adhere to this style**, presented together in a 2x2 grid. 
+**No outer border, no surrounding frame, no external shadow around the entire composition.** The designs must have a sense of physical material and **shallow 3D relief or subtle domed effect** when viewed from the front (frontal isometric view). 
+Ensure **soft, realistic shadows and highlights** that create a sense of depth and volume, preventing the final image from looking like a flat, digital print. 
+Each design is a unique, stylized figure or symbol, where the entire piece itself is the main body of the art. 
+The design must be visually strong, clear, and perfectly sized for a collectible item or keychain (approx. 5cm on its longest side). 
+The image must show the designs ONLY, with ABSOLUTELY NO attached rings, chains, hooks, or holes. 
+The designs should look like high-quality, stylized collectible pieces, with vibrant colors and sharp details. 
+The background must be pure white (RGB 255, 255, 255). 
+The overall theme is: '{descripcion_coleccion}'."""
+            
+            # -------------------------------------------------------------------------
+            # LÓGICA DE REFERENCIA Y OPCIONES ADICIONALES
+            # -------------------------------------------------------------------------
+            
+            if nombre_personaje:
+                personajes_referencia = f"""The designs represent different poses or variations of the following characters/entities: '{nombre_personaje}'. Ensure the figures are easily recognizable and faithful to the original character's design."""
+                
+                if busqueda_referencia:
+                    personajes_referencia += " **IMPORTANT:** Before generating, you must perform a high-fidelity reference search for each specified character to ensure maximum visual fidelity, correct proportions, and canonical color palette. The output MUST reflect these authentic details."
+                
+                prompt_coleccion_base += personajes_referencia
+
+            # Lógica para Referencia de Imagen Externa
+            if estilo_seleccionado == "A partir de una imagen":
+                prompt_coleccion_base += f" The designs are a stylized interpretation of the **attached reference image**, applying the chosen style. "
+            
+            # Lógica para Nombre/Frase
+            if estilo_seleccionado == "Full Name/Phrase" and nombre_completo:
+                prompt_coleccion_base += f" The designs are based on the full name '{nombre_completo}'. "
+                if frase_integrada:
+                    prompt_coleccion_base += f"The phrase '{frase_integrada}' is beautifully and creatively integrated into the design."
+            
+            # Lógica de Opciones Adicionales (Colores, Iconos, Texto)
+            if icono:
+                prompt_coleccion_base += f" Incorporate the {icono} icon."
+            if texto_opcional:
+                prompt_coleccion_base += f" Include the text: '{texto_opcional}'."
+            if cantidad_colores != "Cualquiera":
+                prompt_coleccion_base += f" The designs must use exactly {cantidad_colores} colors."
+                if colores_seleccionados:
+                    colores_str = ", ".join(colores_seleccionados)
+                    prompt_coleccion_base += f" Suggested colors: {colores_str}."
+            elif colores_seleccionados: 
+                colores_str = ", ".join(colores_seleccionados)
+                prompt_coleccion_base += f" Suggested colors: {colores_str}."
+                
+            # Añadir detalles opcionales al final si existen
+            if descripcion_opcional:
+                prompt_coleccion_base += f" Additional details: {descripcion_opcional}."
+
+            st.divider()
+            st.subheader("✅ Tu prompt está listo:")
+            st.markdown("### 1. Prompt para la creación de tu colección (Paso 1)")
+            st.code(str(prompt_coleccion_base), language="markdown")
+except Exception as e:
+    st.error(f"Se ha producido un error al generar el prompt. Por favor, revisa tus entradas. Error: {e}")
+
+
+# --- Aquí se muestran todos los prompts fijos (siempre visibles) ---
+st.divider()
+st.subheader("💡 Prompts de Flujo de Trabajo (Para usar después del Paso 1)")
+st.markdown("Usa la imagen LIMPIA (cortada individualmente del Paso 1) para los siguientes prompts.")
+
+
+st.markdown("### 2. Prompt de Limpieza y Preparación (Paso 2)")
+st.markdown("Usa este prompt si tu imagen aún tiene una sombra o contorno no deseado alrededor de toda la figura.")
+st.code(prompt_limpieza_contorno, language="markdown")
+
+st.markdown("### 3. Prompts de Variantes de Producción (Paso 3)")
+st.markdown("Usa la imagen LIMPIA (Paso 2) para generar las variantes de fabricación y personalización.")
+
+st.markdown("#### 3.a. Prompt para la Variante de Base Personalizada (¡BASE VACÍA, TEMÁTICA Y BAJA!)")
+st.info(f"La base rectangular se generará VACÍA. Si especificaste un estilo de base, se aplicará; de lo contrario, la IA intentará coincidir el estilo de la figura. El color será coherente y armonioso con la figura. Lista para agregar texto en el software de diseño.")
+st.code(prompt_base_personalizacion, language="markdown")
+
+
+st.markdown("#### 3.b. Prompt para versión DXF (Contorno Lineal)")
+st.code(prompt_dxf, language="markdown")
+st.markdown("#### 3.c. Prompt para versión Silueta (Máscara Monolítica)")
+st.code(prompt_silhouette, language="markdown")
+st.markdown("#### 3.d. Prompt para versión Separación de Colores (Relleno Binario)")
+st.code(prompt_separacion_colores, language="markdown")
+
+st.markdown("### 4. Prompts para el Soporte (Paso 4)")
+st.markdown("Utiliza la imagen generada en el paso 1 (o la versión Limpia) para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
+st.markdown("#### Colgadero de Pared")
+st.code(prompt_soporte_pared, language="markdown")
+st.markdown("#### Soporte de Pie")
+st.code(prompt_soporte_pie, language="markdown")
+
+st.markdown("### 5. Prompts para la Presentación Final (Paso 5)")
+st.markdown("Utiliza las imágenes de los diseños y el soporte para crear renders de alta calidad.")
+st.markdown("#### Prompt para Presentación de Llaveros Solos")
+st.code(prompt_presentacion_llaveros_solos, language="markdown")
+st.markdown("#### Prompt para Presentación con Soporte de Pared")
+st.code(prompt_presentacion_soporte_pared, language="markdown")
+st.markdown("#### Prompt para Presentación con Soporte de Pie")
+st.code(prompt_presentacion_soporte_pie, language="markdown")
