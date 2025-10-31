@@ -125,14 +125,13 @@ prompt_limpieza_contorno = f"""Take the attached single design and digitally cle
 **Instead of a line, the border must be PERFECTLY SHARP and should transition DIRECTLY from the design's outermost color to the pure white background.** *If the design naturally has internal black lines, maintain those, but the ABSOLUTE OUTER EDGE must have NO black line or shadow.* Ensure the background is pure white (RGB 255, 255, 255). 
 The final figure must look like a sharp, clean cut-out. Do not add a keyring hole."""
 
-# PROMPT DE BASE DE PERSONALIZACIÓN (OPTIMIZADO Y SIN SELECCIÓN DE COLOR POR EL USUARIO)
-prompt_base_personalizacion_template = """Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
-**Crucial:** The figure must **NOT be modified or altered** in any way; simply place it on top of the base. 
-The base must be **beautiful, eye-catching, and its color(s) coherent and harmonious with the colors of the figure**. It should also have a **3D relief or subtle domed effect** to match the figure's style. 
-The rectangular base should be approximately **1.5 times the width of the figure** and **0.5 times the height of the figure**, maintaining a balanced proportion so as not to overwhelm the design. 
-The front face of the base must be left **completely smooth and empty**, without any molded text, numbers, or details, acting as a clean, blank surface for later text engraving. 
-The entire composition (figure plus base) must have a clean, sharp, **NO external contour line** perimeter, ready for die-cut. 
-Do not add a keyring hole."""
+# PROMPT DE BASE DE PERSONALIZACIÓN (OPTIMIZADO Y MÁS CORTO)
+prompt_base_personalizacion_template = """Based on the attached **single design (cleaned)**, generate a new image with the figure standing on a **solid, horizontal rectangular base**. 
+**Crucial:** Do **NOT modify the figure**; simply place it. 
+The base color/style should be **beautiful, eye-catching, and harmonious with the figure**. It can include a **design, pattern, or artistic figure** (coherent with the figure's theme) on its surface, but the **entire front face MUST remain perfectly smooth and empty for later text engraving**. 
+The base should be approximately **1.5x the figure's width** and **0.3x its height**. 
+The composition (figure + base) must have a clean, sharp, **NO external contour line** perimeter, ready for die-cut. 
+No keyring hole."""
 
 # Lógica para aplicar el estilo de la base (mantiene la opción de input de estilo)
 if estilo_base_personalizacion:
@@ -140,14 +139,14 @@ if estilo_base_personalizacion:
 else:
     prompt_base_personalizacion = prompt_base_personalizacion_template + " The base must perfectly adapt the style of the figure placed on top of it."
 
-# PROMPT DXF
+# PROMPT DXF (sin cambios, incluido para contexto)
 prompt_dxf = f"""Generate a black and white line art version of the **single design** from the attached image, optimized for DXF file conversion. 
 **Maintain the exact size and aspect ratio of the attached image.** The design must have only thin, continuous outlines, no shadows, and a clean vector style. 
 Crucial: Do not include any hole or attachment point in the design. 
 Important: Base the output only on the provided image, do not add new elements or alter the core design. 
 The background must be pure white (RGB 255, 255, 255)."""
 
-# PROMPT SILUETA
+# PROMPT SILUETA (sin cambios, incluido para contexto)
 prompt_silhouette = f"""Generate a complete, solid, and technical black silhouette of the **single design** from the attached image, optimized for DXF file conversion.
 **Crucial:** The output must be a single, monolithic, **100% filled black shape** that represents **ONLY the exact outermost edge (perimeter) of the design**. 
 **It must ignore and completely fill all internal lines, white spaces, or design details with solid black**, acting as a continuous mask. 
@@ -155,8 +154,7 @@ prompt_silhouette = f"""Generate a complete, solid, and technical black silhouet
 Crucial: Do not include any hole or attachment point in the design. 
 The background must be pure white (RGB 255, 255, 255)."""
 
-
-# PROMPT DE SEPARACIÓN DE COLORES
+# PROMPT DE SEPARACIÓN DE COLORES (sin cambios, incluido para contexto)
 prompt_separacion_colores = f"""Based on the attached **black and white line art image of the single design**, generate a **100% binary inverted, technical Fill-In version for industrial color separation**. 
 **Maintain the exact size and aspect ratio of the attached image.** No gradients, no shadows, pure black and pure white only. 
 The transformation must strictly adhere to a complete inversion, ensuring: 
@@ -165,6 +163,7 @@ The transformation must strictly adhere to a complete inversion, ensuring:
 3. **Outer Background:** The outer background must remain **pure white** (RGB 255, 255, 255). 
 Crucial: Do not include any hole or attachment point in the design. 
 The output must be a clean, binary image, ready for industrial color layering."""
+
 
 
 prompt_presentacion_llaveros_solos = f"""Create a high-quality, professional product shot for an e-commerce platform. 
