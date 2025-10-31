@@ -129,7 +129,7 @@ The final figure must look like a sharp, clean cut-out. Do not add a keyring hol
 prompt_base_personalizacion_template = """Based on the attached **single design (cleaned)**, generate a new image with the figure standing on a **solid, horizontal rectangular base**. 
 **Crucial:** Do **NOT modify the figure**; simply place it. 
 The base color/style should be **beautiful, eye-catching, and harmonious with the figure**. It can include a **design, pattern, or artistic figure** (coherent with the figure's theme) on its surface, but the **entire front face MUST remain perfectly smooth and empty for later text engraving**. 
-The base should be approximately **1.5x the figure's width** and **0.3x its height**. 
+The base should be approximately **1.5x the figure's width** and **0.2x its height**. 
 The composition (figure + base) must have a clean, sharp, **NO external contour line** perimeter, ready for die-cut. 
 No keyring hole."""
 
