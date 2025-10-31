@@ -46,7 +46,7 @@ with st.container():
     # Campos de personalización de la BASE RECTANGULAR
     st.divider()
     st.subheader("📝 Datos para Personalización (Base Vacía)")
-    st.markdown("Estos datos se usan para la estética de la base, no para generar texto en la imagen.")
+    st.markdown("Estos datos se usan para la estética de la base, no para generar texto en la imagen. La base se generará lista para grabar un nombre.")
     
     # Mantenemos este campo solo para referencia, aunque el prompt ya no lo usa.
     st.text_input( 
@@ -125,10 +125,11 @@ prompt_limpieza_contorno = f"""Take the attached single design and digitally cle
 **Instead of a line, the border must be PERFECTLY SHARP and should transition DIRECTLY from the design's outermost color to the pure white background.** *If the design naturally has internal black lines, maintain those, but the ABSOLUTE OUTER EDGE must have NO black line or shadow.* Ensure the background is pure white (RGB 255, 255, 255). 
 The final figure must look like a sharp, clean cut-out. Do not add a keyring hole."""
 
-# NUEVO PROMPT DE BASE DE PERSONALIZACIÓN (VACÍA)
+# NUEVO PROMPT DE BASE DE PERSONALIZACIÓN (VACÍA, ALTURA REDUCIDA Y TEMÁTICA)
 prompt_base_personalizacion = f"""Based on the attached **single design (already cleaned)**, generate a new image where the figure is standing on a **solid, horizontal rectangular base**. 
 **Crucial:** The base must be colored **{color_base_personalizacion}** and **perfectly integrate the style and 3D relief/domed effect of the original design**. 
-The rectangular base should be **wider than the figure** (approx. 1.5x the width of the figure) but proportionally balanced so as not to overwhelm the design. 
+The rectangular base should be **wider than the figure** (approx. 1.5x the width of the figure) and **significantly shorter in height** (approx. 0.3x to 0.5x the height of the figure), proportionally balanced so as not to overwhelm the design. 
+The base itself must be **stylized and themed to complement the collection concept: '{descripcion_coleccion}'**, for example, if the collection is about 'Pokemon', the base could have subtle Pokemon-related textures or shapes. 
 The **front face of the base must be left completely smooth and empty**, without any molded text, numbers, or details, acting as a clean, blank surface for later text engraving. 
 The entire composition (figure plus base) must have a clean, sharp, **NO external contour line** perimeter, ready for die-cut. 
 Do not add a keyring hole."""
@@ -141,7 +142,7 @@ Important: Base the output only on the provided image, do not add new elements o
 The background must be pure white (RGB 255, 255, 255)."""
 
 # PROMPT SILUETA
-prompt_silhouette = f"""Generate a complete, solid, and technical black silhouette of the **single design** from the attached image. 
+prompt_silhouette = f"""Generate a complete, solid, and technical black silhouette of the **single design** from the attached image, optimized for DXF file conversion.
 **Crucial:** The output must be a single, monolithic, **100% filled black shape** that represents **ONLY the exact outermost edge (perimeter) of the design**. 
 **It must ignore and completely fill all internal lines, white spaces, or design details with solid black**, acting as a continuous mask. 
 **Maintain the exact size and aspect ratio of the attached image.** The design must have absolutely no internal white spaces, lines, shadows, or gradients. 
@@ -184,6 +185,8 @@ if st.button("Generar Prompt de Colección", type="primary"):
         st.error("Por favor, especifica la palabra para la inicial.")
     elif estilo_seleccionado == "Full Name/Phrase" and not nombre_completo:
         st.error("Por favor, especifica el nombre completo.")
+    elif not descripcion_coleccion: # Se añade validación para que la descripción de la colección sea obligatoria
+        st.error("Por favor, describe la colección para que la base se integre temáticamente.")
     else:
         # Generar el estilo base para el prompt
         estilo_prompt = ""
@@ -276,30 +279,5 @@ st.code(prompt_limpieza_contorno, language="markdown")
 st.markdown("### 3. Prompts de Variantes de Producción (Paso 3)")
 st.markdown("Usa la imagen LIMPIA (Paso 2) para generar las variantes de fabricación y personalización.")
 
-st.markdown("#### 3.a. Prompt para la Variante de Base Personalizada (¡BASE VACÍA!)")
-st.info(f"La base rectangular se generará VACÍA con el color **{color_base_personalizacion}**, lista para agregar texto en el software de diseño.")
-st.code(prompt_base_personalizacion, language="markdown")
-
-
-st.markdown("#### 3.b. Prompt para versión DXF (Contorno Lineal)")
-st.code(prompt_dxf, language="markdown")
-st.markdown("#### 3.c. Prompt para versión Silueta (Máscara Monolítica)")
-st.code(prompt_silhouette, language="markdown")
-st.markdown("#### 3.d. Prompt para versión Separación de Colores (Relleno Binario)")
-st.code(prompt_separacion_colores, language="markdown")
-
-st.markdown("### 4. Prompts para el Soporte (Paso 4)")
-st.markdown("Utiliza la imagen generada en el paso 1 (o la versión Limpia) para crear un soporte para tus diseños. Elige una de las siguientes opciones:")
-st.markdown("#### Colgadero de Pared")
-st.code(prompt_soporte_pared, language="markdown")
-st.markdown("#### Soporte de Pie")
-st.code(prompt_soporte_pie, language="markdown")
-
-st.markdown("### 5. Prompts para la Presentación Final (Paso 5)")
-st.markdown("Utiliza las imágenes de los diseños y el soporte para crear renders de alta calidad.")
-st.markdown("#### Prompt para Presentación de Llaveros Solos")
-st.code(prompt_presentacion_llaveros_solos, language="markdown")
-st.markdown("#### Prompt para Presentación con Soporte de Pared")
-st.code(prompt_presentacion_soporte_pared, language="markdown")
-st.markdown("#### Prompt para Presentación con Soporte de Pie")
-st.code(prompt_presentacion_soporte_pie, language="markdown")
+st.markdown("#### 3.a. Prompt para la Variante de Base Personalizada (¡BASE VACÍA, TEMÁTICA Y BAJA!)")
+st.in
