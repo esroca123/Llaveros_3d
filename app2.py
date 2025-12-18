@@ -23,23 +23,24 @@ with st.container():
         ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_estilos
     )
 
-    # Campos de descripción
-    descripcion_coleccion = st.text_area(
-        "Descripción de la colección",
-        placeholder="Describe el tema o concepto (ej., 'cuatro guerreros espaciales')."
-    )
-
-    # Lógica para la opción "A partir de una imagen" (NUEVA SUB-OPCIÓN)
+    # Lógica para la opción "A partir de una imagen" (SUB-OPCIONES)
     estilo_para_imagen_seleccionado = None
     enfoque_referencia = None
     if estilo_seleccionado == "A partir de una imagen":
-        st.info("💡 Sube la imagen de referencia directamente a tu IA generadora.")
+        st.info("💡 Sube la imagen de referencia a tu IA generadora. La descripción ahora es opcional.")
         enfoque_referencia = st.radio(
             "Enfoque de la referencia:",
             ["Solo personajes de la imagen", "Imagen completa (composición y fondo)"],
             horizontal=True
         )
         estilo_para_imagen_seleccionado = st.selectbox("Estilo para aplicar a la imagen:", todos_los_estilos)
+
+    # Campos de descripción (Ahora con label dinámico)
+    label_descripcion = "Descripción de la colección (Opcional)" if estilo_seleccionado == "A partir de una imagen" else "Descripción de la colección (Obligatorio)"
+    descripcion_coleccion = st.text_area(
+        label_descripcion,
+        placeholder="Describe el tema o concepto (ej., 'guerreros estilo Dragon Ball')."
+    )
 
     nombre_personaje = st.text_input(
         "Nombres de personajes/referencias (opcional)",
@@ -67,14 +68,14 @@ with st.container():
     # Personalización de la Base
     st.divider()
     st.subheader("📝 Personalización de la Base")
-    estilo_base_personalizacion = st.text_input("Estilo específico para la base (opcional)", placeholder="Ej. base de lava")
+    estilo_base_personalizacion = st.text_input("Estilo específico para la base (opcional)", placeholder="Ej. base de nube")
 
     # Colores e iconos
     cantidad_colores = st.selectbox("Cantidad de colores", ["Cualquiera"] + list(range(1, 5)))
     colores_opciones = ["red", "blue", "green", "yellow", "black", "white", "purple", "pink", "orange"]
     colores_seleccionados = st.multiselect("Colores sugeridos", colores_opciones, max_selections=4)
     icono = st.text_input("Icono o símbolo")
-    descripcion_opcional = st.text_area("Detalles adicionales (poses, expresiones)")
+    descripcion_opcional = st.text_area("Requerimientos especiales / Detalles adicionales")
 
 # --- PROMPTS DE SOPORTE Y POST-PROCESADO ---
 prompt_limpieza_contorno = "Take the design and clean it. REMOVE all outer shadows and outlines. Perimeter must transition directly to white background. Keep internal black lines."
@@ -91,8 +92,9 @@ prompt_silhouette = "Generate a 100% solid black silhouette of the design's oute
 # --- BOTÓN DE GENERACIÓN ---
 try:
     if st.button("Generar Prompt de Colección", type="primary"):
-        if not descripcion_coleccion:
-            st.error("Por favor, describe la colección.")
+        # Validación condicional: Obligatorio solo si NO es "A partir de una imagen"
+        if not descripcion_coleccion and estilo_seleccionado != "A partir de una imagen":
+            st.error("Por favor, describe la colección para poder generar el diseño.")
         else:
             # Definir estilo_prompt
             if estilo_seleccionado == "Iconic Chibi Cartoon (Contorno Cero)":
@@ -106,25 +108,30 @@ try:
             else:
                 estilo_prompt = estilo_seleccionado.lower()
 
-            # CONSTRUCCIÓN DEL PROMPT BASE (Optimizado y Directo)
+            # CONSTRUCCIÓN DEL PROMPT BASE
             prompt_coleccion_base = f"""Generate 4 vibrant designs in **{estilo_prompt} style**, 2x2 grid.
 **CRITICAL STYLE:** Use **SOLID FLAT COLORS** only. **NO gradients, NO soft shading, NO color fading**.
 **VOLUME:** Define all muscles, depth, and details exclusively with **sharp, crisp black internal lines**.
-**ORIGINALITY:** Unique creations inspired by the theme. **NO direct replication of copyrighted characters or logos.**
+**ORIGINALITY:** Unique creations. **NO direct replication of copyrighted characters or logos.**
 **CLEANLINESS:** No outer borders, no surrounding frames, no external shadows. Pure white background (RGB 255, 255, 255).
-**FORMAT:** Frontal view, no rings or holes. High-quality collectible look.
-**THEME:** '{descripcion_coleccion}'."""
+**FORMAT:** Frontal view, no rings or holes. High-quality collectible look."""
 
             # Inyección de Referencia de Imagen
             if estilo_seleccionado == "A partir de una imagen":
                 if enfoque_referencia == "Solo personajes de la imagen":
-                    prompt_coleccion_base += " Extract ONLY characters from reference, ignore its background."
+                    prompt_coleccion_base += " **REF:** Extract ONLY characters from reference, ignore background."
                 else:
-                    prompt_coleccion_base += " Replicate the full composition and atmosphere of the reference."
+                    prompt_coleccion_base += " **REF:** Replicate full composition and atmosphere from reference."
+            
+            # Inyección de Tema/Descripción (Solo si se proporcionó)
+            if descripcion_coleccion:
+                prompt_coleccion_base += f" **THEME:** '{descripcion_coleccion}'."
+            elif estilo_seleccionado == "A partir de una imagen":
+                prompt_coleccion_base += " **THEME:** Based strictly on the visual content of the attached reference."
 
             # Inyección de Personajes/Nombres
             if nombre_personaje:
-                prompt_coleccion_base += f" Designs based on: {nombre_personaje}."
+                prompt_coleccion_base += f" **CHARACTERS:** {nombre_personaje}."
                 if busqueda_referencia:
                     prompt_coleccion_base += " Search high-fidelity references for canonical details."
 
@@ -132,7 +139,7 @@ try:
             if icono: prompt_coleccion_base += f" Include {icono} symbol."
             if cantidad_colores != "Cualquiera": prompt_coleccion_base += f" Use max {cantidad_colores} colors."
             if colores_seleccionados: prompt_coleccion_base += f" Colors: {', '.join(colores_seleccionados)}."
-            if descripcion_opcional: prompt_coleccion_base += f" Extra details: {descripcion_opcional}."
+            if descripcion_opcional: prompt_coleccion_base += f" Special requirements: {descripcion_opcional}."
 
             st.divider()
             st.subheader("✅ Prompt de Colección Generado:")
