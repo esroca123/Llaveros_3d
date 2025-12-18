@@ -27,7 +27,7 @@ with st.container():
     estilo_para_imagen_seleccionado = None
     enfoque_referencia = None
     if estilo_seleccionado == "A partir de una imagen":
-        st.info("💡 Sube la imagen de referencia. 'Imagen completa' generará un solo diseño fiel a la original.")
+        st.info("💡 Sube la imagen de referencia. 'Imagen completa' obligará a la IA a calcar la estructura original.")
         enfoque_referencia = st.radio(
             "Enfoque de la referencia:",
             ["Solo personajes de la imagen", "Imagen completa (composición y fondo)"],
@@ -44,20 +44,6 @@ with st.container():
 
     nombre_personaje = st.text_input("Nombres de personajes (opcional)")
     busqueda_referencia = st.checkbox("Activar búsqueda intensiva de referencia", value=False)
-
-    # Lógica para "Initial of a word"
-    inicial_palabra = None
-    estilo_inicial_seleccionado = None
-    if estilo_seleccionado == "Initial of a word":
-        inicial_palabra = st.text_input("Palabra para la inicial")
-        estilo_inicial_seleccionado = st.selectbox("Estilo para la inicial", todos_los_estilos)
-
-    # Lógica para "Full Name/Phrase"
-    nombre_completo = None
-    estilo_nombre_seleccionado = None
-    if estilo_seleccionado == "Full Name/Phrase":
-        nombre_completo = st.text_input("Nombre completo / Frase")
-        estilo_nombre_seleccionado = st.selectbox("Estilo para el nombre", todos_los_estilos)
 
     # Personalización de la Base
     st.divider()
@@ -82,7 +68,8 @@ try:
             st.error("Por favor, describe la colección.")
         else:
             # Definir estilo y cantidad de imágenes
-            cantidad_disenos = "one single design" if (estilo_seleccionado == "A partir de una imagen" and enfoque_referencia == "Imagen completa (composición y fondo)") else "four vibrant designs in a 2x2 grid"
+            es_imagen_completa = (estilo_seleccionado == "A partir de una imagen" and enfoque_referencia == "Imagen completa (composición y fondo)")
+            cantidad_disenos = "one single design" if es_imagen_completa else "four vibrant designs in a 2x2 grid"
             
             if estilo_seleccionado == "Iconic Chibi Cartoon (Contorno Cero)":
                 estilo_prompt = "Iconic Chibi, flat vector, no outer outlines, razor-clean edges"
@@ -96,27 +83,29 @@ try:
                 estilo_prompt = estilo_seleccionado.lower()
 
             # CONSTRUCCIÓN DEL PROMPT BASE
-            prompt_coleccion_base = f"""Generate **{cantidad_disenos}** in **{estilo_prompt} style**.
+            prompt_coleccion_base = f"""Generate **{cantidad_disenos}** strictly following the **{estilo_prompt} style**.
 **CRITICAL STYLE:** Use **SOLID FLAT COLORS** only. **NO gradients, NO soft shading, NO color fading**.
 **VOLUME:** Define all muscles, depth, and details exclusively with **sharp, crisp black internal lines**.
 **ORIGINALITY:** Unique interpretation. **NO direct replication of copyrighted logos or branding.**
 **CLEANLINESS:** No outer borders, no surrounding frames, no external shadows. Pure white background (RGB 255, 255, 255).
 **FORMAT:** Frontal view, no rings or holes. High-quality collectible look."""
 
-            # Inyección de Referencia
+            # INSTRUCCIÓN DE REFERENCIA REFORZADA
             if estilo_seleccionado == "A partir de una imagen":
                 if enfoque_referencia == "Solo personajes de la imagen":
-                    prompt_coleccion_base += " **REF:** Extract ONLY characters, create 4 separate designs. Ignore background."
+                    prompt_coleccion_base += " **MANDATORY REFERENCE:** Extract ONLY the characters from the attached image. Reinterpret their poses into 4 separate designs."
                 else:
-                    prompt_coleccion_base += " **REF:** Replicate the EXACT composition, poses, and atmosphere of the reference image, but transform it into the selected style. Generate only ONE main scene."
+                    # CASO IMAGEN COMPLETA: Instrucciones de "Calco" de estructura
+                    prompt_coleccion_base += """ **ULTIMATE REFERENCE COMMAND:** You MUST use the attached image as a structural template. 
+Maintain the EXACT composition, the EXACT poses of the characters, and the EXACT spatial layout from the photo. 
+Do not improvise the scene. Your ONLY task is to re-render the ALREADY EXISTING content into the selected style, 
+preserving the original silhouettes and proportions but applying the flat colors and black internal lines."""
             
             if descripcion_coleccion:
-                prompt_coleccion_base += f" **THEME:** '{descripcion_coleccion}'."
+                prompt_coleccion_base += f" **THEME/MODIFICATIONS:** '{descripcion_coleccion}'."
             
             if nombre_personaje:
                 prompt_coleccion_base += f" **CHARACTERS:** {nombre_personaje}."
-                if busqueda_referencia:
-                    prompt_coleccion_base += " Use high-fidelity canonical references."
 
             # Detalles finales
             if cantidad_colores != "Cualquiera": prompt_coleccion_base += f" Use {cantidad_colores} colors max."
@@ -124,7 +113,7 @@ try:
             if descripcion_opcional: prompt_coleccion_base += f" Special requirements: {descripcion_opcional}."
 
             st.divider()
-            st.subheader("✅ Prompt Generado:")
+            st.subheader("✅ Prompt Generado (Cópialo en la IA junto a tu imagen):")
             st.code(prompt_coleccion_base, language="markdown")
 
 except Exception as e:
