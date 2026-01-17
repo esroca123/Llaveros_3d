@@ -44,29 +44,27 @@ with st.container():
         )
         estilo_para_imagen_seleccionado = st.selectbox("Estilo artístico para la imagen:", todos_los_estilos)
 
-    # Lógica para "Initial of a word"
-    inicial_palabra = ""
-    estilo_inicial_seleccionado = None
-    if estilo_seleccionado == "Initial of a word":
-        inicial_palabra = st.text_input("Escribe la palabra o letra inicial:")
-        estilo_inicial_seleccionado = st.selectbox("Estilo base para la inicial", todos_los_estilos)
-
-    # Lógica para "Full Name/Phrase"
-    nombre_completo_texto = ""
-    estilo_nombre_seleccionado = None
-    if estilo_seleccionado == "Full Name/Phrase":
-        nombre_completo_texto = st.text_input("Escribe el nombre completo o la frase:")
-        estilo_nombre_seleccionado = st.selectbox("Estilo base para el texto", todos_los_estilos)
+    # Lógica para "Initial of a word" / "Full Name/Phrase" (CON NUEVA OPCIÓN DE FONDO)
+    texto_ingresado = ""
+    estilo_texto_base = None
+    tipo_letras = None
+    if estilo_seleccionado in ["Initial of a word", "Full Name/Phrase"]:
+        texto_ingresado = st.text_input("Escribe el texto (Nombre, frase o inicial):")
+        tipo_letras = st.radio(
+            "Estructura del llavero:",
+            ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"],
+            help="Selecciona 'Solo las letras' para que el llavero tenga la forma física del nombre."
+        )
+        estilo_texto_base = st.selectbox("Estilo base para el texto", todos_los_estilos)
 
     # Campos de descripción general
-    label_descripcion = "Descripción de la colección (Opcional)" if estilo_seleccionado == "A partir de una imagen" else "Descripción de la colección (Obligatorio)"
+    label_descripcion = "Descripción de la colección (Opcional)" if estilo_seleccionado in ["A partir de una imagen", "Full Name/Phrase", "Initial of a word"] else "Descripción de la colección (Obligatorio)"
     descripcion_coleccion = st.text_area(
         label_descripcion,
-        placeholder="Describe el tema o concepto."
+        placeholder="Describe el tema o concepto (ej. inspirado en galaxias)."
     )
 
-    nombre_personaje = st.text_input("Nombres de personajes adicionales (opcional)")
-    busqueda_referencia = st.checkbox("Activar búsqueda intensiva de referencia", value=False)
+    nombre_personaje = st.text_input("Personajes adicionales (opcional)")
 
     # Personalización de la Base
     st.divider()
@@ -81,17 +79,12 @@ with st.container():
 # --- PROMPTS DE SOPORTE ---
 prompt_limpieza_contorno = "Clean the design. REMOVE outer shadows/outlines. Sharp perimeter edges. Keep internal black lines."
 prompt_base_personalizacion_template = "Place the design on a horizontal rectangular base. Solid, empty front. Match theme."
-prompt_dxf = "B&W line art. Thin outlines, no shadows. White background."
-prompt_silhouette = "100% solid black silhouette of the outer perimeter."
 
 # --- BOTÓN DE GENERACIÓN ---
 try:
     if st.button("Generar Prompt de Colección", type="primary"):
-        # Validaciones de seguridad
-        if estilo_seleccionado == "Full Name/Phrase" and not nombre_completo_texto:
-            st.error("Por favor, escribe el nombre o frase.")
-        elif estilo_seleccionado == "Initial of a word" and not inicial_palabra:
-            st.error("Por favor, escribe la inicial.")
+        if estilo_seleccionado in ["Full Name/Phrase", "Initial of a word"] and not texto_ingresado:
+            st.error("Por favor, escribe el texto.")
         elif not descripcion_coleccion and estilo_seleccionado not in ["A partir de una imagen", "Full Name/Phrase", "Initial of a word"]:
             st.error("Por favor, describe la colección.")
         else:
@@ -100,10 +93,8 @@ try:
                 estilo_final = "Iconic Chibi, flat vector, no outer outlines, razor-clean edges"
             elif estilo_seleccionado == "A partir de una imagen":
                 estilo_final = estilo_para_imagen_seleccionado.lower()
-            elif estilo_seleccionado == "Initial of a word":
-                estilo_final = estilo_inicial_seleccionado.lower()
-            elif estilo_seleccionado == "Full Name/Phrase":
-                estilo_final = estilo_nombre_seleccionado.lower()
+            elif estilo_seleccionado in ["Initial of a word", "Full Name/Phrase"]:
+                estilo_final = estilo_texto_base.lower()
             elif estilo_seleccionado == "Free Style":
                 estilo_final = "creative and modern"
             else:
@@ -125,30 +116,31 @@ try:
 **CLEANLINESS:** No outer borders, no surrounding frames, no external shadows. Pure white background (RGB 255, 255, 255).
 **FORMAT:** Frontal view, no rings or holes. High-quality collectible look."""
 
-            # INYECCIÓN DE TEXTO (CORRECCIÓN AQUÍ)
-            if estilo_seleccionado == "Full Name/Phrase":
-                prompt_coleccion_base += f"\n**CORE SUBJECT:** The following text must be the central part of the design: '{nombre_completo_texto}'."
-            elif estilo_seleccionado == "Initial of a word":
-                prompt_coleccion_base += f"\n**CORE SUBJECT:** A creative design based on the letter or word: '{inicial_palabra}'."
+            # LÓGICA DE TEXTO Y ESTRUCTURA (SOLO LETRAS VS FONDO)
+            if estilo_seleccionado in ["Full Name/Phrase", "Initial of a word"]:
+                if tipo_letras == "Solo las letras (Sin fondo)":
+                    prompt_coleccion_base += f"""
+**CORE SUBJECT:** The design is ONLY the typography of the text: '{texto_ingresado}'. 
+**STRUCTURE:** The text must be stand-alone. No background plates, no backing shapes, no rectangles behind. 
+The silhouette of the design must follow the outer edges of the letters. The letters must be interconnected to form a single solid piece."""
+                else:
+                    prompt_coleccion_base += f"""
+**CORE SUBJECT:** The text '{texto_ingresado}' integrated into a decorative background or plaque."""
 
             # INSTRUCCIÓN DE REFERENCIA
             if estilo_seleccionado == "A partir de una imagen":
                 if enfoque_referencia == "Solo personajes de la imagen":
-                    prompt_coleccion_base += "\n**MANDATORY REFERENCE:** Extract ONLY characters from attached image, reinterpret into 4 designs."
+                    prompt_coleccion_base += "\n**MANDATORY REFERENCE:** Extract ONLY characters from attached image."
                 else:
-                    prompt_coleccion_base += """\n**ULTIMATE REFERENCE COMMAND:** Use the attached image as a structural template. 
-Maintain EXACT composition and poses. Do not improvise. Re-render existing content into the selected fusion style."""
+                    prompt_coleccion_base += "\n**ULTIMATE REFERENCE COMMAND:** Use the attached image as a structural template. Maintain EXACT composition."
             
             if descripcion_coleccion:
                 prompt_coleccion_base += f"\n**THEME:** '{descripcion_coleccion}'."
-            
-            if nombre_personaje:
-                prompt_coleccion_base += f"\n**CHARACTERS:** {nombre_personaje}."
 
             # Detalles finales
-            if cantidad_colores != "Cualquiera": prompt_coleccion_base += f"\n**COLORS:** Use {cantidad_colores} colors max."
+            if cantidad_colores != "Cualquiera": prompt_coleccion_base += f"\n**COLORS:** Max {cantidad_colores}."
             if colores_seleccionados: prompt_coleccion_base += f"\n**PALETTE:** {', '.join(colores_seleccionados)}."
-            if descripcion_opcional: prompt_coleccion_base += f"\n**SPECIAL REQUIREMENTS:** {descripcion_opcional}."
+            if descripcion_opcional: prompt_coleccion_base += f"\n**SPECIAL:** {descripcion_opcional}."
 
             st.divider()
             st.subheader("✅ Prompt de Colección Generado:")
