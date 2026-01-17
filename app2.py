@@ -44,7 +44,7 @@ with st.container():
         )
         estilo_para_imagen_seleccionado = st.selectbox("Estilo artístico para la imagen:", todos_los_estilos)
 
-    # Lógica para "Initial of a word" / "Full Name/Phrase" (CON NUEVA OPCIÓN DE FONDO)
+    # Lógica para "Initial of a word" / "Full Name/Phrase"
     texto_ingresado = ""
     estilo_texto_base = None
     tipo_letras = None
@@ -61,7 +61,7 @@ with st.container():
     label_descripcion = "Descripción de la colección (Opcional)" if estilo_seleccionado in ["A partir de una imagen", "Full Name/Phrase", "Initial of a word"] else "Descripción de la colección (Obligatorio)"
     descripcion_coleccion = st.text_area(
         label_descripcion,
-        placeholder="Describe el tema o concepto (ej. inspirado en galaxias)."
+        placeholder="Describe el tema o concepto."
     )
 
     nombre_personaje = st.text_input("Personajes adicionales (opcional)")
@@ -116,23 +116,24 @@ try:
 **CLEANLINESS:** No outer borders, no surrounding frames, no external shadows. Pure white background (RGB 255, 255, 255).
 **FORMAT:** Frontal view, no rings or holes. High-quality collectible look."""
 
-            # LÓGICA DE TEXTO Y ESTRUCTURA (SOLO LETRAS VS FONDO)
+            # LÓGICA DE TEXTO Y ESTRUCTURA (CORRECCIÓN DE APILAMIENTO)
             if estilo_seleccionado in ["Full Name/Phrase", "Initial of a word"]:
                 if tipo_letras == "Solo las letras (Sin fondo)":
                     prompt_coleccion_base += f"""
-**CORE SUBJECT:** The design is ONLY the typography of the text: '{texto_ingresado}'. 
-**STRUCTURE:** The text must be stand-alone. No background plates, no backing shapes, no rectangles behind. 
-The silhouette of the design must follow the outer edges of the letters. The letters must be interconnected to form a single solid piece."""
+**CORE SUBJECT:** The design is ONLY the typography of the name: '{texto_ingresado}'. 
+**MANDATORY TYPOGRAPHY:** The text must be written in a **SINGLE HORIZONTAL LINE**. 
+**NO stacking:** Do not place letters on top of others. Do not split the word. 
+**STRUCTURE:** Stand-alone text, no background plates. The silhouette follows the letters. All letters must be interconnected."""
                 else:
                     prompt_coleccion_base += f"""
-**CORE SUBJECT:** The text '{texto_ingresado}' integrated into a decorative background or plaque."""
+**CORE SUBJECT:** The text '{texto_ingresado}' written in a single line, integrated into a decorative background."""
 
             # INSTRUCCIÓN DE REFERENCIA
             if estilo_seleccionado == "A partir de una imagen":
                 if enfoque_referencia == "Solo personajes de la imagen":
                     prompt_coleccion_base += "\n**MANDATORY REFERENCE:** Extract ONLY characters from attached image."
                 else:
-                    prompt_coleccion_base += "\n**ULTIMATE REFERENCE COMMAND:** Use the attached image as a structural template. Maintain EXACT composition."
+                    prompt_coleccion_base += "\n**ULTIMATE REFERENCE COMMAND:** Use the attached image as a structural template."
             
             if descripcion_coleccion:
                 prompt_coleccion_base += f"\n**THEME:** '{descripcion_coleccion}'."
