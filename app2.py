@@ -12,7 +12,7 @@ with st.container():
     estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
     estilos_generales = ["Minimalist", "Futurist", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
     estilos_adicionales = ["Kawaii", "Pop Art", "Gothic", "Surrealist", "Glass-like", "Metallic", "Wood-carved", "Clay-sculpted", "Flat Design", "Geometric", "Vaporwave", "Cottagecore"]
-    estilos_nuevos_tematicos = ["Gamer / Arcade", "Floral / Nature", "Mandala / Zen", "Iconographic", "Cultural / Ethnic", "Urban / Graffiti", "Sporty", "Disney / Pixar", "Color Splash", "Lego", "Ghibli", "illustration", "Photorealistic", "Hyperrealistic", "Live Action Style", "Cosplay photography", "Unreal Engine 5 Render","Colorful Pop Art Graffiti","Vibrant Splatter Animal Art"]
+    estilos_nuevos_tematicos = ["Gamer / Arcade", "Floral / Nature", "Mandala / Zen", "Iconographic", "Cultural / Ethnic", "Urban / Graffiti", "Sporty", "Disney / Pixar", "Color Splash", "Lego", "Ghibli", "illustration", "Photorealistic", "Hyperrealistic", "Live Action Style", "Cosplay photography", "Unreal Engine 5 Render"]
     
     estilo_iconic_chibi_cartoon = "Iconic Chibi Cartoon (Contorno Cero)"
     todos_los_estilos = [estilo_iconic_chibi_cartoon] + estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
@@ -27,14 +27,12 @@ with st.container():
         )
 
     with col_estilo2:
-        # El segundo estilo es siempre una lista de estilos artísticos
         estilo_secundario = st.selectbox(
             "Segundo Estilo (Opcional)",
-            ["Ninguno"] + todos_los_estilos,
-            help="Selecciona un segundo estilo para mezclarlo con el primero."
+            ["Ninguno"] + todos_los_estilos
         )
 
-    # Lógica para la opción "A partir de una imagen" (SUB-OPCIONES)
+    # Lógica para la opción "A partir de una imagen"
     estilo_para_imagen_seleccionado = None
     enfoque_referencia = None
     if estilo_seleccionado == "A partir de una imagen":
@@ -46,29 +44,29 @@ with st.container():
         )
         estilo_para_imagen_seleccionado = st.selectbox("Estilo artístico para la imagen:", todos_los_estilos)
 
-    # Campos de descripción
+    # Lógica para "Initial of a word"
+    inicial_palabra = ""
+    estilo_inicial_seleccionado = None
+    if estilo_seleccionado == "Initial of a word":
+        inicial_palabra = st.text_input("Escribe la palabra o letra inicial:")
+        estilo_inicial_seleccionado = st.selectbox("Estilo base para la inicial", todos_los_estilos)
+
+    # Lógica para "Full Name/Phrase"
+    nombre_completo_texto = ""
+    estilo_nombre_seleccionado = None
+    if estilo_seleccionado == "Full Name/Phrase":
+        nombre_completo_texto = st.text_input("Escribe el nombre completo o la frase:")
+        estilo_nombre_seleccionado = st.selectbox("Estilo base para el texto", todos_los_estilos)
+
+    # Campos de descripción general
     label_descripcion = "Descripción de la colección (Opcional)" if estilo_seleccionado == "A partir de una imagen" else "Descripción de la colección (Obligatorio)"
     descripcion_coleccion = st.text_area(
         label_descripcion,
         placeholder="Describe el tema o concepto."
     )
 
-    nombre_personaje = st.text_input("Nombres de personajes (opcional)")
+    nombre_personaje = st.text_input("Nombres de personajes adicionales (opcional)")
     busqueda_referencia = st.checkbox("Activar búsqueda intensiva de referencia", value=False)
-
-    # Lógica para "Initial of a word"
-    inicial_palabra = None
-    estilo_inicial_seleccionado = None
-    if estilo_seleccionado == "Initial of a word":
-        inicial_palabra = st.text_input("Palabra para la inicial")
-        estilo_inicial_seleccionado = st.selectbox("Estilo base para la inicial", todos_los_estilos)
-
-    # Lógica para "Full Name/Phrase"
-    nombre_completo = None
-    estilo_nombre_seleccionado = None
-    if estilo_seleccionado == "Full Name/Phrase":
-        nombre_completo = st.text_input("Nombre completo / Frase")
-        estilo_nombre_seleccionado = st.selectbox("Estilo base para el nombre", todos_los_estilos)
 
     # Personalización de la Base
     st.divider()
@@ -80,7 +78,7 @@ with st.container():
     colores_seleccionados = st.multiselect("Colores sugeridos", ["red", "blue", "green", "yellow", "black", "white", "purple", "pink", "orange"])
     descripcion_opcional = st.text_area("Requerimientos especiales")
 
-# --- PROMPTS DE POST-PROCESADO ---
+# --- PROMPTS DE SOPORTE ---
 prompt_limpieza_contorno = "Clean the design. REMOVE outer shadows/outlines. Sharp perimeter edges. Keep internal black lines."
 prompt_base_personalizacion_template = "Place the design on a horizontal rectangular base. Solid, empty front. Match theme."
 prompt_dxf = "B&W line art. Thin outlines, no shadows. White background."
@@ -89,10 +87,15 @@ prompt_silhouette = "100% solid black silhouette of the outer perimeter."
 # --- BOTÓN DE GENERACIÓN ---
 try:
     if st.button("Generar Prompt de Colección", type="primary"):
-        if not descripcion_coleccion and estilo_seleccionado != "A partir de una imagen":
+        # Validaciones de seguridad
+        if estilo_seleccionado == "Full Name/Phrase" and not nombre_completo_texto:
+            st.error("Por favor, escribe el nombre o frase.")
+        elif estilo_seleccionado == "Initial of a word" and not inicial_palabra:
+            st.error("Por favor, escribe la inicial.")
+        elif not descripcion_coleccion and estilo_seleccionado not in ["A partir de una imagen", "Full Name/Phrase", "Initial of a word"]:
             st.error("Por favor, describe la colección.")
         else:
-            # 1. Definir Estilo Principal
+            # 1. Definir Estilo Base
             if estilo_seleccionado == "Iconic Chibi Cartoon (Contorno Cero)":
                 estilo_final = "Iconic Chibi, flat vector, no outer outlines, razor-clean edges"
             elif estilo_seleccionado == "A partir de una imagen":
@@ -118,30 +121,34 @@ try:
             # CONSTRUCCIÓN DEL PROMPT BASE
             prompt_coleccion_base = f"""Generate **{cantidad_disenos}** strictly following the **{estilo_final} style**.
 **CRITICAL STYLE:** Use **SOLID FLAT COLORS** only. **NO gradients, NO soft shading, NO color fading**.
-**VOLUME:** Define all muscles, depth, and details exclusively with **sharp, crisp black internal lines**.
-**ORIGINALITY:** Unique interpretation. **NO direct replication of copyrighted logos or branding.**
+**VOLUME:** Define all depth and details exclusively with **sharp, crisp black internal lines**.
 **CLEANLINESS:** No outer borders, no surrounding frames, no external shadows. Pure white background (RGB 255, 255, 255).
 **FORMAT:** Frontal view, no rings or holes. High-quality collectible look."""
+
+            # INYECCIÓN DE TEXTO (CORRECCIÓN AQUÍ)
+            if estilo_seleccionado == "Full Name/Phrase":
+                prompt_coleccion_base += f"\n**CORE SUBJECT:** The following text must be the central part of the design: '{nombre_completo_texto}'."
+            elif estilo_seleccionado == "Initial of a word":
+                prompt_coleccion_base += f"\n**CORE SUBJECT:** A creative design based on the letter or word: '{inicial_palabra}'."
 
             # INSTRUCCIÓN DE REFERENCIA
             if estilo_seleccionado == "A partir de una imagen":
                 if enfoque_referencia == "Solo personajes de la imagen":
-                    prompt_coleccion_base += " **MANDATORY REFERENCE:** Extract ONLY characters from image, reinterpret into 4 designs."
+                    prompt_coleccion_base += "\n**MANDATORY REFERENCE:** Extract ONLY characters from attached image, reinterpret into 4 designs."
                 else:
-                    prompt_coleccion_base += """ **ULTIMATE REFERENCE COMMAND:** Use the attached image as a structural template. 
-Maintain the EXACT composition, poses, and spatial layout. Do not improvise. Re-render existing content into the selected fusion style, 
-preserving silhouettes and proportions but applying flat colors and black internal lines."""
+                    prompt_coleccion_base += """\n**ULTIMATE REFERENCE COMMAND:** Use the attached image as a structural template. 
+Maintain EXACT composition and poses. Do not improvise. Re-render existing content into the selected fusion style."""
             
             if descripcion_coleccion:
-                prompt_coleccion_base += f" **THEME:** '{descripcion_coleccion}'."
+                prompt_coleccion_base += f"\n**THEME:** '{descripcion_coleccion}'."
             
             if nombre_personaje:
-                prompt_coleccion_base += f" **CHARACTERS:** {nombre_personaje}."
+                prompt_coleccion_base += f"\n**CHARACTERS:** {nombre_personaje}."
 
             # Detalles finales
-            if cantidad_colores != "Cualquiera": prompt_coleccion_base += f" Use {cantidad_colores} colors max."
-            if colores_seleccionados: prompt_coleccion_base += f" Colors: {', '.join(colores_seleccionados)}."
-            if descripcion_opcional: prompt_coleccion_base += f" Special requirements: {descripcion_opcional}."
+            if cantidad_colores != "Cualquiera": prompt_coleccion_base += f"\n**COLORS:** Use {cantidad_colores} colors max."
+            if colores_seleccionados: prompt_coleccion_base += f"\n**PALETTE:** {', '.join(colores_seleccionados)}."
+            if descripcion_opcional: prompt_coleccion_base += f"\n**SPECIAL REQUIREMENTS:** {descripcion_opcional}."
 
             st.divider()
             st.subheader("✅ Prompt de Colección Generado:")
