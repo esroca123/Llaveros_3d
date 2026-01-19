@@ -53,7 +53,7 @@ with st.container():
         tipo_letras = st.radio(
             "Estructura del llavero:",
             ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"],
-            help="Selecciona 'Solo las letras' para que el llavero tenga la forma física del nombre."
+            help="Selecciona 'Solo las letras' para un diseño troquelado."
         )
         estilo_texto_base = st.selectbox("Estilo base para el texto", todos_los_estilos)
 
@@ -75,10 +75,6 @@ with st.container():
     cantidad_colores = st.selectbox("Cantidad de colores", ["Cualquiera"] + list(range(1, 5)))
     colores_seleccionados = st.multiselect("Colores sugeridos", ["red", "blue", "green", "yellow", "black", "white", "purple", "pink", "orange"])
     descripcion_opcional = st.text_area("Requerimientos especiales")
-
-# --- PROMPTS DE SOPORTE ---
-prompt_limpieza_contorno = "Clean the design. REMOVE outer shadows/outlines. Sharp perimeter edges. Keep internal black lines."
-prompt_base_personalizacion_template = "Place the design on a horizontal rectangular base. Solid, empty front. Match theme."
 
 # --- BOTÓN DE GENERACIÓN ---
 try:
@@ -110,23 +106,23 @@ try:
             cantidad_disenos = "one single design" if es_imagen_completa else "four vibrant designs in a 2x2 grid"
 
             # CONSTRUCCIÓN DEL PROMPT BASE
-            prompt_coleccion_base = f"""Generate **{cantidad_disenos}** strictly following the **{estilo_final} style**.
-**CRITICAL STYLE:** Use **SOLID FLAT COLORS** only. **NO gradients, NO soft shading, NO color fading**.
-**VOLUME:** Define all depth and details exclusively with **sharp, crisp black internal lines**.
-**CLEANLINESS:** No outer borders, no surrounding frames, no external shadows. Pure white background (RGB 255, 255, 255).
+            prompt_coleccion_base = f"""Generate **{cantidad_disenos}** following the **{estilo_final} style**.
+**CRITICAL STYLE:** Use **SOLID FLAT COLORS** only. **NO gradients, NO soft shading**.
+**VOLUME:** Define depth and details exclusively with **sharp, crisp black internal lines**.
+**CLEANLINESS:** No outer shadows. Pure white background (RGB 255, 255, 255).
 **FORMAT:** Frontal view, no rings or holes. High-quality collectible look."""
 
-            # LÓGICA DE TEXTO Y ESTRUCTURA (CORRECCIÓN DE APILAMIENTO)
+            # LÓGICA DE TEXTO DINÁMICO Y PROPORCIONAL
             if estilo_seleccionado in ["Full Name/Phrase", "Initial of a word"]:
                 if tipo_letras == "Solo las letras (Sin fondo)":
                     prompt_coleccion_base += f"""
 **CORE SUBJECT:** The design is ONLY the typography of the name: '{texto_ingresado}'. 
-**MANDATORY TYPOGRAPHY:** The text must be written in a **SINGLE HORIZONTAL LINE**. 
-**NO stacking:** Do not place letters on top of others. Do not split the word. 
-**STRUCTURE:** Stand-alone text, no background plates. The silhouette follows the letters. All letters must be interconnected."""
+**PROPORTIONAL DESIGN:** The layout must be organic and attractive, maintaining a natural letter spacing (kerning). 
+**DIMENSIONS:** The total size must fit within a maximum bounding box of 8cm x 4cm, but the width must be proportional to the length of the name. Do not stretch or separate letters unnaturally.
+**STRUCTURE:** Modern, novelty typography where all letters are interconnected to form a single solid and attractive piece. Single horizontal line only. No stacking."""
                 else:
                     prompt_coleccion_base += f"""
-**CORE SUBJECT:** The text '{texto_ingresado}' written in a single line, integrated into a decorative background."""
+**CORE SUBJECT:** The text '{texto_ingresado}' integrated into a creative and eye-catching background plaque."""
 
             # INSTRUCCIÓN DE REFERENCIA
             if estilo_seleccionado == "A partir de una imagen":
