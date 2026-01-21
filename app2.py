@@ -19,120 +19,82 @@ with st.container():
 
     # --- SELECCIÓN DE ESTILOS (SISTEMA DUAL) ---
     col_estilo1, col_estilo2 = st.columns(2)
-    
     with col_estilo1:
-        estilo_seleccionado = st.selectbox(
-            "Estilo Principal",
-            ["Initial of a word", "Free Style", "A partir de una imagen", "Full Name/Phrase"] + todos_los_estilos
-        )
-
+        estilo_seleccionado = st.selectbox("Estilo Principal", ["A partir de una imagen", "Full Name/Phrase", "Initial of a word", "Free Style"] + todos_los_estilos)
     with col_estilo2:
-        estilo_secundario = st.selectbox(
-            "Segundo Estilo (Opcional)",
-            ["Ninguno"] + todos_los_estilos
-        )
+        estilo_secundario = st.selectbox("Segundo Estilo (Opcional)", ["Ninguno"] + todos_los_estilos)
 
     # Variables de control
     texto_ingresado = ""
     tipo_letras = None
-    estilo_base_personalizado = None
     enfoque_referencia = None
-    estilo_para_imagen_seleccionado = None
 
-    # Lógica unificada para Referencia de Imagen
+    # Lógica de Imagen REFORZADA
     if estilo_seleccionado == "A partir de una imagen":
-        st.info("💡 Sube la imagen de referencia. Puedes elegir si quieres personajes o un letrero basado en ella.")
+        st.info("💡 Modo de Referencia Visual Activo.")
         enfoque_referencia = st.radio(
-            "¿Qué quieres replicar de la imagen?",
-            ["Solo personajes", "Imagen completa", "Estilo de letrero/Texto"],
+            "¿Qué debe hacer la IA con la imagen?",
+            ["Clonar Estilo de Letrero (Cambiar solo el texto)", "Solo personajes", "Imagen completa"],
             horizontal=True
         )
         
-        # Si es estilo de letrero, pedimos el nuevo texto
-        if enfoque_referencia == "Estilo de letrero/Texto":
-            texto_ingresado = st.text_input("Nuevo texto para el letrero (basado en la imagen):")
+        if enfoque_referencia == "Clonar Estilo de Letrero (Cambiar solo el texto)":
+            texto_ingresado = st.text_input("Escribe el NUEVO texto/nombre:")
             tipo_letras = st.radio("Estructura:", ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"])
         
-        estilo_para_imagen_seleccionado = st.selectbox("Estilo artístico adicional para la imagen:", todos_los_estilos)
+        estilo_para_imagen_seleccionado = st.selectbox("Estilo artístico adicional (opcional):", ["Ninguno"] + todos_los_estilos)
 
-    # Lógica estándar para Letras/Nombres (sin imagen)
+    # Lógica estándar para Letras (sin imagen)
     if estilo_seleccionado in ["Initial of a word", "Full Name/Phrase"]:
-        texto_ingresado = st.text_input("Escribe el texto (Nombre, frase o inicial):")
-        tipo_letras = st.radio(
-            "Estructura del llavero:",
-            ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"]
-        )
-        estilo_base_personalizado = st.selectbox("Estilo base para el texto", todos_los_estilos)
+        texto_ingresado = st.text_input("Escribe el texto:")
+        tipo_letras = st.radio("Estructura del llavero:", ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"])
 
-    # Campos de descripción general
-    label_descripcion = "Descripción de la colección (Opcional)" if estilo_seleccionado in ["A partir de una imagen", "Full Name/Phrase", "Initial of a word"] else "Descripción de la colección (Obligatorio)"
-    descripcion_coleccion = st.text_area(label_descripcion, placeholder="Describe el tema o concepto.")
+    # Campos de descripción
+    descripcion_coleccion = st.text_area("Requerimientos adicionales o descripción (Opcional)", placeholder="Ej: estilo Dragon Ball, colores neón...")
 
-    # Personalización de la Base y Detalles
-    st.divider()
-    col_colores, col_detalles = st.columns(2)
-    with col_colores:
-        cantidad_colores = st.selectbox("Cantidad de colores", ["Cualquiera"] + list(range(1, 5)))
-        colores_seleccionados = st.multiselect("Colores sugeridos", ["red", "blue", "green", "yellow", "black", "white", "purple", "pink", "orange"])
-    with col_detalles:
-        descripcion_opcional = st.text_area("Requerimientos especiales")
-
-# --- BOTÓN DE GENERACIÓN ---
+# --- PROMPTS TÉCNICOS ---
 try:
-    if st.button("Generar Prompt de Colección", type="primary"):
-        # 1. Definir Estilo Final
-        if estilo_seleccionado == "Iconic Chibi Cartoon (Contorno Cero)":
-            estilo_final = "Iconic Chibi, flat vector, no outer outlines, razor-clean edges"
-        elif estilo_seleccionado == "A partir de una imagen":
-            estilo_final = estilo_para_imagen_seleccionado.lower()
-        elif estilo_seleccionado in ["Initial of a word", "Full Name/Phrase"]:
-            estilo_final = estilo_base_personalizado.lower()
-        else:
-            estilo_final = estilo_seleccionado.lower()
-
+    if st.button("Generar Prompt Maestro", type="primary"):
+        
+        # 1. Definición de la estética base
+        estilo_final = estilo_seleccionado.lower() if estilo_seleccionado != "A partir de una imagen" else "custom reference style"
         if estilo_secundario != "Ninguno":
-            estilo_final = f"hibrid fusion of {estilo_final} and {estilo_secundario.lower()}"
+            estilo_final = f"fusion of {estilo_final} and {estilo_secundario.lower()}"
 
-        # 2. Cantidad de diseños
-        es_imagen_completa = (estilo_seleccionado == "A partir de una imagen" and enfoque_referencia == "Imagen completa")
-        cantidad_disenos = "one single design" if es_imagen_completa else "four vibrant designs in a 2x2 grid"
+        # PROMPT BASE (Reglas de Oro)
+        prompt = f"""ACT AS A PROFESSIONAL GRAPHIC DESIGNER. 
+Generate one high-quality design in {estilo_final}.
+STRICT RULES: Solid flat colors ONLY. Sharp black internal lines for volume. NO gradients. NO shadows. Pure white background."""
 
-        # CONSTRUCCIÓN DEL PROMPT
-        prompt_coleccion_base = f"""Generate **{cantidad_disenos}** following the **{estilo_final} style**.
-**CRITICAL STYLE:** Use **SOLID FLAT COLORS** only. **NO gradients, NO soft shading**.
-**VOLUME:** Define depth and details exclusively with **sharp, crisp black internal lines**.
-**CLEANLINESS:** No outer shadows. Pure white background (RGB 255, 255, 255).
-**FORMAT:** Frontal view, no rings or holes. High-quality collectible look."""
-
-        # LÓGICA DE TEXTO Y REFERENCIA DE IMAGEN
-        if texto_ingresado:
-            layout_letras = "SINGLE HORIZONTAL LINE, interconnected, no stacking"
-            dim_letras = "fit within a max bounding box of 8cm x 4cm, proportional to name length"
+        # 2. LÓGICA DE CLONACIÓN DE TEXTO (LA CLAVE DEL CAMBIO)
+        if estilo_seleccionado == "A partir de una imagen" and enfoque_referencia == "Clonar Estilo de Letrero (Cambiar solo el texto)":
+            prompt = f"""**STRICT STYLE TRANSFER TASK**
+Use the attached image ONLY as a visual template for: Typography shape, Color palette, and Decorative ornaments.
+**NEW TEXT TO RENDER:** "{texto_ingresado.upper()}"
+**INSTRUCTIONS:** 1. Replace the original text from the image with "{texto_ingresado.upper()}".
+2. CLONE the exact font style, textures, and 3D-effect (if any) from the reference image.
+3. Keep the same color scheme.
+4. COMPOSITION: Single horizontal line. Proportional spacing (kerning). Max bounding box 8cm x 4cm.
+5. NO STACKING. NO extra words. Just the new text with the old style."""
             
-            if estilo_seleccionado == "A partir de una imagen" and enfoque_referencia == "Estilo de letrero/Texto":
-                prompt_coleccion_base += f"""
-**ULTIMATE STYLE REFERENCE:** Use the attached image as the absolute guide for typography style, color palette, and aesthetic.
-**TASK:** Create a NEW sign with the text: '{texto_ingresado}'.
-**STRUCTURE:** {layout_letras}. {dim_letras}. {"Stand-alone letters, no background" if tipo_letras == "Solo las letras (Sin fondo)" else "Integrated into a decorative plaque"}.
-Do not copy the original text from the image, ONLY its style and visual essence."""
-            else:
-                prompt_coleccion_base += f"\n**CORE SUBJECT:** Typography for: '{texto_ingresado}'.\n**STRUCTURE:** {layout_letras}. {dim_letras}. {'No background' if tipo_letras == 'Solo las letras (Sin fondo)' else 'With plaque'}."
+            if tipo_letras == "Solo las letras (Sin fondo)":
+                prompt += "\n6. REMOVE any background plaques. The design must be stand-alone interconnected letters."
 
-        # REFERENCIA DE IMAGEN PARA PERSONAJES/ESCENA
-        if estilo_seleccionado == "A partir de una imagen":
+        # 3. Lógica para otros casos de imagen
+        elif estilo_seleccionado == "A partir de una imagen":
             if enfoque_referencia == "Solo personajes":
-                prompt_coleccion_base += "\n**MANDATORY REFERENCE:** Extract ONLY characters from attached image."
-            elif enfoque_referencia == "Imagen completa":
-                prompt_coleccion_base += "\n**ULTIMATE REFERENCE COMMAND:** Use the attached image as a structural template. Maintain EXACT composition."
+                prompt += "\n**REF:** Extract ONLY characters. Ignore background."
+            else:
+                prompt += "\n**REF:** Structural template. Maintain exact composition and poses."
 
-        if descripcion_coleccion: prompt_coleccion_base += f"\n**THEME:** '{descripcion_coleccion}'."
-        if cantidad_colores != "Cualquiera": prompt_coleccion_base += f"\n**COLORS:** Max {cantidad_colores}."
-        if colores_seleccionados: prompt_coleccion_base += f"\n**PALETTE:** {', '.join(colores_seleccionados)}."
-        if descripcion_opcional: prompt_coleccion_base += f"\n**SPECIAL:** {descripcion_opcional}."
+        # 4. Inyección de descripción extra
+        if descripcion_coleccion:
+            prompt += f"\n**ADDITIONAL THEME:** {descripcion_coleccion}."
 
         st.divider()
-        st.subheader("✅ Prompt de Colección Generado:")
-        st.code(prompt_coleccion_base, language="markdown")
+        st.subheader("✅ Prompt para copiar en la IA:")
+        st.code(prompt, language="markdown")
+        st.caption("Copia este prompt y adjunta tu imagen en DALL-E 3, Midjourney o Leonardo AI.")
 
 except Exception as e:
     st.error(f"Error: {e}")
