@@ -4,84 +4,87 @@ import streamlit as st
 st.title("Llavero Prompts Generator")
 st.markdown("Crea prompts detallados para generar diseños de llaveros únicos con IA.")
 
-# --- Contenedor para la entrada de datos ---
+# --- Contenedor de Personalización ---
 with st.container():
-    st.subheader("🛠️ Personaliza tu colección de llaveros")
+    st.subheader("🛠️ Configuración de Diseño Llamativo")
 
-    # Estilos
-    estilos_artisticos = ["Simple & Clean", "Anime Style", "Cartoon", "Cyberpunk", "Kawaii", "Metallic", "8-bit", "Pop Art"]
-    todos_los_estilos = ["Full Name/Phrase", "A partir de una imagen", "Initial of a word"] + estilos_artisticos
+    # Estilos de Letra y Acabados
+    estilos_fuente = ["Modern Sans-Serif", "Graffiti", "Bubble Letters", "Cursive", "Blocky / Heavy", "Futuristic", "Comic / Cartoon", "Elegant"]
+    estilos_visuales = ["Simple & Clean", "Metallic / Chrome", "Neon / Glowing", "Kawaii", "Cyberpunk", "8-bit", "Pop Art", "Gold Leaf"]
+    
+    # Selección de Categoría
+    estilo_seleccionado = st.selectbox("Categoría Principal", ["Full Name/Phrase", "A partir de una imagen", "Initial of a word"])
 
-    col_estilo1, col_estilo2 = st.columns(2)
-    with col_estilo1:
-        estilo_seleccionado = st.selectbox("Categoría Principal", todos_los_estilos)
-    with col_estilo2:
-        estilo_secundario = st.selectbox("Estilo Visual (Opcional)", ["Ninguno"] + estilos_artisticos)
+    # Variables de control
+    texto_ingresado = st.text_input("Escribe el nombre o frase:")
+    
+    # --- SISTEMA DE DOBLE ESTILO ---
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        fuente_principal = st.selectbox("Estilo de Letra", estilos_fuente)
+    with col_f2:
+        fuente_secundaria = st.selectbox("Estilo Visual / Acabado", ["Ninguno"] + estilos_visuales)
 
-    # --- LÓGICA DE TEXTO Y ESTRUCTURA (RESTAURADA) ---
-    texto_ingresado = ""
-    modo_generacion = None
-    tipo_estructura = None
+    # --- COMPOSICIÓN DINÁMICA ---
+    st.divider()
+    col_c1, col_c2 = st.columns(2)
+    with col_c1:
+        estructura = st.radio("Estructura Física:", ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"])
+    with col_c2:
+        disposicion = st.radio("Disposición del Texto:", ["Una sola línea horizontal", "Dos líneas (Apilado decorativo)"], help="La opción de dos líneas es ideal para nombres largos o frases.")
 
-    if estilo_seleccionado in ["Full Name/Phrase", "Initial of a word", "A partir de una imagen"]:
-        texto_ingresado = st.text_input("Escribe el nombre o frase:")
-        
-        # Opción para elegir entre un solo diseño o la colección
-        modo_generacion = st.radio(
-            "¿Qué deseas generar?",
-            ["Un diseño específico", "Colección de 4 variantes (2x2)"],
-            horizontal=True
-        )
-
-        if modo_generacion == "Un diseño específico":
-            tipo_estructura = st.radio(
-                "Estructura del llavero:",
-                ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"],
-                horizontal=True
-            )
-
-    # Lógica de Imagen
-    if estilo_seleccionado == "A partir de una imagen":
-        enfoque_referencia = st.radio("Enfoque de imagen:", ["Clonar Estilo de Letrero", "Solo personajes", "Imagen completa"])
-
-    descripcion_coleccion = st.text_area("Descripción extra (Opcional)")
-    colores = st.multiselect("Colores sugeridos", ["red", "blue", "green", "yellow", "black", "white", "purple", "pastel colors"])
+    # Ajuste de "Llamatividad" para Fondos
+    if estructura == "Texto con fondo decorativo/placa":
+        forma_fondo = st.selectbox("Forma del fondo:", ["Rectangular (8x4)", "Circular", "Forma orgánica personalizada"])
+    
+    descripcion_extra = st.text_area("Detalles adicionales (Ej: 'Inspirado en Spider-Man', 'Estilo Galaxia')")
+    colores = st.multiselect("Paleta de colores", ["red", "blue", "green", "yellow", "black", "white", "purple", "gold", "cyan", "pink"])
 
 # --- GENERACIÓN DEL PROMPT ---
 try:
-    if st.button("Generar Prompt Maestro", type="primary"):
-        if not texto_ingresado and estilo_seleccionado != "A partir de una imagen":
+    if st.button("Generar Diseño Profesional", type="primary"):
+        if not texto_ingresado:
             st.error("Por favor, ingresa el texto.")
         else:
-            # Estilo base
-            estilo_final = estilo_secundario.lower() if estilo_secundario != "Ninguno" else "modern"
+            # Mezcla de estilos
+            estilo_final = fuente_principal.lower()
+            if fuente_secundaria != "Ninguno":
+                estilo_final = f"fusion of {fuente_principal.lower()} and {fuente_secundaria.lower()}"
             
-            # Encabezado según cantidad
-            cant = "one single design" if modo_generacion == "Un diseño específico" else "four different designs in a 2x2 grid"
-            
-            prompt = f"Generate **{cant}** in {estilo_final} style.\n"
-            prompt += f"**CORE SUBJECT:** The text '{texto_ingresado.upper()}'.\n"
+            # --- CONSTRUCCIÓN DEL PROMPT TÉCNICO ---
+            prompt = f"ACT AS A MASTER TYPOGRAPHER AND KEYCHAIN DESIGNER. Generate a highly attractive design.\n"
+            prompt += f"**SUBJECT:** The text '{texto_ingresado.upper()}'.\n"
+            prompt += f"**STYLE:** {estilo_final}.\n"
 
-            # Lógica de estructura recuperada
-            if modo_generacion == "Un diseño específico":
-                if tipo_estructura == "Solo las letras (Sin fondo)":
-                    prompt += "**STRUCTURE:** Die-cut style. Only the interconnected letters. No background plates. The silhouette follows the letters. Bounding box max 8x4cm (proportional).\n"
-                else:
-                    prompt += "**STRUCTURE:** Text integrated into a solid decorative background or plaque (circular or rectangular).\n"
+            # Lógica de Disposición
+            if disposicion == "Una sola línea horizontal":
+                instruccion_lineas = "Rendered in a SINGLE HORIZONTAL LINE. No stacking."
             else:
-                # Lógica de colección de 4 variantes
-                prompt += "**COLLECTION RULES:** Provide 4 variations: 1) Circular badge, 2) Rectangular plaque (2:1 ratio), 3) Die-cut letters only (no background), 4) Simple/Minimalist version.\n"
+                instruccion_lineas = "Rendered in TWO STACKED LINES. The words must be artistically arranged one above the other to create a compact and balanced block."
 
-            # Reglas críticas de texto
-            prompt += f"**MANDATORY:** Single horizontal line. No stacking letters. Correct spelling of '{texto_ingresado.upper()}'. Letters must be interconnected.\n"
-            prompt += "**VISUALS:** Solid flat colors. Sharp black internal lines. Pure white background. No gradients.\n"
+            # Lógica de Estructura y Proporción
+            if estructura == "Solo las letras (Sin fondo)":
+                prompt += f"**STRUCTURE:** Die-cut style. No background. The silhouette follows the letters.\n"
+                prompt += f"**COMPOSITION:** {instruccion_lineas} All letters must be thick, bold, and interconnected to form a single solid piece.\n"
+            else:
+                prompt += f"**STRUCTURE:** Integrated into a {forma_fondo.lower()} plaque.\n"
+                prompt += f"**COMPOSITION:** {instruccion_lineas} **CRITICAL:** The text must be LARGE and BOLD, occupying at least 80% of the plaque's surface area. The text should dominate the space, not look small or isolated.\n"
 
+            # Reglas de Calidad y Visuales
+            prompt += f"**MANDATORY:** Correct spelling of '{texto_ingresado.upper()}'. Solid flat colors. Sharp black internal vector lines. Pure white background (RGB 255, 255, 255). No gradients. No external shadows.\n"
+            
             if colores: prompt += f"**COLORS:** {', '.join(colores)}.\n"
-            if descripcion_coleccion: prompt += f"**THEME:** {descripcion_coleccion}."
+            if descripcion_extra: prompt += f"**THEME/CONTEXT:** {descripcion_extra}."
 
             st.divider()
-            st.subheader("✅ Prompt Generado")
+            st.subheader("✅ Prompt Maestro Generado")
             st.code(prompt, language="markdown")
+            
+            # Nota de éxito según la selección
+            if estructura == "Texto con fondo decorativo/placa":
+                st.success("🎨 El prompt incluye la orden de 'Texto Gigante' para que el fondo no opaque tu nombre.")
+            else:
+                st.success(f"📏 El prompt está optimizado para un diseño de {'una línea' if disposicion == 'Una sola línea horizontal' else 'dos líneas'} troquelado.")
 
 except Exception as e:
     st.error(f"Error: {e}")
