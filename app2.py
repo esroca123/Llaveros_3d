@@ -17,84 +17,73 @@ with st.container():
     estilo_iconic_chibi_cartoon = "Iconic Chibi Cartoon (Contorno Cero)"
     todos_los_estilos = [estilo_iconic_chibi_cartoon] + estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
 
-    # --- SELECCIÓN DE ESTILOS (SISTEMA DUAL) ---
+    # --- SELECCIÓN DE ESTILOS ---
     col_estilo1, col_estilo2 = st.columns(2)
     with col_estilo1:
-        estilo_seleccionado = st.selectbox("Estilo Principal", ["A partir de una imagen", "Full Name/Phrase", "Initial of a word", "Free Style"] + todos_los_estilos)
+        estilo_seleccionado = st.selectbox("Estilo Principal", ["Full Name/Phrase", "A partir de una imagen", "Initial of a word", "Free Style"] + todos_los_estilos)
     with col_estilo2:
         estilo_secundario = st.selectbox("Segundo Estilo (Opcional)", ["Ninguno"] + todos_los_estilos)
 
     # Variables de control
     texto_ingresado = ""
     tipo_letras = None
-    enfoque_referencia = None
 
-    # Lógica de Imagen REFORZADA
-    if estilo_seleccionado == "A partir de una imagen":
-        st.info("💡 Modo de Referencia Visual Activo.")
-        enfoque_referencia = st.radio(
-            "¿Qué debe hacer la IA con la imagen?",
-            ["Clonar Estilo de Letrero (Cambiar solo el texto)", "Solo personajes", "Imagen completa"],
-            horizontal=True
-        )
-        
-        if enfoque_referencia == "Clonar Estilo de Letrero (Cambiar solo el texto)":
-            texto_ingresado = st.text_input("Escribe el NUEVO texto/nombre:")
+    # LÓGICA ESPECÍFICA PARA FULL NAME / PHRASE
+    if estilo_seleccionado == "Full Name/Phrase":
+        texto_ingresado = st.text_input("Escribe el nombre completo o frase:", placeholder="Ej: Bachir / Mi Mascota")
+        tipo_letras = st.radio("Estructura del llavero:", ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"], horizontal=True)
+        estilo_base_letras = st.selectbox("Estilo artístico para el texto:", todos_los_estilos)
+
+    # Lógica para otras opciones (simplificada para este ajuste)
+    elif estilo_seleccionado == "A partir de una imagen":
+        enfoque_referencia = st.radio("Enfoque:", ["Clonar Estilo de Letrero", "Solo personajes", "Imagen completa"])
+        if "Letrero" in enfoque_referencia:
+            texto_ingresado = st.text_input("Nuevo texto:")
             tipo_letras = st.radio("Estructura:", ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"])
-        
-        estilo_para_imagen_seleccionado = st.selectbox("Estilo artístico adicional (opcional):", ["Ninguno"] + todos_los_estilos)
+        estilo_base_letras = st.selectbox("Estilo artístico:", todos_los_estilos)
+    
+    else:
+        estilo_base_letras = "custom"
 
-    # Lógica estándar para Letras (sin imagen)
-    if estilo_seleccionado in ["Initial of a word", "Full Name/Phrase"]:
-        texto_ingresado = st.text_input("Escribe el texto:")
-        tipo_letras = st.radio("Estructura del llavero:", ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"])
+    descripcion_coleccion = st.text_area("Descripción o tema adicional", placeholder="Ej: inspirado en el espacio, colores neón...")
 
-    # Campos de descripción
-    descripcion_coleccion = st.text_area("Requerimientos adicionales o descripción (Opcional)", placeholder="Ej: estilo Dragon Ball, colores neón...")
-
-# --- PROMPTS TÉCNICOS ---
+# --- GENERACIÓN DEL PROMPT ---
 try:
-    if st.button("Generar Prompt Maestro", type="primary"):
-        
-        # 1. Definición de la estética base
-        estilo_final = estilo_seleccionado.lower() if estilo_seleccionado != "A partir de una imagen" else "custom reference style"
-        if estilo_secundario != "Ninguno":
-            estilo_final = f"fusion of {estilo_final} and {estilo_secundario.lower()}"
+    if st.button("Generar Prompt de Nombre/Frase", type="primary"):
+        if (estilo_seleccionado == "Full Name/Phrase" or "Letrero" in str(locals().get('enfoque_referencia', ''))) and not texto_ingresado:
+            st.error("Por favor, ingresa el texto para generar el prompt.")
+        else:
+            # Definición de estilo final
+            estilo_final = estilo_base_letras.lower() if estilo_seleccionado in ["Full Name/Phrase", "A partir de una imagen"] else estilo_seleccionado.lower()
+            if estilo_secundario != "Ninguno":
+                estilo_final = f"fusion of {estilo_final} and {estilo_secundario.lower()}"
 
-        # PROMPT BASE (Reglas de Oro)
-        prompt = f"""ACT AS A PROFESSIONAL GRAPHIC DESIGNER. 
-Generate one high-quality design in {estilo_final}.
-STRICT RULES: Solid flat colors ONLY. Sharp black internal lines for volume. NO gradients. NO shadows. Pure white background."""
+            # Construcción del Prompt MAESTRO para NOMBRES
+            prompt = f"""**TASK:** Professional Graphic Design for a custom keychain.
+**STYLE:** {estilo_final}.
+**CORE SUBJECT:** The specific text "{texto_ingresado.upper()}".
 
-        # 2. LÓGICA DE CLONACIÓN DE TEXTO (LA CLAVE DEL CAMBIO)
-        if estilo_seleccionado == "A partir de una imagen" and enfoque_referencia == "Clonar Estilo de Letrero (Cambiar solo el texto)":
-            prompt = f"""**STRICT STYLE TRANSFER TASK**
-Use the attached image ONLY as a visual template for: Typography shape, Color palette, and Decorative ornaments.
-**NEW TEXT TO RENDER:** "{texto_ingresado.upper()}"
-**INSTRUCTIONS:** 1. Replace the original text from the image with "{texto_ingresado.upper()}".
-2. CLONE the exact font style, textures, and 3D-effect (if any) from the reference image.
-3. Keep the same color scheme.
-4. COMPOSITION: Single horizontal line. Proportional spacing (kerning). Max bounding box 8cm x 4cm.
-5. NO STACKING. NO extra words. Just the new text with the old style."""
-            
+**TYPOGRAPHY RULES:**
+1. **TEXT INTEGRITY:** The word "{texto_ingresado.upper()}" must be spelled correctly. No extra letters.
+2. **HORIZONTAL ALIGNMENT:** Render the entire text in a SINGLE HORIZONTAL LINE. No stacking, no splitting the word into two lines.
+3. **PROPORTIONAL KERNING:** Maintain balanced and attractive spacing between letters. The design must fit a maximum proportional bounding box of 8cm x 4cm based on name length.
+4. **BOLD STRUCTURE:** Use thick, bold typography. All letters MUST be physically interconnected/touching to form a single solid piece."""
+
             if tipo_letras == "Solo las letras (Sin fondo)":
-                prompt += "\n6. REMOVE any background plaques. The design must be stand-alone interconnected letters."
-
-        # 3. Lógica para otros casos de imagen
-        elif estilo_seleccionado == "A partir de una imagen":
-            if enfoque_referencia == "Solo personajes":
-                prompt += "\n**REF:** Extract ONLY characters. Ignore background."
+                prompt += "\n5. **DIE-CUT SHAPE:** No background plates. The outer silhouette must follow the exact shape of the letters. Pure white background."
             else:
-                prompt += "\n**REF:** Structural template. Maintain exact composition and poses."
+                prompt += "\n5. **PLAQUE DESIGN:** The text is integrated into a creative decorative base or rectangular plaque."
 
-        # 4. Inyección de descripción extra
-        if descripcion_coleccion:
-            prompt += f"\n**ADDITIONAL THEME:** {descripcion_coleccion}."
+            prompt += f"\n\n**VISUAL FINISH:** Solid flat colors. Sharp black internal vector lines. High contrast. No gradients. No shadows."
+            
+            if descripcion_coleccion:
+                prompt += f"\n**THEME DETAILS:** {descripcion_coleccion}."
 
-        st.divider()
-        st.subheader("✅ Prompt para copiar en la IA:")
-        st.code(prompt, language="markdown")
-        st.caption("Copia este prompt y adjunta tu imagen en DALL-E 3, Midjourney o Leonardo AI.")
+            st.divider()
+            st.subheader("✅ Prompt Optimizado para Full Name/Phrase:")
+            st.code(prompt, language="markdown")
+            
+            st.info("💡 **Consejo:** Este prompt obliga a la IA a mantener el nombre en una sola línea y asegura que las letras estén unidas para que el llavero no se rompa.")
 
 except Exception as e:
     st.error(f"Error: {e}")
