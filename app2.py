@@ -8,82 +8,85 @@ st.markdown("Crea prompts detallados para generar diseños de llaveros únicos c
 with st.container():
     st.subheader("🛠️ Personaliza tu colección de llaveros")
 
-    # Definición de estilos
-    estilos_especificos = ["Anime/Manga Style", "Cartoon", "Realistic", "8-bit", "16-bit"]
-    estilos_generales = ["Minimalist", "Futurist", "Vintage", "Cyberpunk", "Steampunk", "Art Deco"]
-    estilos_adicionales = ["Kawaii", "Pop Art", "Gothic", "Surrealist", "Glass-like", "Metallic", "Wood-carved", "Clay-sculpted", "Flat Design", "Geometric", "Vaporwave", "Cottagecore"]
-    estilos_nuevos_tematicos = ["Gamer / Arcade", "Floral / Nature", "Mandala / Zen", "Iconographic", "Cultural / Ethnic", "Urban / Graffiti", "Sporty", "Disney / Pixar", "Color Splash", "Lego", "Ghibli", "illustration", "Photorealistic", "Hyperrealistic", "Live Action Style", "Cosplay photography", "Unreal Engine 5 Render"]
+    # Definición de estilos mejorada
+    estilos_artisticos = [
+        "Simple & Clean (Minimalist)", "Anime Style", "Cartoon", "Cyberpunk", 
+        "Kawaii", "Metallic", "Wood-carved", "8-bit", "Ghibli Style", "Pop Art"
+    ]
     
-    estilo_iconic_chibi_cartoon = "Iconic Chibi Cartoon (Contorno Cero)"
-    todos_los_estilos = [estilo_iconic_chibi_cartoon] + estilos_especificos + estilos_generales + estilos_adicionales + estilos_nuevos_tematicos
+    # Lista extendida de estilos
+    estilos_especificos = ["Realistic", "16-bit", "Futurist", "Vintage", "Steampunk", "Art Deco"]
+    estilos_adicionales = ["Gothic", "Surrealist", "Glass-like", "Clay-sculpted", "Flat Design", "Geometric", "Vaporwave"]
+    
+    estilo_iconic_chibi = "Iconic Chibi Cartoon (Contorno Cero)"
+    todos_los_estilos = [estilo_iconic_chibi] + estilos_artisticos + estilos_especificos + estilos_adicionales
 
     # --- SELECCIÓN DE ESTILOS ---
     col_estilo1, col_estilo2 = st.columns(2)
     with col_estilo1:
-        estilo_seleccionado = st.selectbox("Estilo Principal", ["Full Name/Phrase", "A partir de una imagen", "Initial of a word", "Free Style"] + todos_los_estilos)
+        estilo_seleccionado = st.selectbox("Categoría Principal", ["Full Name/Phrase", "A partir de una imagen", "Initial of a word", "Free Style"] + todos_los_estilos)
     with col_estilo2:
-        estilo_secundario = st.selectbox("Segundo Estilo (Opcional)", ["Ninguno"] + todos_los_estilos)
+        estilo_secundario = st.selectbox("Estilo Visual de la Colección", ["Ninguno"] + todos_los_estilos)
 
     # Variables de control
     texto_ingresado = ""
-    tipo_letras = None
-
-    # LÓGICA ESPECÍFICA PARA FULL NAME / PHRASE
+    
+    # LÓGICA PARA FULL NAME / PHRASE
     if estilo_seleccionado == "Full Name/Phrase":
-        texto_ingresado = st.text_input("Escribe el nombre completo o frase:", placeholder="Ej: Bachir / Mi Mascota")
-        tipo_letras = st.radio("Estructura del llavero:", ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"], horizontal=True)
-        estilo_base_letras = st.selectbox("Estilo artístico para el texto:", todos_los_estilos)
+        texto_ingresado = st.text_input("Escribe el nombre completo o frase:", placeholder="Ej: Bachir / Love Life")
+        st.info("🎨 Se generarán 4 variantes: Redondo, Cuadrado, Solo Letras y Minimalista.")
 
-    # Lógica para otras opciones (simplificada para este ajuste)
+    # Lógica para Imagen
     elif estilo_seleccionado == "A partir de una imagen":
         enfoque_referencia = st.radio("Enfoque:", ["Clonar Estilo de Letrero", "Solo personajes", "Imagen completa"])
         if "Letrero" in enfoque_referencia:
-            texto_ingresado = st.text_input("Nuevo texto:")
-            tipo_letras = st.radio("Estructura:", ["Solo las letras (Sin fondo)", "Texto con fondo decorativo/placa"])
-        estilo_base_letras = st.selectbox("Estilo artístico:", todos_los_estilos)
+            texto_ingresado = st.text_input("Nuevo texto basado en la imagen:")
     
-    else:
-        estilo_base_letras = "custom"
+    descripcion_coleccion = st.text_area("Descripción adicional (Opcional)", placeholder="Ej: colores pastel, estilo galaxia...")
 
-    descripcion_coleccion = st.text_area("Descripción o tema adicional", placeholder="Ej: inspirado en el espacio, colores neón...")
+    # Colores
+    st.divider()
+    colores_seleccionados = st.multiselect("Colores sugeridos", ["red", "blue", "green", "yellow", "black", "white", "purple", "pink", "orange", "pastel colors", "neon colors"])
 
 # --- GENERACIÓN DEL PROMPT ---
 try:
-    if st.button("Generar Prompt de Nombre/Frase", type="primary"):
-        if (estilo_seleccionado == "Full Name/Phrase" or "Letrero" in str(locals().get('enfoque_referencia', ''))) and not texto_ingresado:
-            st.error("Por favor, ingresa el texto para generar el prompt.")
+    if st.button("Generar Colección de 4 Diseños", type="primary"):
+        if estilo_seleccionado == "Full Name/Phrase" and not texto_ingresado:
+            st.error("Por favor, ingresa el texto.")
         else:
-            # Definición de estilo final
-            estilo_final = estilo_base_letras.lower() if estilo_seleccionado in ["Full Name/Phrase", "A partir de una imagen"] else estilo_seleccionado.lower()
-            if estilo_secundario != "Ninguno":
-                estilo_final = f"fusion of {estilo_final} and {estilo_secundario.lower()}"
+            # Definir estilo final
+            estilo_final = estilo_secundario.lower() if estilo_secundario != "Ninguno" else "modern and attractive"
+            if estilo_seleccionado == "Simple & Clean (Minimalist)":
+                estilo_final = "minimalist, simple flat colors, elegant, clean lines, high contrast"
 
-            # Construcción del Prompt MAESTRO para NOMBRES
-            prompt = f"""**TASK:** Professional Graphic Design for a custom keychain.
+            # Construcción del Prompt MAESTRO
+            prompt = f"""**TASK:** Create a collection of **4 different keychain designs** in a 2x2 grid.
 **STYLE:** {estilo_final}.
-**CORE SUBJECT:** The specific text "{texto_ingresado.upper()}".
+**CORE SUBJECT:** The text "{texto_ingresado.upper()}".
 
-**TYPOGRAPHY RULES:**
-1. **TEXT INTEGRITY:** The word "{texto_ingresado.upper()}" must be spelled correctly. No extra letters.
-2. **HORIZONTAL ALIGNMENT:** Render the entire text in a SINGLE HORIZONTAL LINE. No stacking, no splitting the word into two lines.
-3. **PROPORTIONAL KERNING:** Maintain balanced and attractive spacing between letters. The design must fit a maximum proportional bounding box of 8cm x 4cm based on name length.
-4. **BOLD STRUCTURE:** Use thick, bold typography. All letters MUST be physically interconnected/touching to form a single solid piece."""
+**COLLECTION VARIATIONS (One for each of the 4 designs):**
+1. **CIRCULAR:** The text "{texto_ingresado.upper()}" perfectly centered inside a solid circular badge.
+2. **SQUARE/RECTANGULAR:** The text inside a sharp square or rectangular frame (8x4 aspect ratio).
+3. **DIE-CUT (LETTERS ONLY):** The text as a stand-alone piece where the silhouette follows the outer edges of the interconnected letters.
+4. **SIMPLE & MINIMAL:** A very basic but attractive version using only 2 solid colors, bold clean typography, and no ornaments.
 
-            if tipo_letras == "Solo las letras (Sin fondo)":
-                prompt += "\n5. **DIE-CUT SHAPE:** No background plates. The outer silhouette must follow the exact shape of the letters. Pure white background."
-            else:
-                prompt += "\n5. **PLAQUE DESIGN:** The text is integrated into a creative decorative base or rectangular plaque."
-
-            prompt += f"\n\n**VISUAL FINISH:** Solid flat colors. Sharp black internal vector lines. High contrast. No gradients. No shadows."
+**TECHNICAL RULES:**
+- **HORIZONTAL ALIGNMENT:** Text must be in a single horizontal line in all 4 versions. No stacking.
+- **INTERCONNECTION:** Letters must touch/be connected to form a single solid piece.
+- **VISUALS:** Solid flat colors. Sharp black internal lines. Pure white background. No gradients. No shadows.
+"""
+            # Añadir colores si se seleccionaron
+            if colores_seleccionados:
+                prompt += f"\n**COLOR PALETTE:** {', '.join(colores_seleccionados)}."
             
             if descripcion_coleccion:
-                prompt += f"\n**THEME DETAILS:** {descripcion_coleccion}."
+                prompt += f"\n**EXTRA THEME:** {descripcion_coleccion}."
 
             st.divider()
-            st.subheader("✅ Prompt Optimizado para Full Name/Phrase:")
+            st.subheader("✅ Prompt de Colección (4 Diseños):")
             st.code(prompt, language="markdown")
             
-            st.info("💡 **Consejo:** Este prompt obliga a la IA a mantener el nombre en una sola línea y asegura que las letras estén unidas para que el llavero no se rompa.")
+            st.success("Este prompt generará una cuadrícula con las 4 formas solicitadas (Circular, Cuadrada, Troquelada y Simple).")
 
 except Exception as e:
     st.error(f"Error: {e}")
