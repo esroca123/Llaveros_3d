@@ -66,30 +66,50 @@ Easy to paint and suitable for 3D printing.
 The character must clearly belong to the same brand universe.
 """
 
+def animal_block(animal_type, personalized=False):
+    if not animal_type:
+        return ""
+    animal_type = animal_type.lower().strip()
+    if personalized:
+        return f"""
+A cartoon version of a {animal_type}, standing on two legs like a human.
+Use the same style, proportions, and design language as the human character.
+Face, hairstyle (if any), and clothing inspired by the reference photo.
+Simplify all features, no textures, no small details.
+Slightly cute but mature style.
+Easy to paint and suitable for 3D printing.
+"""
+    else:
+        return f"""
+A cartoon version of a {animal_type}, standing on two legs like a human.
+Slightly cute but mature style.
+Simplified shapes, clean surfaces, no textures or tiny details.
+Stable base for 3D printing.
+Easy to paint.
+"""
+
 # =========================
 # PROMPT GENERATOR
 # =========================
 
-def generate_prompt(
-    gender,
-    hairstyle,
-    profession,
-    personalized,
-    extra_notes
-):
+def generate_prompt(character_type, gender, hairstyle, profession, animal_type, personalized, extra_notes):
     prompt = BASE_PROMPT
-    prompt += f"\nCharacter gender: {gender}."
-
-    if personalized:
-        prompt += personalization_block()
-    else:
-        prompt += f"\nHairstyle: {hairstyle}, simple cartoon style."
-        prompt += face_block_standard()
-        prompt += profession_block(profession)
-
+    prompt += f"\nCharacter type: {character_type}."
+    
+    if character_type == "Human":
+        prompt += f"\nCharacter gender: {gender}."
+        if personalized:
+            prompt += personalization_block()
+        else:
+            prompt += f"\nHairstyle: {hairstyle}, simple cartoon style."
+            prompt += face_block_standard()
+            prompt += profession_block(profession)
+    else:  # Animal
+        prompt += animal_block(animal_type, personalized)
+    
     if extra_notes:
         prompt += f"\nAdditional notes: {extra_notes}"
-
+    
     return prompt.strip()
 
 # =========================
@@ -97,35 +117,32 @@ def generate_prompt(
 # =========================
 
 st.set_page_config(page_title="3D Character Prompt Generator", layout="centered")
-
-st.title("🧍‍♂️🧍‍♀️ 3D Character Prompt Generator")
+st.title("🧍‍♂️🦊 3D Character Prompt Generator")
 st.write(
-    "Generate consistent, brand-safe prompts for 3D printable characters. "
-    "Designed for generic figures, professions, and photo-based personalization."
+    "Generate consistent, brand-safe prompts for 3D printable characters and animals. "
+    "Animals stand on two legs like humans. Supports free-text professions and photo personalization."
 )
 
 st.divider()
 
 # --- Controls ---
 
-gender = st.selectbox(
-    "Character gender",
-    ["Male", "Female"]
-)
+character_type = st.selectbox("Character type", ["Human", "Animal"])
 
-hairstyle = st.selectbox(
-    "Hairstyle (base style)",
-    ["Short", "Medium", "Long", "Tied"]
-)
+gender = "N/A"
+hairstyle = "N/A"
+profession = ""
+animal_type = ""
+personalized = False
 
-profession = st.text_input(
-    "Profession or role (free text)",
-    placeholder="e.g. doctor, chef, teacher, gamer, musician"
-)
-
-personalized = st.checkbox(
-    "Personalize using a photo reference (face + clothing)"
-)
+if character_type == "Human":
+    gender = st.selectbox("Character gender", ["Male", "Female"])
+    hairstyle = st.selectbox("Hairstyle (base style)", ["Short", "Medium", "Long", "Tied"])
+    profession = st.text_input("Profession or role (free text)", placeholder="e.g. doctor, chef, teacher")
+    personalized = st.checkbox("Personalize using a photo reference (face + clothing)")
+else:
+    animal_type = st.text_input("Animal type (e.g. dog, cat, lion, unicorn)")
+    personalized = st.checkbox("Personalize using a photo reference (face + clothing)")
 
 extra_notes = st.text_area(
     "Extra notes (optional)",
@@ -138,16 +155,13 @@ st.divider()
 
 if st.button("Generate Prompt"):
     final_prompt = generate_prompt(
+        character_type=character_type,
         gender=gender,
         hairstyle=hairstyle,
         profession=profession,
+        animal_type=animal_type,
         personalized=personalized,
         extra_notes=extra_notes
     )
-
     st.subheader("Generated Prompt")
-    st.text_area(
-        "Copy this prompt and use it in your AI tool",
-        final_prompt,
-        height=450
-    )
+    st.text_area("Copy this prompt and use it in your AI tool", final_prompt, height=450)
