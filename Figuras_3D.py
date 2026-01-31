@@ -96,6 +96,10 @@ def generate_prompt(character_type, gender, hairstyle, profession, animal_type, 
     prompt = BASE_PROMPT
     prompt += f"\nCharacter type: {character_type}."
     
+    # PROFESIÓN SIEMPRE OPCIONAL
+    if profession:
+        prompt += profession_block(profession)
+    
     if character_type == "Human":
         prompt += f"\nCharacter gender: {gender}."
         if personalized:
@@ -103,7 +107,6 @@ def generate_prompt(character_type, gender, hairstyle, profession, animal_type, 
         else:
             prompt += f"\nHairstyle: {hairstyle}, simple cartoon style."
             prompt += face_block_standard()
-            prompt += profession_block(profession)
     else:  # Animal
         prompt += animal_block(animal_type, personalized)
     
@@ -131,18 +134,19 @@ character_type = st.selectbox("Character type", ["Human", "Animal"])
 
 gender = "N/A"
 hairstyle = "N/A"
-profession = ""
 animal_type = ""
 personalized = False
 
 if character_type == "Human":
     gender = st.selectbox("Character gender", ["Male", "Female"])
     hairstyle = st.selectbox("Hairstyle (base style)", ["Short", "Medium", "Long", "Tied"])
-    profession = st.text_input("Profession or role (free text)", placeholder="e.g. doctor, chef, teacher")
     personalized = st.checkbox("Personalize using a photo reference (face + clothing)")
 else:
     animal_type = st.text_input("Animal type (e.g. dog, cat, lion, unicorn)")
     personalized = st.checkbox("Personalize using a photo reference (face + clothing)")
+
+# PROFESIÓN SIEMPRE OPCIONAL
+profession = st.text_input("Profession or role (optional, free text)", placeholder="e.g. doctor, chef, teacher, gamer")
 
 extra_notes = st.text_area(
     "Extra notes (optional)",
