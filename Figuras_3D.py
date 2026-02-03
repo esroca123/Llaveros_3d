@@ -135,4 +135,69 @@ def generate_prompt(
 # =========================
 
 st.set_page_config(page_title="3D Character Prompt Generator", layout="centered")
-st.title("🧍‍♂️🦊⭐ 3D Character Generator")
+st.title("🧍‍♂️🦊⭐ 3D Character Prompt Generator")
+st.write(
+    "Create consistent prompts for humans, animals or specific characters. "
+    "All outputs are optimized for 3D printing and painting."
+)
+
+st.divider()
+
+# --- Controls ---
+
+character_type = st.selectbox(
+    "Character type",
+    ["Human", "Animal", "Character"]
+)
+
+gender = "N/A"
+hairstyle = "N/A"
+animal_type = ""
+character_name = ""
+personalized = False
+
+if character_type == "Human":
+    gender = st.selectbox("Character gender", ["Male", "Female"])
+    hairstyle = st.selectbox("Hairstyle (base style)", ["Short", "Medium", "Long", "Tied"])
+    personalized = st.checkbox("Personalize using a photo reference")
+
+elif character_type == "Animal":
+    animal_type = st.text_input("Animal type (e.g. dog, cat, dragon)")
+    personalized = st.checkbox("Personalize using a photo reference")
+
+elif character_type == "Character":
+    character_name = st.text_input("Character name (e.g. Pikachu, Mario, Batman)")
+    personalized = st.checkbox("Adapt character using a reference image")
+
+# PROFESIÓN SIEMPRE DISPONIBLE
+profession = st.text_input(
+    "Profession or role (optional)",
+    placeholder="e.g. doctor, chef, warrior, gamer"
+)
+
+extra_notes = st.text_area(
+    "Extra notes (optional)",
+    placeholder="e.g. friendly pose, heroic stance, relaxed vibe"
+)
+
+st.divider()
+
+# --- Generate ---
+
+if st.button("Generate Prompt"):
+    final_prompt = generate_prompt(
+        character_type=character_type,
+        gender=gender,
+        hairstyle=hairstyle,
+        profession=profession,
+        animal_type=animal_type,
+        character_name=character_name,
+        personalized=personalized,
+        extra_notes=extra_notes
+    )
+    st.subheader("Generated Prompt")
+    st.text_area(
+        "Copy this prompt and use it in your AI tool",
+        final_prompt,
+        height=480
+    )
