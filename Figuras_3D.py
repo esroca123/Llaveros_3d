@@ -135,4 +135,4 @@ def generate_prompt(
 # =========================
 
 st.set_page_config(page_title="3D Character Prompt Generator", layout="centered")
-st.title("🧍‍♂️🦊⭐ 3
+st.title("🧍‍♂️🦊⭐ 3D Character Generator")
