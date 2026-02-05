@@ -11,81 +11,42 @@ st.set_page_config(
 st.title("🧍‍♂️🦊⭐ 3D Character Generator")
 
 st.markdown(
-    "Generador de prompts para **figuras 3D imprimibles**, "
-    "listas para pintar, personalizar o coleccionar."
+    "Generador de prompts para **figuras 3D imprimibles en blanco**, "
+    "listas para pintar y personalizar."
 )
 
 # --------------------------------------------------
-# STYLE PRESETS
+# BRAND STYLE (FIXED)
 # --------------------------------------------------
-STYLE_PRESETS = {
-    "Default Brand": """
+BRAND_STYLE = """
 Clean 3D cartoon character.
-Slightly cute but mature.
-Smooth surfaces, no textures.
-Simple shapes, easy to paint.
-Matte white unpainted 3D model.
+Slightly cute but adult-oriented.
+Smooth and simple surfaces.
+No textures.
+No tiny details.
+Unpainted white 3D model.
+Matte finish.
+Designed for easy painting.
 Stable proportions for 3D printing.
-""",
-
-    "Minimal 3D Print": """
-Ultra-clean 3D model.
-Very minimal details.
-Extremely smooth surfaces.
-Optimized for easy painting and printing.
-""",
-
-    "Cute Chibi": """
-Chibi-style cartoon character.
-Cute and friendly appearance.
-Simplified shapes.
-IMPORTANT: Do not exaggerate proportions.
-No oversized head or eyes.
-""",
-
-    "Semi-Adult Cartoon": """
-Stylized cartoon character.
-More mature proportions.
-Soft expression.
-Clean and modern look.
-""",
-
-    "Toy Figure": """
-Collectible toy figure style.
-Compact body.
-Solid and stable stance.
-Simple geometry.
-""",
-
-    "Animal Mascot": """
-Friendly anthropomorphic mascot style.
-Standing on two legs.
-Clean shapes.
-Brand-friendly look.
 """
-}
 
 # --------------------------------------------------
 # CHARACTER FIDELITY BLOCK (ONLY FOR EXISTING CHARACTERS)
 # --------------------------------------------------
 CHARACTER_FIDELITY_BLOCK = """
 IMPORTANT:
-This is a well-known existing character.
+This is an existing and recognizable character.
 
-Preserve the original identity, silhouette,
-facial structure, head shape, eyes, posture,
-and personality.
+Preserve original identity, silhouette,
+facial structure, head shape, eyes,
+posture and personality.
 
 Do NOT redesign the character.
-Do NOT change key proportions.
-Do NOT modernize or reinterpret.
+Do NOT exaggerate proportions.
+Do NOT reinterpret the style.
 
-Style adjustments must be subtle.
-If applying a cartoon or chibi style:
-- No exaggeration
-- No head enlargement
-- No eye enlargement
-- No body deformation
+If adapting to a cartoon style:
+Only simplify shapes without losing identity.
 
 The character must remain instantly recognizable.
 """
@@ -94,36 +55,9 @@ The character must remain instantly recognizable.
 # UI – TYPE SELECTION
 # --------------------------------------------------
 character_type = st.selectbox(
-    "Select character type",
+    "Select what you want to create",
     ["Person", "Animal", "Character"]
 )
-
-# --------------------------------------------------
-# COMMON OPTIONS
-# --------------------------------------------------
-style_preset = st.selectbox(
-    "Style preset",
-    list(STYLE_PRESETS.keys())
-)
-
-profession = st.text_input(
-    "Profession (optional)",
-    placeholder="e.g. baker, samurai, doctor..."
-)
-
-extra_details = st.text_input(
-    "Extra details (optional)",
-    placeholder="e.g. holding a lantern, calm pose..."
-)
-
-use_photo = st.checkbox("Use photo reference (optional)")
-
-photo_reference = ""
-if use_photo:
-    photo_reference = st.text_area(
-        "Describe the photo reference",
-        placeholder="Describe facial features, hairstyle, clothing..."
-    )
 
 # --------------------------------------------------
 # TYPE-SPECIFIC INPUTS
@@ -160,87 +94,100 @@ Existing fictional character: {character_name}.
 """
 
 # --------------------------------------------------
-# PROFESSION BLOCK (OPTIONAL ALWAYS)
+# OPTIONAL INPUTS
 # --------------------------------------------------
-profession_block = ""
-if profession.strip():
-    profession_block = f"""
+profession = st.text_input(
+    "Profession (optional)",
+    placeholder="e.g. baker, samurai, doctor..."
+)
+
+extra_details = st.text_input(
+    "Extra details (optional)",
+    placeholder="e.g. holding a lantern, calm pose..."
+)
+
+use_photo = st.checkbox("Use photo reference (optional)")
+
+photo_reference = ""
+if use_photo:
+    photo_reference = st.text_area(
+        "Describe the photo reference",
+        placeholder="Describe facial features, hairstyle, clothing..."
+    )
+
+# --------------------------------------------------
+# GENERATE BUTTON
+# --------------------------------------------------
+generate = st.button("✨ Generate prompt")
+
+# --------------------------------------------------
+# PROMPT GENERATION
+# --------------------------------------------------
+if generate:
+
+    profession_block = ""
+    if profession.strip():
+        profession_block = f"""
 Profession: {profession}.
-Appropriate simple outfit and accessories.
+Simple and appropriate outfit.
 """
 
-# --------------------------------------------------
-# PHOTO / REFERENCE BLOCK
-# --------------------------------------------------
-reference_block = ""
+    reference_block = ""
 
-if character_type == "Character":
-    if use_photo and photo_reference.strip():
-        reference_block = f"""
+    if character_type == "Character":
+        if use_photo and photo_reference.strip():
+            reference_block = """
 Use the provided photo reference.
-Faithfully adapt facial features, clothing and proportions.
+Faithfully adapt facial features, clothing,
+and proportions.
 Simplify only where needed for 3D printing.
 """
-    else:
-        reference_block = """
+        else:
+            reference_block = """
 Use the most accurate and recognizable visual references
 of this character as commonly found online.
 Stay faithful to the original design.
 """
 
-elif use_photo and photo_reference.strip():
-    reference_block = f"""
-Use the provided photo reference.
-Adapt facial features and clothing.
-Simplified cartoon interpretation.
-"""
-
-# --------------------------------------------------
-# FINAL PROMPT ASSEMBLY
-# --------------------------------------------------
-if character_type == "Character":
-    final_prompt = f"""
+        final_prompt = f"""
 {CHARACTER_FIDELITY_BLOCK}
-{STYLE_PRESETS[style_preset]}
+{BRAND_STYLE}
 {base_character_block}
 {reference_block}
 {profession_block}
 {extra_details}
 
-Unpainted white 3D model.
-Matte finish.
-Smooth surfaces.
-No textures.
-No tiny details.
-Stable base.
 3D printable sculpture.
+Stable base.
 """
-else:
-    final_prompt = f"""
-{STYLE_PRESETS[style_preset]}
+    else:
+        if use_photo and photo_reference.strip():
+            reference_block = """
+Use the provided photo reference.
+Adapt facial features and clothing
+to a simplified cartoon style.
+"""
+
+        final_prompt = f"""
+{BRAND_STYLE}
 {base_character_block}
 {reference_block}
 {profession_block}
 {extra_details}
 
-Unpainted white 3D model.
-Matte finish.
-Smooth surfaces.
-No textures.
-No tiny details.
-Stable base.
 3D printable sculpture.
+Stable base.
 """
 
-# --------------------------------------------------
-# OUTPUT
-# --------------------------------------------------
-st.subheader("📄 Final Prompt")
+    # --------------------------------------------------
+    # OUTPUT
+    # --------------------------------------------------
+    st.subheader("📄 Final Prompt")
 
-st.text_area(
-    "Copy-ready prompt",
-    final_prompt.strip(),
-    height=350
-)
+    st.text_area(
+        "Copy-ready prompt",
+        final_prompt.strip(),
+        height=350
+    )
 
-st.markdown("⬆️ *You can copy the full prompt directly from the box above.*")
+    st.markdown("⬆️ *You can copy the full prompt directly from the box above.*")
