@@ -16,39 +16,73 @@ st.markdown(
 )
 
 # --------------------------------------------------
-# BRAND STYLE (FIXED)
+# BRAND STYLE (FIXED – TECHNICAL)
 # --------------------------------------------------
 BRAND_STYLE = """
 Clean 3D cartoon character.
 Slightly cute but adult-oriented.
+Technical 3D model.
 Smooth and simple surfaces.
 No textures.
-No tiny details.
-Unpainted white 3D model.
+No micro details.
+Unpainted white material.
 Matte finish.
-Designed for easy painting.
-Stable proportions for 3D printing.
+Designed strictly for 3D printing.
 """
 
 # --------------------------------------------------
-# CHARACTER FIDELITY BLOCK (ONLY FOR EXISTING CHARACTERS)
+# TECHNICAL CONTROL (GLOBAL – VERY IMPORTANT)
+# --------------------------------------------------
+TECHNICAL_CONTROL_BLOCK = """
+This is a technical 3D model, not an illustration.
+No artistic interpretation.
+No cinematic lighting.
+No dramatic pose.
+No environment.
+No background elements.
+No decorative additions.
+"""
+
+# --------------------------------------------------
+# BASE CONTROL (ABSOLUTE)
+# --------------------------------------------------
+BASE_BLOCK = """
+Base:
+Simple flat round base.
+Plain cylinder.
+No decoration.
+No texture.
+No engravings.
+No patterns.
+No symbols.
+Purely functional base only.
+"""
+
+# --------------------------------------------------
+# CHARACTER FIDELITY (ONLY FOR EXISTING CHARACTERS)
 # --------------------------------------------------
 CHARACTER_FIDELITY_BLOCK = """
-IMPORTANT:
-This is an existing and recognizable character.
+IMPORTANT – CHARACTER FIDELITY OVERRIDES STYLE
 
-Preserve original identity, silhouette,
-facial structure, head shape, eyes,
-posture and personality.
+This is a well-known existing character.
+Accuracy is mandatory.
 
-Do NOT redesign the character.
-Do NOT exaggerate proportions.
-Do NOT reinterpret the style.
+Preserve:
+- Original facial structure
+- Original head shape
+- Original proportions
+- Original silhouette
+- Original personality
 
-If adapting to a cartoon style:
-Only simplify shapes without losing identity.
+Do NOT:
+- Redesign the character
+- Stylize freely
+- Exaggerate proportions
+- Add new elements
+- Change base design
 
-The character must remain instantly recognizable.
+Any style adaptation must be minimal and secondary.
+Instant recognition has absolute priority.
 """
 
 # --------------------------------------------------
@@ -81,7 +115,7 @@ elif character_type == "Animal":
     base_character_block = f"""
 Anthropomorphic {animal_type} character.
 Standing on two legs like a human.
-Animal features preserved.
+Animal anatomy preserved.
 """
 
 elif character_type == "Character":
@@ -112,7 +146,7 @@ photo_reference = ""
 if use_photo:
     photo_reference = st.text_area(
         "Describe the photo reference",
-        placeholder="Describe facial features, hairstyle, clothing..."
+        placeholder="Describe facial features, clothing, posture..."
     )
 
 # --------------------------------------------------
@@ -125,28 +159,31 @@ generate = st.button("✨ Generate prompt")
 # --------------------------------------------------
 if generate:
 
+    # Profession block (always optional)
     profession_block = ""
     if profession.strip():
         profession_block = f"""
 Profession: {profession}.
 Simple and appropriate outfit.
+No decorative excess.
 """
 
+    # Reference handling
     reference_block = ""
 
     if character_type == "Character":
         if use_photo and photo_reference.strip():
             reference_block = """
 Use the provided photo reference.
-Faithfully adapt facial features, clothing,
-and proportions.
-Simplify only where needed for 3D printing.
+Faithfully match facial features, clothing,
+body proportions and posture.
+Simplify only when required for 3D printing.
 """
         else:
             reference_block = """
 Use the most accurate and recognizable visual references
 of this character as commonly found online.
-Stay faithful to the original design.
+Faithfulness is mandatory.
 """
 
         final_prompt = f"""
@@ -157,9 +194,12 @@ Stay faithful to the original design.
 {profession_block}
 {extra_details}
 
+{TECHNICAL_CONTROL_BLOCK}
+{BASE_BLOCK}
+
 3D printable sculpture.
-Stable base.
 """
+
     else:
         if use_photo and photo_reference.strip():
             reference_block = """
@@ -175,8 +215,10 @@ to a simplified cartoon style.
 {profession_block}
 {extra_details}
 
+{TECHNICAL_CONTROL_BLOCK}
+{BASE_BLOCK}
+
 3D printable sculpture.
-Stable base.
 """
 
     # --------------------------------------------------
@@ -187,7 +229,7 @@ Stable base.
     st.text_area(
         "Copy-ready prompt",
         final_prompt.strip(),
-        height=350
+        height=380
     )
 
-    st.markdown("⬆️ *You can copy the full prompt directly from the box above.*")
+    st.markdown("⬆️ *Copy the full prompt directly from the box above.*")
