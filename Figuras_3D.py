@@ -1,203 +1,246 @@
 import streamlit as st
 
-# =========================
-# BASE PROMPT (NO TOCAR)
-# =========================
-
-BASE_PROMPT = """
-A clean 3D cartoon character designed for 3D printing.
-Style is slightly cute but mature, suitable for both kids and adults.
-Smooth, simple surfaces, no textures, no tiny details.
-Unpainted white model, matte finish.
-Friendly and calm expression.
-
-Medium-sized head, balanced cartoon proportions.
-Compact body, stable and solid.
-Neutral standing pose, arms relaxed along the body.
-Simplified hands and feet.
-Flat and stable base.
-
-3D sculpture style.
-Not illustration.
-Not realistic.
-"""
-
-# =========================
-# PROMPT BLOCKS
-# =========================
-
-def face_block_standard():
-    return """
-Simple friendly face.
-Soft rounded facial features.
-Small nose and gentle smile.
-Cartoon eyes, clean and minimal.
-"""
-
-def profession_block(profession):
-    if not profession:
-        return ""
-    profession = profession.lower().strip()
-    return f"""
-Add a {profession} outfit.
-Profession-related clothing and accessories only.
-Simple shapes.
-No logos, no text, no patterns.
-Easy to paint.
-Suitable for 3D printing.
-"""
-
-def personalization_block():
-    return """
-Use the same character style, proportions, and design language.
-Do not change the overall look of the character.
-
-Face and clothing inspired by the reference image,
-fully adapted to the existing cartoon style.
-Simplify all features.
-No realism.
-No textures.
-No small details.
-
-The character must clearly belong to the same brand universe.
-"""
-
-def animal_block(animal_type, personalized=False):
-    if not animal_type:
-        return ""
-    animal_type = animal_type.lower().strip()
-    return f"""
-A cartoon version of a {animal_type}, standing on two legs like a human.
-Slightly cute but mature style.
-Simplified shapes, clean surfaces.
-No textures or tiny details.
-Stable base for 3D printing.
-Easy to paint.
-"""
-
-def character_block(character_name):
-    if not character_name:
-        return ""
-    character_name = character_name.strip()
-    return f"""
-A stylized cartoon reinterpretation of {character_name}.
-Do not copy realism or exact original design.
-Adapt the character to the brand's 3D cartoon style.
-Simplify shapes and details.
-No logos, no text, no trademarks.
-Suitable for 3D printing and painting.
-"""
-
-# =========================
-# PROMPT GENERATOR
-# =========================
-
-def generate_prompt(
-    character_type,
-    gender,
-    hairstyle,
-    profession,
-    animal_type,
-    character_name,
-    personalized,
-    extra_notes
-):
-    prompt = BASE_PROMPT
-    prompt += f"\nCharacter type: {character_type}."
-
-    # PROFESIÓN SIEMPRE OPCIONAL
-    if profession:
-        prompt += profession_block(profession)
-
-    if character_type == "Human":
-        prompt += f"\nCharacter gender: {gender}."
-        if personalized:
-            prompt += personalization_block()
-        else:
-            prompt += f"\nHairstyle: {hairstyle}, simple cartoon style."
-            prompt += face_block_standard()
-
-    elif character_type == "Animal":
-        prompt += animal_block(animal_type, personalized)
-
-    elif character_type == "Character":
-        prompt += character_block(character_name)
-        if personalized:
-            prompt += personalization_block()
-
-    if extra_notes:
-        prompt += f"\nAdditional notes: {extra_notes}"
-
-    return prompt.strip()
-
-# =========================
-# STREAMLIT UI
-# =========================
-
-st.set_page_config(page_title="3D Character Prompt Generator", layout="centered")
-st.title("🧍‍♂️🦊⭐ 3D Character Prompt Generator")
-st.write(
-    "Create consistent prompts for humans, animals or specific characters. "
-    "All outputs are optimized for 3D printing and painting."
+# --------------------------------------------------
+# CONFIG
+# --------------------------------------------------
+st.set_page_config(
+    page_title="3D Character Generator",
+    layout="centered"
 )
 
-st.divider()
+st.title("🧍‍♂️🦊⭐ 3D Character Generator")
 
-# --- Controls ---
+st.markdown(
+    "Generador de prompts para **figuras 3D imprimibles**, "
+    "listas para pintar, personalizar o coleccionar."
+)
 
+# --------------------------------------------------
+# STYLE PRESETS
+# --------------------------------------------------
+STYLE_PRESETS = {
+    "Default Brand": """
+Clean 3D cartoon character.
+Slightly cute but mature.
+Smooth surfaces, no textures.
+Simple shapes, easy to paint.
+Matte white unpainted 3D model.
+Stable proportions for 3D printing.
+""",
+
+    "Minimal 3D Print": """
+Ultra-clean 3D model.
+Very minimal details.
+Extremely smooth surfaces.
+Optimized for easy painting and printing.
+""",
+
+    "Cute Chibi": """
+Chibi-style cartoon character.
+Cute and friendly appearance.
+Simplified shapes.
+IMPORTANT: Do not exaggerate proportions.
+No oversized head or eyes.
+""",
+
+    "Semi-Adult Cartoon": """
+Stylized cartoon character.
+More mature proportions.
+Soft expression.
+Clean and modern look.
+""",
+
+    "Toy Figure": """
+Collectible toy figure style.
+Compact body.
+Solid and stable stance.
+Simple geometry.
+""",
+
+    "Animal Mascot": """
+Friendly anthropomorphic mascot style.
+Standing on two legs.
+Clean shapes.
+Brand-friendly look.
+"""
+}
+
+# --------------------------------------------------
+# CHARACTER FIDELITY BLOCK (ONLY FOR EXISTING CHARACTERS)
+# --------------------------------------------------
+CHARACTER_FIDELITY_BLOCK = """
+IMPORTANT:
+This is a well-known existing character.
+
+Preserve the original identity, silhouette,
+facial structure, head shape, eyes, posture,
+and personality.
+
+Do NOT redesign the character.
+Do NOT change key proportions.
+Do NOT modernize or reinterpret.
+
+Style adjustments must be subtle.
+If applying a cartoon or chibi style:
+- No exaggeration
+- No head enlargement
+- No eye enlargement
+- No body deformation
+
+The character must remain instantly recognizable.
+"""
+
+# --------------------------------------------------
+# UI – TYPE SELECTION
+# --------------------------------------------------
 character_type = st.selectbox(
-    "Character type",
-    ["Human", "Animal", "Character"]
+    "Select character type",
+    ["Person", "Animal", "Character"]
 )
 
-gender = "N/A"
-hairstyle = "N/A"
-animal_type = ""
-character_name = ""
-personalized = False
+# --------------------------------------------------
+# COMMON OPTIONS
+# --------------------------------------------------
+style_preset = st.selectbox(
+    "Style preset",
+    list(STYLE_PRESETS.keys())
+)
 
-if character_type == "Human":
-    gender = st.selectbox("Character gender", ["Male", "Female"])
-    hairstyle = st.selectbox("Hairstyle (base style)", ["Short", "Medium", "Long", "Tied"])
-    personalized = st.checkbox("Personalize using a photo reference")
+profession = st.text_input(
+    "Profession (optional)",
+    placeholder="e.g. baker, samurai, doctor..."
+)
+
+extra_details = st.text_input(
+    "Extra details (optional)",
+    placeholder="e.g. holding a lantern, calm pose..."
+)
+
+use_photo = st.checkbox("Use photo reference (optional)")
+
+photo_reference = ""
+if use_photo:
+    photo_reference = st.text_area(
+        "Describe the photo reference",
+        placeholder="Describe facial features, hairstyle, clothing..."
+    )
+
+# --------------------------------------------------
+# TYPE-SPECIFIC INPUTS
+# --------------------------------------------------
+base_character_block = ""
+
+if character_type == "Person":
+    gender = st.selectbox("Gender", ["Male", "Female"])
+    base_character_block = f"""
+Original human character.
+Gender: {gender}.
+Neutral standing pose.
+Friendly and calm expression.
+"""
 
 elif character_type == "Animal":
-    animal_type = st.text_input("Animal type (e.g. dog, cat, dragon)")
-    personalized = st.checkbox("Personalize using a photo reference")
+    animal_type = st.text_input(
+        "Type of animal",
+        placeholder="e.g. turtle, fox, cat..."
+    )
+    base_character_block = f"""
+Anthropomorphic {animal_type} character.
+Standing on two legs like a human.
+Animal features preserved.
+"""
 
 elif character_type == "Character":
-    character_name = st.text_input("Character name (e.g. Pikachu, Mario, Batman)")
-    personalized = st.checkbox("Adapt character using a reference image")
+    character_name = st.text_input(
+        "Character name",
+        placeholder="e.g. Master Oogway, Pikachu..."
+    )
+    base_character_block = f"""
+Existing fictional character: {character_name}.
+"""
 
-# PROFESIÓN SIEMPRE DISPONIBLE
-profession = st.text_input(
-    "Profession or role (optional)",
-    placeholder="e.g. doctor, chef, warrior, gamer"
+# --------------------------------------------------
+# PROFESSION BLOCK (OPTIONAL ALWAYS)
+# --------------------------------------------------
+profession_block = ""
+if profession.strip():
+    profession_block = f"""
+Profession: {profession}.
+Appropriate simple outfit and accessories.
+"""
+
+# --------------------------------------------------
+# PHOTO / REFERENCE BLOCK
+# --------------------------------------------------
+reference_block = ""
+
+if character_type == "Character":
+    if use_photo and photo_reference.strip():
+        reference_block = f"""
+Use the provided photo reference.
+Faithfully adapt facial features, clothing and proportions.
+Simplify only where needed for 3D printing.
+"""
+    else:
+        reference_block = """
+Use the most accurate and recognizable visual references
+of this character as commonly found online.
+Stay faithful to the original design.
+"""
+
+elif use_photo and photo_reference.strip():
+    reference_block = f"""
+Use the provided photo reference.
+Adapt facial features and clothing.
+Simplified cartoon interpretation.
+"""
+
+# --------------------------------------------------
+# FINAL PROMPT ASSEMBLY
+# --------------------------------------------------
+if character_type == "Character":
+    final_prompt = f"""
+{CHARACTER_FIDELITY_BLOCK}
+{STYLE_PRESETS[style_preset]}
+{base_character_block}
+{reference_block}
+{profession_block}
+{extra_details}
+
+Unpainted white 3D model.
+Matte finish.
+Smooth surfaces.
+No textures.
+No tiny details.
+Stable base.
+3D printable sculpture.
+"""
+else:
+    final_prompt = f"""
+{STYLE_PRESETS[style_preset]}
+{base_character_block}
+{reference_block}
+{profession_block}
+{extra_details}
+
+Unpainted white 3D model.
+Matte finish.
+Smooth surfaces.
+No textures.
+No tiny details.
+Stable base.
+3D printable sculpture.
+"""
+
+# --------------------------------------------------
+# OUTPUT
+# --------------------------------------------------
+st.subheader("📄 Final Prompt")
+
+st.text_area(
+    "Copy-ready prompt",
+    final_prompt.strip(),
+    height=350
 )
 
-extra_notes = st.text_area(
-    "Extra notes (optional)",
-    placeholder="e.g. friendly pose, heroic stance, relaxed vibe"
-)
-
-st.divider()
-
-# --- Generate ---
-
-if st.button("Generate Prompt"):
-    final_prompt = generate_prompt(
-        character_type=character_type,
-        gender=gender,
-        hairstyle=hairstyle,
-        profession=profession,
-        animal_type=animal_type,
-        character_name=character_name,
-        personalized=personalized,
-        extra_notes=extra_notes
-    )
-    st.subheader("Generated Prompt")
-    st.text_area(
-        "Copy this prompt and use it in your AI tool",
-        final_prompt,
-        height=480
-    )
+st.markdown("⬆️ *You can copy the full prompt directly from the box above.*")
