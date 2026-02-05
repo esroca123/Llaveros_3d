@@ -86,6 +86,26 @@ Instant recognition has absolute priority.
 """
 
 # --------------------------------------------------
+# CHARACTER REFERENCE SEARCH (NEW – PROMPT ONLY)
+# --------------------------------------------------
+CHARACTER_REFERENCE_SEARCH_BLOCK = """
+REFERENCE ACQUISITION STEP (MANDATORY):
+
+Before generating the character, search for the most accurate and
+recognizable visual references of this character available online.
+
+Analyze multiple references to identify:
+- Canonical facial features
+- Full body proportions
+- Typical clothing and accessories
+- Overall silhouette and stance
+
+If available references are partial (e.g. upper body only),
+reconstruct the full body based on the official and commonly accepted design.
+Do NOT crop or limit the character due to incomplete references.
+"""
+
+# --------------------------------------------------
 # UI – TYPE SELECTION
 # --------------------------------------------------
 character_type = st.selectbox(
@@ -168,25 +188,27 @@ Simple and appropriate outfit.
 No decorative excess.
 """
 
-    # Reference handling
     reference_block = ""
 
     if character_type == "Character":
+
         if use_photo and photo_reference.strip():
-            reference_block = """
-Use the provided photo reference.
-Faithfully match facial features, clothing,
-body proportions and posture.
-Simplify only when required for 3D printing.
+            reference_block = f"""
+Use the provided photo reference as a visual guide.
+Match facial features, clothing and proportions faithfully.
+If the photo is partial, reconstruct the full body
+based on official character design consistency.
+Photo description:
+{photo_reference}
 """
         else:
             reference_block = """
-Use the most accurate and recognizable visual references
-of this character as commonly found online.
-Faithfulness is mandatory.
+No photo reference provided.
+Rely exclusively on accurate and well-known online references.
 """
 
         final_prompt = f"""
+{CHARACTER_REFERENCE_SEARCH_BLOCK}
 {CHARACTER_FIDELITY_BLOCK}
 {BRAND_STYLE}
 {base_character_block}
@@ -201,11 +223,14 @@ Faithfulness is mandatory.
 """
 
     else:
+
         if use_photo and photo_reference.strip():
-            reference_block = """
+            reference_block = f"""
 Use the provided photo reference.
 Adapt facial features and clothing
 to a simplified cartoon style.
+Photo description:
+{photo_reference}
 """
 
         final_prompt = f"""
