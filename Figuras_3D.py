@@ -12,60 +12,42 @@ st.title("🧍‍♂️🦊⭐ 3D Character Generator")
 
 st.markdown(
     "Generador de prompts para **figuras 3D imprimibles en blanco**, "
-    "listas para pintar y personalizar."
+    "enfocado en fidelidad absoluta de personajes conocidos."
 )
 
 # --------------------------------------------------
-# BRAND STYLE
+# BRAND STYLE (ESTILO VISUAL)
 # --------------------------------------------------
 BRAND_STYLE = """
-Clean 3D cartoon character.
-Slightly cute but adult-oriented.
-Technical 3D model.
-Smooth and simple surfaces.
-No textures.
-No micro details.
-Unpainted white material.
-Matte finish.
+STYLE: Clean 3D sculpture, unpainted white material, matte finish. 
+Technical 3D model with smooth surfaces. No textures, no micro-details. 
 Designed strictly for 3D printing.
 """
 
 # --------------------------------------------------
-# TECHNICAL CONTROL
+# TECHNICAL & BASE CONTROL
 # --------------------------------------------------
 TECHNICAL_CONTROL_BLOCK = """
-This is a technical 3D model, not an illustration.
-No artistic interpretation.
-No cinematic lighting.
-No dramatic pose.
-No environment.
-No background elements.
-No decorative additions.
+CONTROL: Technical model, no background, isolated on white. 
+No cinematic lighting, no environment, no decorative additions.
 """
 
-# --------------------------------------------------
-# BASE CONTROL
-# --------------------------------------------------
 BASE_BLOCK = """
-Base:
-Simple flat round base.
-Plain cylinder.
-No decoration.
-No texture.
-No engravings.
-No patterns.
-No symbols.
-Purely functional base only.
+BASE: Simple flat round base, plain cylinder, purely functional.
 """
 
 # --------------------------------------------------
-# NUEVA LÓGICA DE BÚSQUEDA Y FIDELIDAD (OPTIMIZADA)
+# NUEVO BLOQUE: SEARCH & FIDELITY (EL CAMBIO CLAVE)
 # --------------------------------------------------
-CHARACTER_FIDELITY_BLOCK = """
-CRITICAL STEP: Before generating, identify the official visual design of this character.
-You must replicate the canonical facial structure, body proportions, and iconic silhouette.
-This prompt is for a technical 3D reference: do not deviate from the original source.
-Accuracy is mandatory for 3D printing.
+# Este bloque obliga a la IA a buscar y mantener la anatomía exacta.
+CHARACTER_ANALYSIS_BLOCK = """
+MANDATORY REFERENCE STEP:
+1. Search and analyze the official design of the character.
+2. REPLICATE EXACT ANATOMY: Maintain the specific facial structure, 
+   eye shape, hand/paw configuration, and unique body elements 
+   (like shells, horns, or armor) with 90% fidelity to the original.
+3. DO NOT stylize or simplify the character's biological or iconic traits.
+4. Accuracy of the character's unique silhouette is the highest priority.
 """
 
 # --------------------------------------------------
@@ -73,89 +55,53 @@ Accuracy is mandatory for 3D printing.
 # --------------------------------------------------
 character_type = st.selectbox(
     "Select what you want to create",
-    ["Person", "Animal", "Character"]
+    ["Character", "Person", "Animal"]
 )
 
 base_character_block = ""
 
 if character_type == "Person":
     gender = st.selectbox("Gender", ["Male", "Female"])
-    base_character_block = f"""
-Original human character.
-Gender: {gender}.
-Neutral standing pose.
-Friendly and calm expression.
-"""
+    base_character_block = f"SUBJECT: Original human, {gender}. Neutral pose."
 
 elif character_type == "Animal":
-    animal_type = st.text_input(
-        "Type of animal",
-        placeholder="e.g. turtle, fox, cat..."
-    )
-    base_character_block = f"""
-Anthropomorphic {animal_type} character.
-Standing on two legs like a human.
-Animal anatomy preserved.
-"""
+    animal_type = st.text_input("Type of animal", placeholder="e.g. fox, turtle...")
+    base_character_block = f"SUBJECT: Anthropomorphic {animal_type}."
 
 elif character_type == "Character":
     character_name = st.text_input(
         "Character name",
         placeholder="e.g. Master Oogway, Pikachu..."
     )
-    # Aquí el cambio clave: forzamos a la IA a citar el personaje específico
-    base_character_block = f"""
-Existing fictional character: {character_name}.
-Official design from its respective franchise.
-Maintain exact canonical likeness.
-"""
+    # Refuerzo del nombre y origen
+    base_character_block = f"SUBJECT: The official character '{character_name}' in its canon design."
 
 # --------------------------------------------------
 # OPTIONAL INPUTS
 # --------------------------------------------------
-profession = st.text_input(
-    "Profession (optional)",
-    placeholder="e.g. baker, samurai, doctor..."
-)
+profession = st.text_input("Profession (optional)")
+extra_details = st.text_input("Extra details (optional)", placeholder="Pose, objects...")
 
-extra_details = st.text_input(
-    "Extra details (optional)",
-    placeholder="e.g. holding a lantern, calm pose..."
-)
-
-use_photo = st.checkbox("Use photo reference (optional)")
-
+use_photo = st.checkbox("Use photo reference description (optional)")
 photo_reference = ""
 if use_photo:
-    photo_reference = st.text_area(
-        "Describe the photo reference",
-        placeholder="Describe facial features, clothing, posture..."
-    )
+    photo_reference = st.text_area("Describe the photo reference")
 
 # --------------------------------------------------
 # GENERATE BUTTON
 # --------------------------------------------------
-generate = st.button("✨ Generate prompt")
+generate = st.button("✨ Generate Master Prompt")
 
 if generate:
-    profession_block = ""
-    if profession.strip():
-        profession_block = f"Profession: {profession}.\nSimple outfit."
-
-    reference_block = ""
-
+    profession_block = f"PROFESSION: {profession}." if profession.strip() else ""
+    
     if character_type == "Character":
-        if use_photo and photo_reference.strip():
-            reference_block = f"Use this photo description: {photo_reference}"
-        else:
-            # Instrucción de búsqueda integrada en el prompt final
-            reference_block = "Search your internal database for the most accurate visual reference of this character."
-
+        # PROMPT CONSTRUÍDO PARA MÁXIMA FIDELIDAD
         final_prompt = f"""
-{CHARACTER_FIDELITY_BLOCK}
-{BRAND_STYLE}
+{CHARACTER_ANALYSIS_BLOCK}
 {base_character_block}
-{reference_block}
+{BRAND_STYLE}
+{photo_reference if use_photo else ""}
 {profession_block}
 {extra_details}
 {TECHNICAL_CONTROL_BLOCK}
@@ -163,14 +109,11 @@ if generate:
 3D printable sculpture.
 """
     else:
-        # Lógica original para Person y Animal
-        if use_photo and photo_reference.strip():
-            reference_block = f"Adapt this photo to cartoon: {photo_reference}"
-        
+        # Prompt estándar para creaciones originales
         final_prompt = f"""
-{BRAND_STYLE}
 {base_character_block}
-{reference_block}
+{BRAND_STYLE}
+{photo_reference if use_photo else ""}
 {profession_block}
 {extra_details}
 {TECHNICAL_CONTROL_BLOCK}
@@ -178,5 +121,5 @@ if generate:
 3D printable sculpture.
 """
 
-    st.subheader("📄 Final Prompt")
-    st.text_area("Copy-ready prompt", final_prompt.strip(), height=380)
+    st.subheader("📄 Prompt para Gemini / Nano Banana")
+    st.text_area("Copia este texto:", final_prompt.strip(), height=400)
