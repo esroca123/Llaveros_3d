@@ -5,50 +5,69 @@ import streamlit as st
 # --------------------------------------------------
 st.set_page_config(page_title="3D Character Generator Pro", layout="centered")
 
-st.title("🧍‍♂️ FOX ⭐ 3D Character Workflow")
-
-st.markdown("""
-### Estrategia de Dos Pasos:
-1. **Generar la Identidad:** Creamos al personaje con total fidelidad.
-2. **Convertir a 3D:** Usamos la imagen del Paso 1 para crear la figura imprimible.
-""")
+st.title("🧍‍♂️ FOX ⭐ 3D Character Generator")
 
 # --------------------------------------------------
-# UI - ENTRADA DE DATOS
+# UI - SELECCIÓN DE TIPO (RESTAURADO)
 # --------------------------------------------------
-char_name = st.text_input("Nombre del Personaje", placeholder="Ej: Master Oogway")
-extra_details = st.text_input("Detalles adicionales (Pose, expresión, objetos)")
+character_type = st.selectbox(
+    "Select what you want to create",
+    ["Character", "Person", "Animal"]
+)
 
-if st.button("✨ Generar Flujo de Trabajo"):
-    if not char_name:
-        st.error("Por favor, introduce el nombre de un personaje.")
+# Variables de control
+subject_description = ""
+extra_details = ""
+
+if character_type == "Person":
+    gender = st.selectbox("Gender", ["Male", "Female"])
+    age = st.selectbox("Age group", ["Child", "Adult", "Elderly"])
+    profession = st.text_input("Profession (e.g. Warrior, Doctor)")
+    extra_details = st.text_input("Special description (Physical traits, outfit)")
+    subject_description = f"A {age} {gender} {profession}. {extra_details}"
+
+elif character_type == "Animal":
+    animal_kind = st.text_input("Type of animal", placeholder="e.g. Fox, Turtle, Lion")
+    animal_traits = st.selectbox("Style", ["Natural", "Anthropomorphic (Human-like)"])
+    extra_details = st.text_input("Special description (Pose, clothing)")
+    subject_description = f"A {animal_traits} {animal_kind}. {extra_details}"
+
+elif character_type == "Character":
+    char_name = st.text_input("Character name", placeholder="e.g. Master Oogway")
+    extra_details = st.text_input("Specific details (Pose, expression, objects)")
+    subject_description = f"{char_name}. {extra_details}"
+
+# --------------------------------------------------
+# LÓGICA DE GENERACIÓN
+# --------------------------------------------------
+if st.button("✨ Generate Workflow / Prompt"):
+    
+    # ESTILO TÉCNICO BASE PARA EL PASO FINAL
+    BRAND_STYLE = "STYLE: Clean 3D digital sculpture, unpainted white resin material, matte finish."
+    TECH_BLOCK = "CONTROL: Isolated on white background, no environment, neutral lighting, simple round base."
+
+    if character_type == "Character":
+        if not char_name:
+            st.error("Please enter a character name.")
+        else:
+            # FLUJO DE DOS PASOS PARA PERSONAJES
+            st.markdown("---")
+            st.subheader("🚀 Dual Step Workflow for Characters")
+            
+            # Paso 1: Identidad Visual
+            st.info("1️⃣ **Step 1: Generate Visual Identity**\nUse this prompt to get the perfect reference:")
+            p1 = f"GENERATE IDENTITY: Full color cinematic render of {char_name}. {extra_details if extra_details else 'Official canon appearance'}. 1:1 anatomical fidelity, highly detailed skin and textures, solid neutral background."
+            st.code(p1, language="text")
+
+            # Paso 2: Conversión a 3D
+            st.info("2️⃣ **Step 2: 3D Translation**\nAttach the image from Step 1 and use this prompt:")
+            p2 = f"3D TRANSLATION: Use the attached image as absolute geometry reference. Convert this exact character into a {BRAND_STYLE} {TECH_BLOCK} Maintain 100% of facial wrinkles and canonical proportions."
+            st.code(p2, language="text")
+    
     else:
-        # --- PROMPT PASO 1: FIDELIDAD TOTAL ---
-        prompt_paso_1 = f"""
-PASO 1: GENERACIÓN DE IDENTIDAD CRÍTICA
-OBJETIVO: Crear una imagen cinematográfica de alta calidad de {char_name}.
-DETALLES: {extra_details if extra_details else "Apariencia canon oficial completa"}.
-REGLA: Debe ser una representación 1:1 del personaje original de la película, con todas sus arrugas, texturas de piel y vestimenta original a todo color.
-FONDO: Fondo neutro sólido.
-"""
-
-        # --- PROMPT PASO 2: TRADUCCIÓN A 3D ---
-        prompt_paso_2 = f"""
-PASO 2: TRADUCCIÓN TÉCNICA A FIGURA 3D
-INSTRUCCIÓN: Usa la imagen generada en el Paso 1 como referencia geométrica absoluta.
-ACCIÓN: Convierte al personaje de la imagen en una escultura digital para impresión 3D.
-ESTILO: Resina blanca pura, sin pintar, acabado mate.
-DETALLES TÉCNICOS: Mantén el 100% de las arrugas y formas de la cara del Paso 1. 
-CONTROL: Aísla al personaje sobre un fondo blanco puro, añade una base redonda simple y elimina cualquier textura que no sea relieve.
-"""
-
-        # --- MOSTRAR RESULTADOS ---
-        st.subheader("1️⃣ Paso 1: Generar la Referencia")
-        st.info("Copia este prompt primero para obtener la imagen perfecta del personaje:")
-        st.code(prompt_paso_1.strip(), language="text")
-
-        st.subheader("2️⃣ Paso 2: Crear la Versión 3D")
-        st.info("Una vez generada la imagen del Paso 1, adjúntala y usa este prompt:")
-        st.code(prompt_paso_2.strip(), language="text")
-
-        st.success("Flujo de trabajo generado. ¡Sigue los pasos en orden!")
+        # PROMPT ÚNICO PARA PERSONAS Y ANIMALES (Lógica original)
+        st.markdown("---")
+        st.subheader("📄 Single Step Prompt")
+        final_prompt = f"SUBJECT: {subject_description}.\n{BRAND_STYLE}\n{TECH_BLOCK}\n3D printable figurine."
+        st.code(final_prompt.strip(), language="text")
+        st.success("Prompt generated successfully!")
