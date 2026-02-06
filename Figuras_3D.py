@@ -16,6 +16,17 @@ st.markdown(
 )
 
 # --------------------------------------------------
+# ADVERTENCIA SUPERIOR
+# --------------------------------------------------
+st.warning(
+    "⚠️ Para obtener un resultado fiel de un personaje existente, "
+    "asegúrate de **adjuntar al menos una imagen de referencia directamente en la IA** "
+    "(por ejemplo, Gemini) que generará la imagen. "
+    "Si la referencia es parcial (rostro o torso), la IA completará el resto del cuerpo "
+    "manteniendo coherencia."
+)
+
+# --------------------------------------------------
 # BRAND STYLE (FIXED – TECHNICAL)
 # --------------------------------------------------
 BRAND_STYLE = """
@@ -202,12 +213,10 @@ Photo description:
 {photo_reference}
 """
         else:
-            # NUEVA INDICACIÓN CLARA PARA EL USUARIO
             reference_block = """
-⚠️ IMPORTANT: To get a faithful result of the character, 
-you must attach at least one reference image directly in the AI (e.g., Gemini) that will generate the image.
-The AI will use the image(s) as primary source.
-If the reference is partial (e.g., only torso or face), the AI will complete the rest of the body maintaining coherence.
+No photo reference provided.
+AI will need at least one reference image attached in the generating platform
+to achieve high fidelity with the original character.
 """
 
         final_prompt = f"""
@@ -254,14 +263,13 @@ Photo description:
     # --------------------------------------------------
     st.subheader("📄 Final Prompt")
 
-    # Text area con prompt
-    st.text_area(
+    prompt_area = st.text_area(
         "Copy-ready prompt",
         final_prompt.strip(),
         height=380
     )
 
-    # Botón de copiado rápido
+    # Botón de copiado rápido real
     if st.button("📋 Copy prompt"):
-        st.experimental_set_query_params()  # Forcing UI refresh (hack para feedback simple)
+        st.experimental_set_query_params()  # refresco UI
         st.success("Prompt copied! ✅ Copy it directly into the AI with your reference image.")
