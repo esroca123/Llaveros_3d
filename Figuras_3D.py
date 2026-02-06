@@ -8,56 +8,48 @@ st.set_page_config(page_title="3D Character Generator", layout="centered")
 st.title("🧍‍♂️ FOX ⭐ 3D Character Generator")
 
 # --------------------------------------------------
-# BRAND & TECHNICAL BLOCKS
+# BRAND STYLE - Simplificado al máximo para no estorbar
 # --------------------------------------------------
-BRAND_STYLE = "STYLE: Full body 3D digital sculpture, unpainted white resin material, matte finish. Technical model for 3D printing."
-TECH_BLOCK = "CONTROL: Isolated on white background, no environment, neutral lighting, simple round base."
+BRAND_STYLE = "Pure white unpainted 3D resin sculpture style. Matte finish."
+TECH_BLOCK = "Isolated on white background, simple round base, technical 3D model."
 
 # --------------------------------------------------
-# UI - SELECCIÓN Y CONFIGURACIÓN
+# UI
 # --------------------------------------------------
 character_type = st.selectbox("Select type", ["Character", "Person", "Animal"])
-
-# OPCIÓN DE REFERENCIA (IMPORTANTE)
-use_image_ref = st.checkbox("Use photo reference description (optional)")
+use_image_ref = st.checkbox("Use photo reference description (High Priority)")
 
 if character_type == "Character":
     char_name = st.text_input("Character name", placeholder="Master Oogway...")
-    
+    # Instrucción de Identidad Crítica
     if use_image_ref:
-        subject_block = f"SUBJECT: The character {char_name}. Use the attached image as the absolute reference for anatomy, proportions, and wrinkles."
+        subject_block = f"SCULPTURE: {char_name}. REPLICATE THE ATTACHED PHOTO 1:1. EXACT WRINKLES AND ANATOMY."
     else:
-        subject_block = f"SUBJECT: The official character {char_name}. Exact canon anatomy, original face wrinkles, and iconic silhouette."
+        subject_block = f"SCULPTURE: The official {char_name}. Masterfully detailed face, authentic wrinkles, iconic canon body proportions."
 else:
     detail = st.text_input("Description / Name")
-    if use_image_ref:
-        subject_block = f"SUBJECT: {detail}. Replicate the exact proportions and features shown in the attached photo."
-    else:
-        subject_block = f"SUBJECT: {detail}."
+    subject_block = f"SCULPTURE: {detail}."
 
 extra = st.text_input("Extra details (Pose, objects...)")
 
 # --------------------------------------------------
-# GENERADOR Y BOTÓN DE COPIADO RÁPIDO
+# GENERADOR Y COPIADO RÁPIDO
 # --------------------------------------------------
 if st.button("✨ Generate Master Prompt"):
     if character_type == "Character" and not char_name:
         st.error("Please enter a name.")
     else:
-        # Construcción del prompt
-        ref_instruction = "PHOTO REFERENCE: Analyze the attached image carefully to replicate 1:1 geometry." if use_image_ref else ""
-        
+        # Estructura de Prompt "Limpia" para evitar alucinaciones
+        # Ponemos el sujeto PRIMERO y solo al final el estilo técnico
         if character_type == "Character":
-            final_prompt = f"""{ref_instruction}
-{subject_block}
+            final_prompt = f"""{subject_block}
+{extra if extra else ""}
 {BRAND_STYLE}
 {TECH_BLOCK}
-DETAILS: {extra if extra else "Official outfit and signature objects."}
-MANDATE: 100% fidelity. Do not simplify or add non-canon features. No extra hair or beards."""
+MANDATE: 100% likeness. Do not modify the original character's face or body. No beards or hair unless they belong to {char_name}."""
         else:
-            final_prompt = f"{ref_instruction}\n{subject_block}\n{BRAND_STYLE}\n{TECH_BLOCK}\n{extra}"
+            final_prompt = f"{subject_block}\n{extra}\n{BRAND_STYLE}\n{TECH_BLOCK}"
 
         st.subheader("📄 Prompt para Nano Banana")
-        st.info("Haz clic en el icono de la derecha para copiar:")
+        st.info("Copia este prompt y adjunta la imagen de referencia en la IA:")
         st.code(final_prompt.strip(), language="text")
-        st.success("¡Prompt con referencia de imagen listo!")
