@@ -27,96 +27,6 @@ st.warning(
 )
 
 # --------------------------------------------------
-# BRAND STYLE (FIXED – TECHNICAL)
-# --------------------------------------------------
-BRAND_STYLE = """
-Clean 3D cartoon character.
-Slightly cute but adult-oriented.
-Technical 3D model.
-Smooth and simple surfaces.
-No textures.
-No micro details.
-Unpainted white material.
-Matte finish.
-Designed strictly for 3D printing.
-"""
-
-# --------------------------------------------------
-# TECHNICAL CONTROL (GLOBAL – VERY IMPORTANT)
-# --------------------------------------------------
-TECHNICAL_CONTROL_BLOCK = """
-This is a technical 3D model, not an illustration.
-No artistic interpretation.
-No cinematic lighting.
-No dramatic pose.
-No environment.
-No background elements.
-No decorative additions.
-"""
-
-# --------------------------------------------------
-# BASE CONTROL (ABSOLUTE)
-# --------------------------------------------------
-BASE_BLOCK = """
-Base:
-Simple flat round base.
-Plain cylinder.
-No decoration.
-No texture.
-No engravings.
-No patterns.
-No symbols.
-Purely functional base only.
-"""
-
-# --------------------------------------------------
-# CHARACTER FIDELITY (ONLY FOR EXISTING CHARACTERS)
-# --------------------------------------------------
-CHARACTER_FIDELITY_BLOCK = """
-IMPORTANT – CHARACTER FIDELITY OVERRIDES STYLE
-
-This is a well-known existing character.
-Accuracy is mandatory.
-
-Preserve:
-- Original facial structure
-- Original head shape
-- Original proportions
-- Original silhouette
-- Original personality
-
-Do NOT:
-- Redesign the character
-- Stylize freely
-- Exaggerate proportions
-- Add new elements
-- Change base design
-
-Any style adaptation must be minimal and secondary.
-Instant recognition has absolute priority.
-"""
-
-# --------------------------------------------------
-# CHARACTER REFERENCE SEARCH (NEW – PROMPT ONLY)
-# --------------------------------------------------
-CHARACTER_REFERENCE_SEARCH_BLOCK = """
-REFERENCE ACQUISITION STEP (MANDATORY):
-
-Before generating the character, search for the most accurate and
-recognizable visual references of this character available online.
-
-Analyze multiple references to identify:
-- Canonical facial features
-- Full body proportions
-- Typical clothing and accessories
-- Overall silhouette and stance
-
-If available references are partial (e.g. upper body only),
-reconstruct the full body based on the official and commonly accepted design.
-Do NOT crop or limit the character due to incomplete references.
-"""
-
-# --------------------------------------------------
 # UI – TYPE SELECTION
 # --------------------------------------------------
 character_type = st.selectbox(
@@ -128,35 +38,25 @@ character_type = st.selectbox(
 # TYPE-SPECIFIC INPUTS
 # --------------------------------------------------
 base_character_block = ""
+char_name = ""
 
 if character_type == "Person":
     gender = st.selectbox("Gender", ["Male", "Female"])
-    base_character_block = f"""
-Original human character.
-Gender: {gender}.
-Neutral standing pose.
-Friendly and calm expression.
-"""
+    base_character_block = f"Original human character. Gender: {gender}. Neutral standing pose. Friendly and calm expression."
 
 elif character_type == "Animal":
     animal_type = st.text_input(
         "Type of animal",
         placeholder="e.g. turtle, fox, cat..."
     )
-    base_character_block = f"""
-Anthropomorphic {animal_type} character.
-Standing on two legs like a human.
-Animal anatomy preserved.
-"""
+    base_character_block = f"Anthropomorphic {animal_type} character. Standing on two legs like a human. Animal anatomy preserved."
 
 elif character_type == "Character":
-    character_name = st.text_input(
+    char_name = st.text_input(
         "Character name",
         placeholder="e.g. Master Oogway, Pikachu..."
     )
-    base_character_block = f"""
-Existing fictional character: {character_name}.
-"""
+    base_character_block = f"Existing fictional character: {char_name}."
 
 # --------------------------------------------------
 # OPTIONAL INPUTS
@@ -183,93 +83,28 @@ if use_photo:
 # --------------------------------------------------
 # GENERATE BUTTON
 # --------------------------------------------------
-generate = st.button("✨ Generate prompt")
+if st.button("✨ Generate Prompt"):
 
-# --------------------------------------------------
-# PROMPT GENERATION
-# --------------------------------------------------
-if generate:
+    # --- DEFINICIONES DE BLOQUES FIJOS ---
+    BRAND_STYLE = "STYLE: Clean 3D digital sculpture, unpainted white resin material, matte finish."
+    TECH_BLOCK = "CONTROL: Isolated on white background, no environment, neutral lighting, simple round base."
 
-    # Profession block (always optional)
-    profession_block = ""
-    if profession.strip():
-        profession_block = f"""
-Profession: {profession}.
-Simple and appropriate outfit.
-No decorative excess.
-"""
+    # Profesión y detalles adicionales
+    profession_block = f"Profession: {profession}. Simple and appropriate outfit. No decorative excess." if profession.strip() else ""
+    extra_block = extra_details if extra_details.strip() else ""
 
-    reference_block = ""
-
+    # --------------------------------------------------
+    # CHARACTER (DUAL STEP)
+    # --------------------------------------------------
     if character_type == "Character":
 
-        if use_photo and photo_reference.strip():
-            reference_block = f"""
-Use the provided photo reference as a visual guide.
-Match facial features, clothing, and proportions faithfully.
-If the photo is partial, reconstruct the full body
-based on official character design consistency.
-Photo description:
-{photo_reference}
-"""
+        if not char_name:
+            st.error("Please enter a character name.")
         else:
-            reference_block = """
-No photo reference provided.
-AI will need at least one reference image attached in the generating platform
-to achieve high fidelity with the original character.
-"""
+            st.markdown("---")
+            st.subheader(f"🚀 Dual Step Workflow: {char_name}")
 
-        final_prompt = f"""
-{CHARACTER_REFERENCE_SEARCH_BLOCK}
-{CHARACTER_FIDELITY_BLOCK}
-{BRAND_STYLE}
-{base_character_block}
-{reference_block}
-{profession_block}
-{extra_details}
-
-{TECHNICAL_CONTROL_BLOCK}
-{BASE_BLOCK}
-
-3D printable sculpture.
-"""
-
-    else:
-
-        if use_photo and photo_reference.strip():
-            reference_block = f"""
-Use the provided photo reference.
-Adapt facial features and clothing
-to a simplified cartoon style.
-Photo description:
-{photo_reference}
-"""
-
-        final_prompt = f"""
-{BRAND_STYLE}
-{base_character_block}
-{reference_block}
-{profession_block}
-{extra_details}
-
-{TECHNICAL_CONTROL_BLOCK}
-{BASE_BLOCK}
-
-3D printable sculpture.
-"""
-
-    # --------------------------------------------------
-    # OUTPUT
-    # --------------------------------------------------
-    st.subheader("📄 Final Prompt")
-
-    prompt_area = st.text_area(
-        "Copy-ready prompt",
-        final_prompt.strip(),
-        height=380
-    )
-
-    # Botón de copiado rápido real
-    if st.button("📋 Copy prompt"):
-        st.experimental_set_query_params()  # refresco UI
-        st.success("Prompt copied! ✅ Copy it directly into the AI with your reference image.")
+            # Paso 1: Generar imagen de referencia
+            prompt_paso_1 = f"""IDENTITY ANCHOR: {char_name} (Official Design).
+VISUAL SPECIFICATIONS: High-fidelity 1:1 replica. Focus on extremely detailed anatomical features, specific skin wrinkles, and iconic facial geometry.
+STAGING: Neutral standing position
