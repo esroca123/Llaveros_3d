@@ -4,23 +4,26 @@ import streamlit as st
 # CONFIG
 # --------------------------------------------------
 st.set_page_config(
-    page_title="3D Character Generator - FDM Gap Edition",
+    page_title="3D Character Generator",
     layout="centered"
 )
 
-st.title("🧍‍♂️🦊⭐ 3D Character Generator (FDM-Gap)")
+st.title("🧍‍♂️🦊⭐ 3D Character Generator")
 
 st.markdown(
-    "Generador de prompts para figuras **3D imprimibles**. "
-    "Optimizado para poses naturales con **separación técnica (Gap)** para cortes por color."
+    "Generador de prompts para **figuras 3D imprimibles en blanco**, "
+    "listas para pintar y personalizar."
 )
 
 # --------------------------------------------------
 # ADVERTENCIA SUPERIOR
 # --------------------------------------------------
 st.warning(
-    "⚠️ El sistema generará poses naturales pero asegurando un **pequeño espacio (gap)** "
-    "entre brazos y torso para permitir cortes perpendiculares limpios."
+    "⚠️ Para obtener un resultado fiel de un personaje existente, "
+    "asegúrate de **adjuntar al menos una imagen de referencia directamente en la IA** "
+    "(por ejemplo, Gemini) que generará la imagen. "
+    "Si la referencia es parcial (rostro o torso), la IA completará el resto del cuerpo "
+    "manteniendo coherencia."
 )
 
 # --------------------------------------------------
@@ -34,95 +37,112 @@ character_type = st.selectbox(
 # --------------------------------------------------
 # TYPE-SPECIFIC INPUTS
 # --------------------------------------------------
+base_character_block = ""
 char_name = ""
 gender = ""
 animal_type = ""
 
 if character_type == "Person":
     gender = st.selectbox("Gender", ["Male", "Female"])
+    base_character_block = f"Original human character. Gender: {gender}. Neutral standing pose. Friendly and calm expression."
+
 elif character_type == "Animal":
-    animal_type = st.text_input("Type of animal", placeholder="e.g. fox, bear...")
+    animal_type = st.text_input(
+        "Type of animal",
+        placeholder="e.g. turtle, fox, cat..."
+    )
+    base_character_block = f"Anthropomorphic {animal_type} character. Standing on two legs like a human. Animal anatomy preserved."
+
 elif character_type == "Character":
-    char_name = st.text_input("Character name", placeholder="e.g. Mario, Batman...")
+    char_name = st.text_input(
+        "Character name",
+        placeholder="e.g. Master Oogway, Pikachu..."
+    )
+    base_character_block = f"Existing fictional character: {char_name}."
 
 # --------------------------------------------------
 # OPTIONAL INPUTS
 # --------------------------------------------------
-profession = st.text_input("Profession (optional)", placeholder="e.g. explorer, wizard...")
-extra_details = st.text_input("Extra details (optional)", placeholder="e.g. holding a staff, smiling...")
+profession = st.text_input(
+    "Profession (optional)",
+    placeholder="e.g. baker, samurai, doctor..."
+)
+
+extra_details = st.text_input(
+    "Extra details (optional)",
+    placeholder="e.g. holding a lantern, calm pose..."
+)
+
+use_photo = st.checkbox("Use photo reference (optional)")
+
+photo_reference = ""
+if use_photo:
+    photo_reference = st.text_area(
+        "Describe the photo reference",
+        placeholder="Describe facial features, clothing, posture..."
+    )
 
 # --------------------------------------------------
 # GENERATE BUTTON
 # --------------------------------------------------
-if st.button("✨ Generate Prompt with Technical Gap"):
+if st.button("✨ Generate Prompt"):
 
-    # --- BLOQUE DE ESTILO Y REGLAS TÉCNICAS ---
+    # --- DEFINICIONES DE BLOQUES FIJOS ---
     BRAND_STYLE = "STYLE: Clean 3D digital sculpture, unpainted white resin material, matte finish."
-    
-    # Aquí definimos la regla del GAP para poses naturales
-    FDM_GAP_RULE = (
-        "TECHNICAL REQUIREMENT: Ensure a mandatory small gap (minimum clearance) between the arms and the torso. "
-        "Even in natural poses, limbs MUST NOT touch the body. There must be visible empty space "
-        "to allow for clean perpendicular planar cuts in 3D software. No intersections."
-    )
-    
-    TECH_BLOCK = "CONTROL: Isolated on white background, neutral studio lighting, simple round base."
+    TECH_BLOCK = "CONTROL: Isolated on white background, no environment, neutral lighting, simple round base."
 
-    profession_block = f"Profession: {profession}." if profession.strip() else ""
+    # Profesión y detalles adicionales
+    profession_block = f"Profession: {profession}. Simple and appropriate outfit. No decorative excess." if profession.strip() else ""
     extra_block = extra_details if extra_details.strip() else ""
 
     # --------------------------------------------------
-    # CASE: CHARACTER (DUAL STEP)
+    # CHARACTER (DUAL STEP)
     # --------------------------------------------------
     if character_type == "Character":
+
         if not char_name:
             st.error("Please enter a character name.")
         else:
             st.markdown("---")
             st.subheader(f"🚀 Dual Step Workflow: {char_name}")
 
-            # Paso 1: Referencia con Pose Natural + Gap
-            prompt_paso_1 = f"""IDENTITY ANCHOR: {char_name}.
-POSE: Natural and dynamic standing pose. 
-CRITICAL: Maintain a subtle but clear physical gap between arms/hands and the torso. 
-The limbs should be close to the body but never touching it. 
-VISUALS: High-fidelity 1:1 replica, solid grey background, clear silhouettes."""
+            # Paso 1: Generar imagen de referencia
+            prompt_paso_1 = f"""IDENTITY ANCHOR: {char_name} (Official Design).
+VISUAL SPECIFICATIONS: High-fidelity 1:1 replica. Focus on extremely detailed anatomical features, specific skin wrinkles, and iconic facial geometry.
+STAGING: Neutral standing position, flat studio lighting, solid grey background. 
+MANDATE: No cinematic effects, no artistic stylization. Keep it simple and recognizable as the original character."""
 
-            st.info("1️⃣ **Paso 1: Generar Referencia con Separación**")
+            st.info("1️⃣ **Paso 1: Generar Referencia Fiel** (Copia y genera esta imagen primero)")
             st.code(prompt_paso_1, language="text")
 
-            # Paso 2: Conversión
-            prompt_paso_2 = f"""ACT AS A 3D SCULPTOR: Use the attached reference of {char_name}.
+            # Paso 2: Conversión 3D con estilo de marca
+            prompt_paso_2 = f"""ACT AS A 3D SCULPTOR: Use the attached simple reference of {char_name} as a 1:1 geometric template.
 CONVERT TO: {BRAND_STYLE}
-{FDM_GAP_RULE}
 TECHNICAL: {TECH_BLOCK}
-MANDATE: Keep the naturalistic pose but strictly enforce the air gap between the arms and the chest. 
-Ensure the geometry is optimized for vertical/perpendicular slicing for multi-color FDM printing.
+MANDATE: Preserve every facial wrinkle and proportion exactly as seen in the reference. Do not simplify the geometry. High-fidelity 3D printable model.
 {profession_block}
 {extra_block}"""
 
             st.write("---")
-            st.info("2️⃣ **Paso 2: Conversión a 3D (Corte por Color)**")
+            st.info("2️⃣ **Paso 2: Conversión a 3D** (Adjunta la imagen del paso 1 y usa este prompt)")
             st.code(prompt_paso_2, language="text")
 
     # --------------------------------------------------
-    # CASE: PERSON / ANIMAL (SINGLE STEP)
+    # PERSON / ANIMAL (SINGLE STEP)
     # --------------------------------------------------
     else:
         st.markdown("---")
-        st.subheader("📄 Single Step FDM Prompt")
+        st.subheader("📄 Single Step Prompt")
 
-        subject = f"{gender} person" if character_type == "Person" else f"{animal_type} animal"
+        # Definir descripción del sujeto según el tipo
+        if character_type == "Person":
+            subject_description = f"{gender} person"
+        elif character_type == "Animal":
+            subject_description = f"{animal_type} animal"
+        else:
+            subject_description = "Subject"
 
-        prompt_unico = (
-            f"SUBJECT: {subject}.\n"
-            f"POSE: Natural standing stance. Arms can be flexed or relaxed, but a visible gap must exist between limbs and torso.\n"
-            f"{BRAND_STYLE}\n"
-            f"{FDM_GAP_RULE}\n"
-            f"{TECH_BLOCK}\n"
-            f"{profession_block}\n"
-            f"{extra_block}"
-        )
+        prompt_unico = f"SUBJECT: {subject_description}.\n{BRAND_STYLE}\n{TECH_BLOCK}\n{profession_block}\n{extra_block}\n3D printable figurine."
 
-        st.info("Prompt con Gap para corte perpendicular:")
+        st.info("Haz clic para copiar el prompt:")
         st.code(prompt_unico, language="text")
