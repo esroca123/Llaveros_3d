@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Generador de Kits de Arte", layout="wide")
 st.title("🎨 Generador de Kits de Arte: Colorear + Llavero")
-st.markdown("Crea colecciones coherentes: una hoja para colorear limpia para niños y su llavero físico optimizado.")
+st.markdown("Crea colecciones coherentes: una hoja para colorear adaptada por edad y su llavero físico optimizado.")
 
 # --- Configuración ---
 with st.container():
@@ -16,17 +16,33 @@ with st.container():
     ]
     estilo_seleccionado = st.selectbox("Estilo artístico", estilos)
     
+    # NUEVA OPCIÓN: Nivel de complejidad del fondo para colorear
+    complejidad_fondo = st.selectbox(
+        "Nivel de complejidad del fondo (Página para colorear)",
+        [
+            "Simple (Minimalista, pocos elementos, ideal para niños pequeños)", 
+            "Intermedio (Un poco más elaborado, con más elementos temáticos pero limpio)"
+        ]
+    )
+    
     detalles = st.text_area("Detalles del diseño", placeholder="Describe acciones o elementos extra (ej: 'Mario corriendo con un hongo', 'Hello Kitty con una manzana')")
 
-# --- Lógica de Prompts Optimizado ---
-def generar_prompts(tematica, estilo, detalles):
-    # Prompt para la Página de Colorear (Simplificado para niños + Marco rectangular)
+# --- Lógica de Prompts Actualizada ---
+def generar_prompts(tematica, estilo, complejidad, detalles):
+    
+    # Definir la instrucción del fondo según la opción elegida
+    if "Simple" in complejidad:
+        instruccion_fondo = "- Minimalist and very simple background, with very few elements, not crowded, very easy for toddlers to color."
+    else:
+        instruccion_fondo = "- Moderately detailed and engaging background with thematic elements from the character's world, balanced and fun for older kids, avoiding clutter."
+
+    # Prompt para la Página de Colorear con Marco y complejidad variable
     prompt_colorear = f"""
-    Create a clean, simple coloring book page designed specifically for young children. 
+    Create a clean coloring book page. 
     Subject: {tematica}. Style: {estilo}. Details: {detalles}.
     Requirements: 
     - The entire page MUST be enclosed by a clean, straight black rectangular border framing the edge of the page.
-    - Minimalist and simple background, not crowded, easy for kids to color.
+    {instruccion_fondo}
     - Thick, clean, crisp black outlines.
     - Absolutely no gray, no shading, no colors, no textures inside.
     - Pure white background.
@@ -49,7 +65,7 @@ def generar_prompts(tematica, estilo, detalles):
 # --- Ejecución ---
 if st.button("Generar Prompts del Kit", type="primary"):
     if tematica:
-        p_color, p_llavero = generar_prompts(tematica, estilo_seleccionado, detalles)
+        p_color, p_llavero = generar_prompts(tematica, estilo_seleccionado, complejidad_fondo, detalles)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -59,7 +75,6 @@ if st.button("Generar Prompts del Kit", type="primary"):
             st.subheader("🔑 Prompt para Llavero")
             st.code(p_llavero, language="text")
             
-        st.info("💡 Tip: Copia estos nuevos prompts en tu generador de imágenes. Ahora la hoja de colorear incluirá el marco y será más simple para niños, y el llavero saldrá libre de argollas y bordes extraños.")
+        st.info("💡 Tip: Con esta nueva opción podrás alternar entre un diseño súper limpio para los más pequeños o uno con un poco más de contexto y reto para niños de mayor edad.")
     else:
         st.error("Por favor, ingresa una temática para comenzar.")
- 
