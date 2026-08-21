@@ -16,7 +16,7 @@ with st.container():
     ]
     estilo_seleccionado = st.selectbox("Estilo artístico", estilos)
     
-    # NUEVA OPCIÓN: Nivel de complejidad del fondo para colorear
+    # Nivel de complejidad del fondo para colorear
     complejidad_fondo = st.selectbox(
         "Nivel de complejidad del fondo (Página para colorear)",
         [
@@ -27,7 +27,7 @@ with st.container():
     
     detalles = st.text_area("Detalles del diseño", placeholder="Describe acciones o elementos extra (ej: 'Mario corriendo con un hongo', 'Hello Kitty con una manzana')")
 
-# --- Lógica de Prompts Actualizada ---
+# --- Lógica de Prompts Actualizada con Esquinas Redondeadas ---
 def generar_prompts(tematica, estilo, complejidad, detalles):
     
     # Definir la instrucción del fondo según la opción elegida
@@ -36,17 +36,17 @@ def generar_prompts(tematica, estilo, complejidad, detalles):
     else:
         instruccion_fondo = "- Moderately detailed and engaging background with thematic elements from the character's world, balanced and fun for older kids, avoiding clutter."
 
-    # Prompt para la Página de Colorear con Marco y complejidad variable
+    # Prompt para la Página de Colorear (Con marco de esquinas redondeadas y proporción 150x110 mm)
     prompt_colorear = f"""
-    Create a clean coloring book page. 
+    Create a clean coloring book page with a vertical rectangular aspect ratio (approx. 150 mm height by 110 mm width). 
     Subject: {tematica}. Style: {estilo}. Details: {detalles}.
     Requirements: 
-    - The entire page MUST be enclosed by a clean, straight black rectangular border framing the edge of the page.
+    - The entire page MUST be enclosed by a clean, straight black rectangular border with **rounded corners** framing the edge of the page.
     {instruccion_fondo}
     - Thick, clean, crisp black outlines.
     - Absolutely no gray, no shading, no colors, no textures inside.
     - Pure white background.
-    - Composition: Centered and well-balanced inside the rectangular frame.
+    - Composition: Centered and well-balanced inside the rounded rectangular frame, matching the 150x110 mm vertical proportion.
     """
     
     # Prompt para el Llavero (Sin argolla, sin borde rojo exterior)
@@ -75,6 +75,6 @@ if st.button("Generar Prompts del Kit", type="primary"):
             st.subheader("🔑 Prompt para Llavero")
             st.code(p_llavero, language="text")
             
-        st.info("💡 Tip: Con esta nueva opción podrás alternar entre un diseño súper limpio para los más pequeños o uno con un poco más de contexto y reto para niños de mayor edad.")
+        st.info("💡 Tip: Ahora la hoja para colorear incluirá en su instrucción que el marco rectangular tenga las esquinas redondeadas.")
     else:
         st.error("Por favor, ingresa una temática para comenzar.")
