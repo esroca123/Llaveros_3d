@@ -1,11 +1,11 @@
 import streamlit as st
 
 st.set_page_config(page_title="Generador de Kits de Arte Pro", layout="wide")
-st.title("🎨 Generador de Kits de Arte y Diseños Avanzados")
-st.markdown("Herramienta profesional para crear kits infantiles y diseños avanzados de alta complejidad mediante texto libre.")
+st.title("🎨 Generador de Kits de Arte: Infantil y Avanzado (Colorear + Llavero)")
+st.markdown("Crea colecciones coherentes de hojas para colorear y llaveros físicos, adaptados tanto para niños como para un público más adulto o avanzado.")
 
 # --- Sistema de Pestañas (Tabs) ---
-pestana_infantil, pestana_avanzada = st.tabs(["🧸 Kits Infantiles (Colorear + Llavero)", "🔥 Diseños Avanzados & Estilos Complejos"])
+pestana_infantil, pestana_avanzada = st.tabs(["🧸 Kits Infantiles", "🔥 Kits Avanzados / Adultos (Mandalas, Streetwear, Poligonal)"])
 
 # ==========================================
 # PESTAÑA 1: KITS INFANTILES
@@ -29,14 +29,14 @@ with pestana_infantil:
         
     detalles_inf = st.text_area("Detalles adicionales", placeholder="Ej: corriendo con un hongo, sonriendo...", key="det_inf")
 
-    if st.button("Generar Prompts Infantiles", type="primary", key="btn_inf"):
+    if st.button("Generar Kits Infantiles", type="primary", key="btn_inf"):
         if tematica_inf:
             if "Simple" in complejidad_fondo:
                 inst_fondo = "- Minimalist and very simple background, with very few elements, not crowded, very easy for toddlers to color."
             else:
                 inst_fondo = "- Moderately detailed and engaging background with thematic elements from the character's world, balanced and fun for older kids, avoiding clutter."
 
-            prompt_colorear = f"""
+            prompt_colorear_inf = f"""
             Create a clean coloring book page with a vertical rectangular aspect ratio (approx. 150 mm height by 110 mm width). 
             Subject: {tematica_inf}. Style: {estilo_inf}. Details: {detalles_inf}.
             Requirements: 
@@ -48,7 +48,7 @@ with pestana_infantil:
             - Composition: Centered and well-balanced inside the rounded rectangular frame, matching the 150x110 mm vertical proportion.
             """
             
-            prompt_llavero = f"""
+            prompt_llavero_inf = f"""
             Create a high-quality, professional 3D render design of a keychain character.
             Subject: {tematica_inf}. Style: {estilo_inf}. Details: {detalles_inf}.
             Requirements:
@@ -61,86 +61,110 @@ with pestana_infantil:
             
             c1, c2 = st.columns(2)
             with c1:
-                st.markdown("#### 📄 Hoja de Colorear")
-                st.code(prompt_colorear, language="text")
+                st.markdown("#### 📄 Hoja de Colorear (Infantil)")
+                st.code(prompt_colorear_inf, language="text")
             with c2:
-                st.markdown("#### 🔑 Llavero 3D")
-                st.code(prompt_llavero, language="text")
+                st.markdown("#### 🔑 Llavero 3D (Infantil)")
+                st.code(prompt_llavero_inf, language="text")
         else:
             st.error("Por favor, ingresa una temática infantil.")
 
 # ==========================================
-# PESTAÑA 2: DISEÑOS AVANZADOS (Libre / Streetwear / Poligonal / Mandalas)
+# PESTAÑA 2: KITS AVANZADOS / ADULTOS (Colorear + Llavero)
 # ==========================================
 with pestana_avanzada:
-    st.subheader("🔥 Generador de Diseños Avanzados por Descripción Libre")
-    st.markdown("Escribe exactamente lo que imaginas (un animal, un concepto, un objeto) y combínalo con estilos profesionales de gran formato.")
+    st.subheader("🔥 Kit Avanzado / Adultos (Colorear Detallado + Llavero Coherente)")
+    st.markdown("Crea diseños complejos de alta gama para pintar (como mandalas detalladas, estilos poligonales o arte urbano) acompañados de su llavero a juego.")
     
     col_a1, col_a2 = st.columns(2)
     with col_a1:
-        # CAMBIO CLAVE: Texto totalmente libre para describir la imagen o concepto deseado
         descripcion_libre = st.text_area(
-            "¿Qué quieres crear? (Descripción o Imagen deseada)", 
-            placeholder="Ej: Un león imponente rodeado de panteras, Un cráneo de azúcar mexicano, Un paisaje urbano futurista...", 
+            "¿Qué concepto o imagen quieres crear?", 
+            placeholder="Ej: Un león geométrico, una mandala compleja de flores, un cráneo de azúcar mexicano...", 
             key="desc_libre"
         )
         
         estilo_pro = st.selectbox(
             "Estilo Visual Avanzado",
             [
-                "Streetwear Splash Art (Grafitis, salpicaduras de pintura colorida, ropa urbana con capucha y audífonos)",
+                "Mandala Intricada (Diseño simétrico, meditativo y altamente detallado para colorear adultos)",
                 "Geometric Low-Poly / Mosaic (Facetado poligonal geométrico, mosaico moderno)",
-                "Mandala Intricada (Diseño simétrico, meditativo y altamente detallado)",
-                "Vector Art / Pop Illustration (Diseño limpio y vibrante para impresión en agendas/camisetas)"
+                "Streetwear Splash Art (Grafitis, salpicaduras detalladas de pintura y estética urbana)",
+                "Line Art Complejo / Zentangle (Ilustración intrincada de alta densidad y texturas finas)"
             ],
             key="est_pro"
         )
     with col_a2:
-        fondo_pro = st.selectbox(
-            "Fondo y Contexto",
+        complejidad_pro_fondo = st.selectbox(
+            "Nivel de detalle del fondo para colorear",
             [
-                "Aislado sobre fondo negro sólido y limpio",
-                "Aislado sobre fondo blanco puro",
-                "Con salpicaduras de pintura expansivas y dinámicas (Paint splatters splashing around)"
+                "Alto nivel de detalle y patrones ornamentales envolventes",
+                "Fondo geométrico o simétrico estructurado de alta complejidad"
             ],
-            key="fon_pro"
+            key="comp_pro"
         )
         
-        iluminacion_pro = st.selectbox(
-            "Paleta de Colores y Acabado",
+        acabado_llavero = st.selectbox(
+            "Estilo del Llavero / Figura Física",
             [
-                "Colores vibrantes de neón y alto contraste",
-                "Gama cromática de tonos cálidos y fríos equilibrados",
-                "Monocromático con acentos de color brillantes"
+                "Versión 3D estilizada en alta definición con colores sólidos vibrantes",
+                "Versión 3D geométrica / facetada lista para fabricación"
             ],
-            key="ilu_pro"
+            key="fab_pro"
         )
 
-    detalles_pro = st.text_area("Detalles técnicos o elementos extra opcionales", placeholder="Ej: Mirada penetrante, estilo simétrico perfecto, líneas finas...", key="det_pro")
+    detalles_pro = st.text_area("Detalles técnicos o elementos extra opcionales", placeholder="Ej: Elementos florales adicionales, simetría perfecta, trazos muy limpios...", key="det_pro")
 
-    if st.button("Generar Prompt Avanzado", type="primary", key="btn_pro"):
+    if st.button("Generar Kit Avanzado (Colorear + Llavero)", type="primary", key="btn_pro"):
         if descripcion_libre:
-            # Lógica adaptada a la descripción libre del usuario
-            if "Streetwear" in estilo_pro:
-                estilo_prompt = "Vibrant Streetwear Pop Splash Art illustration, dynamic composition with modern urban elements, surrounded by colorful watercolor and paint splatters, bold outlines, highly detailed digital artwork, commercial vector style suitable for printing."
+            # Definir estilo de prompt avanzado para colorear
+            if "Mandala" in estilo_pro:
+                base_estilo_colorear = "Intricate and complex adult coloring book page with a vertical rectangular aspect ratio (approx. 150 mm height by 110 mm width). Highly symmetrical mandala style, ornate geometric and floral patterns."
+                base_estilo_llavero = "A high-end professional 3D physical badge or decorative keychain render based on a complex mandala design, symmetrical, vibrant solid flat colors."
             elif "Geometric" in estilo_pro:
-                estilo_prompt = "Geometric low-poly mosaic illustration, sharp triangular facets, colorful stained-glass aesthetic, intricate patterns, clean vector shapes, highly detailed."
-            elif "Mandala" in estilo_pro:
-                estilo_prompt = "Intricate and complex mandala design, highly symmetrical, ornate geometric and floral patterns, meditative aesthetic, clean fine-line vector art, professional graphic design."
+                base_estilo_colorear = "Advanced geometric low-poly coloring book page with a vertical rectangular aspect ratio (approx. 150 mm height by 110 mm width). Sharp triangular facets, mosaic stained-glass aesthetic, intricate line art."
+                base_estilo_llavero = "A high-quality 3D geometric low-poly render model of a keychain character or object, sharp clean edges, solid vibrant multi-colors."
+            elif "Streetwear" in estilo_pro:
+                base_estilo_colorear = "Detailed streetwear pop art coloring book page with a vertical rectangular aspect ratio (approx. 150 mm height by 110 mm width). Dynamic composition, urban textures, bold clean outlines."
+                base_estilo_llavero = "A high-quality 3D render design of a streetwear urban character keychain, vibrant solid flat colors, sharp edges."
             else:
-                estilo_prompt = "High-end vector pop illustration, clean lines, vibrant flat colors, modern commercial graphic style, sharp details."
+                base_estilo_colorear = "Complex and detailed Zentangle line art coloring book page with a vertical rectangular aspect ratio (approx. 150 mm height by 110 mm width). Dense patterns, fine intricate black outlines."
+                base_estilo_llavero = "A professional 3D render design of an intricate detailed keychain, vibrant solid colors, sharp clean edges."
 
-            prompt_avanzado_final = f"""
-            {estilo_prompt}
-            Core Subject / Concept: {descripcion_libre}. 
-            Additional Details: {detalles_pro}.
-            Color Palette & Atmosphere: {iluminacion_pro}.
-            Background Requirement: {fondo_pro}.
-            Additional Technical Specs: Masterpiece, ultra-sharp focus, perfect composition, flawless vector quality, commercial printing ready.
+            # Prompt avanzado para la hoja de colorear (con marco redondeado, medida 150x110 y nivel adulto)
+            prompt_colorear_avanzado = f"""
+            {base_estilo_colorear}
+            Subject / Concept: {descripcion_libre}. Details: {detalles_pro}.
+            Background/Environment: {complejidad_pro_fondo}.
+            Requirements:
+            - The entire page MUST be enclosed by a clean, straight black rectangular border with rounded corners framing the edge of the page.
+            - Thick, clean, crisp black outlines suitable for older kids, teens, or adults.
+            - Absolutely no gray, no shading, no colors, no textures inside.
+            - Pure white background.
+            - Composition: Centered and well-balanced inside the rounded rectangular frame, matching the 150x110 mm vertical proportion.
+            """
+            
+            # Prompt avanzado para el llavero/figura física correspondiente
+            prompt_llavero_avanzado = f"""
+            {base_estilo_llavero}
+            Subject / Concept: {descripcion_libre}. Details: {detalles_pro}.
+            Style type: {acabado_llavero}.
+            Requirements:
+            - Vibrant, solid flat colors.
+            - Sharp, clean edges. 
+            - STRICTLY NO keyring, NO metallic ring, NO chain, and NO hole or loop for a keyring at the top.
+            - Absolutely NO external colored border or surrounding outline frame around the object. 
+            - Completely isolated on a pure white background, ready for manufacturing.
             """
 
-            st.markdown("#### 🚀 Prompt Avanzado Optimizado")
-            st.code(prompt_avanzado_final.strip(), language="text")
-            st.info("💡 Tip: Copia este prompt en tu generador favorito. Al describir libremente el concepto, la IA interpretará exactamente los elementos visuales que buscas bajo el filtro del estilo avanzado elegido.")
+            c1, c2 = st.columns(2)
+            with c1:
+                st.markdown("#### 📄 Hoja de Colorear (Avanzada / Adultos)")
+                st.code(prompt_colorear_avanzado.strip(), language="text")
+            with c2:
+                st.markdown("#### 🔑 Llavero / Figura 3D (Avanzado)")
+                st.code(prompt_llavero_avanzado.strip(), language="text")
+                
+            st.info("💡 Tip: Ambas salidas mantienen la coherencia temática del concepto ingresado, generando una página para colorear de formato 150x110 mm con esquinas redondeadas y su respectivo llavero físico sin argollas adaptado al estilo avanzado elegido.")
         else:
-            st.error("Por favor, ingresa una descripción o concepto para generar el prompt.")
+            st.error("Por favor, ingresa una descripción o concepto para generar el kit avanzado.")
