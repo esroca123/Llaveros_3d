@@ -12,7 +12,7 @@ with st.container():
     
     estilos = [
         "Chibi / Kawaii", "Cartoon clásico", "Estilo Anime", 
-        "Line Art detallado", "Gamer / Arcade", "Floral / Nature"
+        "Line Art detallado", "Gamer / Arcade", "Floral / Nature", "color splash"
     ]
     estilo_seleccionado = st.selectbox("Estilo artístico", estilos)
     
